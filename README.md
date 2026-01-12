@@ -1,92 +1,93 @@
-# 🚀 MESH - EDDA - Midnight Starter Template
-- A starter template for building on Midnight Network with React frontend and smart contract integration.
-- **[Live Demo → counter.nebula.builders](https://counter.nebula.builders)**
+# AutoDiscovery
 
-## 📦 Prerequisites
+**A Midnight-based, geographically compliant template for attaining full and legal discovery for a variety of court applications.**
 
-- [Node.js](https://nodejs.org/) (v23+) & [npm](https://www.npmjs.com/) (v11+)
-- [Docker](https://docs.docker.com/get-docker/)
-- [Git LFS](https://git-lfs.com/) (for large files)
-- [Compact](https://docs.midnight.network/relnotes/compact-tools) (Midnight developer tools)
-- [Lace](https://chromewebstore.google.com/detail/hgeekaiplokcnmakghbdfbgnlfheichg?utm_source=item-share-cb) (Browser wallet extension)
-- [Faucet](https://faucet.preview.midnight.network/) (Preview Network Faucet)
+> *GeoOracle Auto Compliance: build once, comply everywhere.*
 
-## 🛠️ Setup
-
-### 1️⃣ Install Git LFS
-
-```bash
-# Install and initialize Git LFS
-sudo dnf install git-lfs  # For Fedora/RHEL
-git lfs install
-```
-
-### 2️⃣ Install Compact Tools
-
-```bash
-# Install the latest Compact tools
-curl --proto '=https' --tlsv1.2 -LsSf \
-  https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
-```
-```bash
-# Install the latest compiler
-# Compact compiler version 0.27 should be downloaded manually. Compact tools does not support it currently. 
-compact update +0.27.0
-```
-
-### 3️⃣ Install Node.js and docker
-- [Node.js](https://nodejs.org/) & [npm](https://www.npmjs.com/)
-- [Docker](https://docs.docker.com/get-docker/)
-
-### 4️⃣ Verify Installation
-```bash
-# Check versions
-node -v  
-npm -v   
-docker -v
-git lfs version
-compact check  # Should show latest version
-```
-
-## 📁 Project Structure
-
-```
-├── counter-cli/         # CLI tools
-├── counter-contract/    # Smart contracts
-└── frontend-vite-react/ # React application
-```
-
-## 🔗 Setup Instructions
-
-### Install Project Dependencies and compile contracts
-  ```bash
-   # In one terminal (from project root)
-   npm install
-   npm run build
-   ```
-
-### Setup Env variables
-
-1. **Create .env file from template under counter-cli folder**
-   - [`counter-cli/.env_template`](./counter-cli/.env_template)
-
-2. **Create .env file from template under frontend-vite-react folder**
-   - [`frontend-vite-react/.env_template`](./frontend-vite-react/.env_template)
-
-### Start Development In Preview Network or
-   ```bash   
-   # In one terminal (from project root)
-   npm run dev:frontend
-   ```
-
-### Start Development In Undeployed Network
-   ```bash   
-   # In one terminal (from project root)
-   npm run setup-standalone
-   
-   # In another terminal (from project root)
-   npm run dev:frontend
-   ```
 ---
 
-<div align="center"><p>Built with ❤️ by <a href="https://meshjs.dev">Mesh</a> × <a href="https://eddalabs.io">Edda Labs</a></p></div>
+## Vision
+
+AutoDiscovery automates legal discovery workflows with **jurisdiction-aware compliance**. Using a GeoOracle, it automatically applies the correct regional legislation based on case location—eliminating discovery non-compliance risks.
+
+**Key Features:**
+- **Automated Discovery Workflows** — Step-by-step process execution
+- **GeoOracle Auto Compliance** — Location-aware rule application
+- **Modular Jurisdiction Rules** — Plug-in legislation for Idaho, Utah, Washington
+- **Immutable Compliance Proofs** — ZK proofs as factual court record
+- **Selective Disclosure** — Reveal only what's required
+
+📖 **[Full Project Overview →](./docs/PROJECT_OVERVIEW.md)**
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | React + Vite + TypeScript |
+| Smart Contracts | Compact (Midnight) |
+| Wallet | Lace Browser Extension |
+| Hosting | Vercel/Netlify + Custom Domain |
+
+---
+
+## Project Structure
+
+```
+├── autodiscovery-cli/        # CLI tools for deployment
+├── autodiscovery-contract/   # Compact smart contracts
+├── frontend-vite-react/      # React application
+└── docs/                     # Documentation
+```
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v23+) & npm (v11+)
+- [Docker](https://docs.docker.com/get-docker/)
+- [Git LFS](https://git-lfs.com/)
+- [Compact Tools](https://docs.midnight.network/relnotes/compact-tools)
+- [Lace Wallet](https://chromewebstore.google.com/detail/hgeekaiplokcnmakghbdfbgnlfheichg)
+
+### Setup
+
+```bash
+# Clone
+git clone git@github.com:bytewizard42i/AutoDiscovery.git
+cd AutoDiscovery
+
+# Install dependencies
+npm install
+
+# Build contracts
+npm run build
+
+# Start frontend
+npm run dev:frontend
+```
+
+### Environment Variables
+
+1. Copy `autodiscovery-cli/.env_template` → `.env`
+2. Copy `frontend-vite-react/.env_template` → `.env`
+
+---
+
+## Team
+
+- **Spy ([@SpyCrypto](https://github.com/SpyCrypto))** — Retired Naval Paralegal, Domain Expert
+- **John ([@bytewizard42i](https://github.com/bytewizard42i))** — Developer, Midnight Builder
+
+---
+
+## Hackathon Target
+
+**Midnight Vegas Hackathon** — April 2026
+
+---
+
+*Built with Midnight Network — Privacy meets compliance.*
