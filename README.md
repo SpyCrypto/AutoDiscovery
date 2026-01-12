@@ -79,7 +79,7 @@ npm run dev:frontend
 
 ## Team
 
-- **Spy ([@SpyCrypto](https://github.com/SpyCrypto))** — Retired Paralegal, Domain Expert
+- **Spy ([@SpyCrypto](https://github.com/SpyCrypto))** — Experienced as a complex litigation paralegal and researcher; accented with numerous published statistics reports for government agencies in Idaho, Spy brings her energy and skills to further the worlds' needs. [📄 Dossier](./docs/TEAM_SPY.md)
 - **John ([@bytewizard42i](https://github.com/bytewizard42i))** — Developer, Midnight Builder
 
 ---
