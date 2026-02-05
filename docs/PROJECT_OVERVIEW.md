@@ -181,6 +181,12 @@ AutoDiscovery handles jurisdiction-specific:
 3. **Immutable proofs** — Compliance attestations can't be altered
 4. **Auditability** — Courts can verify without seeing underlying data
 
+### Why Courts = Legitimization
+
+Courts guard precedent fiercely. In one case, a judge refused to let a plaintiff shortcut SCRA military status verification by simply asking the defendant under oath—calling the suggestion "slippery" because it would set dangerous precedent.
+
+**The inverse is equally powerful:** Once courts accept ZK proofs as factual record, that precedent binds all future proceedings. No industry can question what the legal system has validated.
+
 ### Why GeoOracle?
 
 **No privacy-preserving geographical oracle exists today.** AutoDiscovery + GeoOracle is a prerequisite infrastructure layer for any location-aware compliance system.
