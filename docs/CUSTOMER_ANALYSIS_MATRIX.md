@@ -82,8 +82,56 @@ An attorney handling a medical malpractice case in Boise follows completely diff
 | *Qualcomm v. Broadcom* (S.D. Cal. 2008) | Withheld 46,000+ discoverable documents | $8,568,633 in sanctions; 6 attorneys referred to California State Bar `[desk research: Law360, eDiscoveryLaw.com]` |
 | *Pennypack Woods v. Narberth* (3d Cir.) | Destroyed evidence after duty to preserve arose | Case-dispositive sanctions |
 | *City of LA v. PricewaterhouseCoopers* (Cal. 2022) | Egregious discovery abuse | Post-dismissal sanctions upheld on appeal |
+| ***State v. Kohberger* (Idaho, Ada County CR01-24-31665)** | **68 TB of discovery produced in disorganized fashion; 25 experts listed but only 5 reports provided** | **Defense motion to compel + sanctions; motion for continuance; trial delay arguments; AG office diverted resources specifically to manage discovery burden** `[desk research: Newsweek, Idaho News, KTVB, court filings]` |
 
 These are not edge cases. **Missed deadlines are the #1 complaint in legal malpractice claims**, and **discovery errors are one of four recognized categories** of attorney malpractice `[desk research: TLIE]`. The problem is systemic.
+
+### Spotlight: *State v. Kohberger* — Why AutoDiscovery Exists
+
+The 2022 University of Idaho quadruple homicide case is the most high-profile criminal prosecution in Idaho history — and a masterclass in discovery chaos. It happened in **our beachhead jurisdiction**.
+
+```
+╔══════════════════════════════════════════════════════════════════╗
+║           STATE v. KOHBERGER — DISCOVERY BREAKDOWN               ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║   68 TERABYTES of discovery produced                             ║
+║   = ~17 million photos OR 68,000 hours of video                  ║
+║                                                                  ║
+║   25 prosecution experts listed                                  ║
+║    └── Only 5 had reports disclosed to defense                   ║
+║                                                                  ║
+║   Discovery described as:                                        ║
+║    • "extremely disorganized" (defense motion, Dec 2024)         ║
+║    • "slow, disorganized and tedious" (defense reply, Mar 2025)  ║
+║    • "unorganized and overwhelming" (trial brief, Apr 2025)      ║
+║                                                                  ║
+║   Defense filed:                                                 ║
+║    • Motion to compel complete expert disclosures                ║
+║    • Motion for sanctions against prosecution                    ║
+║    • Motion for continuance (trial delay)                        ║
+║                                                                  ║
+║   Idaho AG's office diverted attorneys specifically to let        ║
+║   Latah County prosecutors "concentrate on discovery"            ║
+║                                                                  ║
+║   Outcome: Guilty plea June 2025 · 4 life sentences July 2025   ║
+╚══════════════════════════════════════════════════════════════════╝
+```
+
+**What AutoDiscovery would have changed:**
+
+| Kohberger Problem | AutoDiscovery Solution |
+|-------------------|----------------------|
+| 68 TB dumped without organization | **Automated jurisdiction-aware indexing** — documents tagged by IRCP rule relevance at intake |
+| Expert disclosures incomplete (5 of 25) | **Deadline tracking with automated alerts** — every expert disclosure deadline calendared with escalation |
+| "Disorganized and tedious" production | **Structured workflow engine** — documents produced in compliance with IRCP disclosure requirements |
+| Defense couldn't review before trial | **Audit trail + search** — every document timestamped, categorized, and searchable on delivery |
+| AG diverted resources to manage discovery | **Automated compliance proofs** — ZK attestations prove production completeness without manual review |
+| No verifiable record of what was produced when | **Immutable Midnight ledger** — court can independently verify production timeline |
+
+> **The Kohberger case proves that even in the highest-stakes prosecution imaginable — a quadruple homicide capital case with unlimited state resources — discovery still breaks down.** If Idaho's AG office can't manage document production smoothly, what chance does a solo practitioner or small firm have? `[domain expertise + desk research]`
+
+This is not a hypothetical. This is Idaho. This is now. This is why we're building AutoDiscovery.
 
 ### The Cost of Getting It Wrong
 
@@ -738,10 +786,11 @@ February 2026
 | 9 | *Pennypack Woods Civic Ass'n v. Narberth* (3d Cir.) | Case-dispositive sanctions for spoliation of evidence after duty to preserve arose. |
 | 10 | *City of Los Angeles v. PricewaterhouseCoopers* (Cal. 2022) | Post-dismissal sanctions upheld on appeal for egregious discovery abuse. |
 | 11 | Texas Lawyers' Insurance Exchange (TLIE) | Missed deadlines = #1 legal malpractice complaint. Discovery errors are one of 4 recognized malpractice categories. [tlie.org](https://www.tlie.org/resource/4-common-mistakes-that-can-lead-to-a-legal-malpractice-suit) |
-| 12 | ABA Model Rules of Professional Conduct, Rule 1.6 | Duty of confidentiality — attorneys must not reveal client information without informed consent. |
-| 13 | Federal Rules of Civil Procedure, Rules 26, 37 | Rule 26: mandatory disclosures and discovery scope. Rule 37: sanctions for discovery failures. |
-| 14 | FindLaw, State of Small Law Firms (2023) | 77% of small law firms spend too much time on administrative tasks. |
-| 15 | Above the Law (2024) | 39% of law firms experienced a security breach; 97% have invested in cybersecurity. |
+| 12 | *State v. Kohberger*, Ada County CR01-24-31665 (Idaho 2024–25) | 68 TB of disorganized discovery; defense motions to compel, for sanctions, and for continuance; AG diverted resources to manage discovery burden. Guilty plea June 2025, 4 life sentences July 2025. [Newsweek](https://www.newsweek.com/bryan-kohberger-trial-update-idaho-murders-lawyer-response-2010410); [Idaho News/CBS2](https://idahonews.com/news/local/state-claims-kohberger-defense-is-seeking-a-perpetual-continuance-ahead-of-murder-trial); [Idaho AG](https://www.ag.idaho.gov/newsroom/attorney-general-labrador-commends-life-sentences-for-bryan-kohberger/); [Court filings via coi.isc.idaho.gov](https://coi.isc.idaho.gov/docs/CR01-24-31665/2025/041425+Defendants+Trial+Brief.pdf) |
+| 13 | ABA Model Rules of Professional Conduct, Rule 1.6 | Duty of confidentiality — attorneys must not reveal client information without informed consent. |
+| 14 | Federal Rules of Civil Procedure, Rules 26, 37 | Rule 26: mandatory disclosures and discovery scope. Rule 37: sanctions for discovery failures. |
+| 15 | FindLaw, State of Small Law Firms (2023) | 77% of small law firms spend too much time on administrative tasks. |
+| 16 | Above the Law (2024) | 39% of law firms experienced a security breach; 97% have invested in cybersecurity. |
 
 ---
 
