@@ -29,6 +29,20 @@
 
 ---
 
+### Evidence Methodology
+
+Every claim in this document is tagged with its evidence basis:
+
+| Tag | Meaning |
+|-----|---------|
+| `[domain expertise]` | Direct knowledge from 20 years of complex litigation practice |
+| `[desk research]` | Published data, case law, or industry reports (see References) |
+| `[assumption]` | Hypothesis to be validated through customer interviews in Weeks 2–3 |
+
+This transparency helps prioritize validation efforts and distinguishes what we *know* from what we *believe*.
+
+---
+
 ## I. THE PROBLEM LANDSCAPE
 
 ### A World of Fragmented Rules
@@ -64,12 +78,12 @@ An attorney handling a medical malpractice case in Boise follows completely diff
 
 | Case | What Went Wrong | Consequence |
 |------|----------------|-------------|
-| *Zubulake v. UBS Warburg* (S.D.N.Y. 2004) | Failure to preserve electronic evidence during discovery | Adverse inference instruction; $29M verdict |
-| *Qualcomm v. Broadcom* (S.D. Cal. 2008) | Withheld 46,000+ discoverable documents | $8.5M in sanctions; 6 attorneys referred to State Bar |
+| *Zubulake v. UBS Warburg* (S.D.N.Y. 2003–04) | Failure to preserve electronic evidence during discovery | Adverse inference instruction; compensatory + punitive verdict `[desk research: ABA Journal, Wikipedia]` |
+| *Qualcomm v. Broadcom* (S.D. Cal. 2008) | Withheld 46,000+ discoverable documents | $8,568,633 in sanctions; 6 attorneys referred to California State Bar `[desk research: Law360, eDiscoveryLaw.com]` |
 | *Pennypack Woods v. Narberth* (3d Cir.) | Destroyed evidence after duty to preserve arose | Case-dispositive sanctions |
 | *City of LA v. PricewaterhouseCoopers* (Cal. 2022) | Egregious discovery abuse | Post-dismissal sanctions upheld on appeal |
 
-These are not edge cases. **67% of federal judges** report having sanctioned attorneys for discovery violations (Federal Judicial Center survey). The problem is systemic.
+These are not edge cases. **Missed deadlines are the #1 complaint in legal malpractice claims**, and **discovery errors are one of four recognized categories** of attorney malpractice `[desk research: TLIE]`. The problem is systemic.
 
 ### The Cost of Getting It Wrong
 
@@ -128,7 +142,7 @@ Three roles touch discovery daily. Each experiences the problem differently — 
 
 | Attribute | Segment A: Paralegals | Segment B: Solo/Small Firm Attorneys | Segment C: Regional Firm Partners |
 |-----------|----------------------|-------------------------------------|-----------------------------------|
-| **Size** | ~350,000 in US | ~350,000 solo; ~160,000 small firm | ~50,000 at multi-office firms |
+| **Size** | ~350,000 in US `[desk research: BLS]` | ~350,000 solo; ~160,000 small firm `[desk research: ABA 2025 NLPS — 1.37M total US attorneys; solo = ~40% of all firms]` | ~50,000 at multi-office firms `[assumption]` |
 | **Age** | 30–55 | 35–60 | 40–65 |
 | **Income** | $45K–$75K | $80K–$250K+ | $200K–$1M+ |
 | **Jurisdiction exposure** | 1–2 states | 1–3 states | 2–5+ states |
@@ -141,11 +155,11 @@ Three roles touch discovery daily. Each experiences the problem differently — 
 
 | Dimension | Implication for AutoDiscovery |
 |-----------|-------------------------------|
-| **Risk-averse by training** | Position as liability *reduction*, not innovation |
+| **Risk-averse by training** | Position as liability *reduction*, not innovation `[domain expertise]` |
 | **Precedent-driven** | Show existing legal tech adoption curves; cite court acceptance |
-| **Skeptical of hype** | Never say "blockchain" first — lead with compliance, reveal infrastructure later |
+| **Skeptical of hype** | Never say "blockchain" first — lead with compliance, reveal infrastructure later `[domain expertise]` |
 | **Peer-influenced** | One bar association endorsement > 100 ads |
-| **Ethically bound** | Confidentiality isn't optional — it's a professional obligation (ABA Model Rules 1.6) |
+| **Ethically bound** | Confidentiality isn't optional — it's a professional obligation (ABA Model Rules 1.6) `[desk research]` |
 
 ---
 
@@ -269,14 +283,16 @@ Each pain point scored on three axes: **severity** (career/case impact), **frequ
   ■ Every item in the rightmost column can end a career
 ```
 
-### Quantified Impact
+### Quantified Impact + Willingness to Pay
 
-| Pain Point | Annual Cost per Firm | Firms Affected | Market Pain |
-|------------|---------------------|----------------|-------------|
-| **Missed deadlines** | $50K–$500K (sanctions + lost cases) | ~40% of small/mid firms annually | $2B+ |
-| **Wrong jurisdiction rules** | $25K–$2M (retrials, malpractice) | ~15% of multi-state practices | $500M+ |
-| **No compliance audit trail** | $10K–$50K (insurance premium uplift) | Nearly all firms | $1B+ |
-| **Multi-jurisdiction complexity** | 200+ paralegal hours/year wasted | ~25% of firms handle multi-state | $750M+ |
+| Pain Point | Annual Cost per Firm | Firms Affected | WTP Signal | Evidence |
+|------------|---------------------|----------------|------------|----------|
+| **Missed deadlines** | $50K–$500K (sanctions + lost cases) | ~40% of small/mid firms annually | **5/5** — #1 malpractice trigger | `[desk research: TLIE]` |
+| **Wrong jurisdiction rules** | $25K–$2M (retrials, malpractice) | ~15% of multi-state practices | **5/5** — liability exposure | `[domain expertise]` |
+| **No compliance audit trail** | $10K–$50K (insurance premium uplift) | Nearly all firms | **4/5** — insurance discount driver | `[assumption]` |
+| **Multi-jurisdiction complexity** | 200+ paralegal hours/year wasted | ~25% of firms handle multi-state | **3/5** — time savings | `[assumption]` |
+
+> **Key Insight:** Compliance audit trail ranks moderate in direct pain but high in WTP — malpractice carriers may offer premium discounts for provable compliance, making the *buyer* the insurance company, not just the firm. `[assumption — validate Week 3]`
 
 ---
 
@@ -428,6 +444,19 @@ Each pain point scored on three axes: **severity** (career/case impact), **frequ
 | **Share only what opposing counsel needs** | Binary choice: share everything or nothing | Selective disclosure at the data field level |
 | **Detect jurisdiction automatically** | No privacy-preserving location oracle exists | GeoOracle — a new infrastructure primitive |
 | **Handle privileged information** | Any system that "sees" privileged data risks waiver | Zero-knowledge architecture never exposes raw content |
+
+### What Must Be True
+
+These are the critical assumptions underpinning AutoDiscovery. Each must be validated for the product to succeed.
+
+| # | Assumption | Risk Level | Validation Plan | Timeline |
+|---|-----------|------------|-----------------|----------|
+| 1 | Courts will accept ZK proofs as compliance evidence | **High** | Research court precedent for blockchain evidence; consult with judges in Phase 1 jurisdictions | Weeks 3–5 |
+| 2 | Paralegals will adopt a new tool into their existing workflow | **Medium** | User testing with 5–10 paralegals via Spy's professional network `[domain expertise]` | Weeks 2–4 |
+| 3 | Attorneys will pay for compliance automation vs. manual processes | **Medium** | Semi-structured interviews with 3–5 solo/small firm attorneys in Idaho `[assumption]` | Weeks 2–3 |
+| 4 | GeoOracle can reliably determine jurisdiction without exposing case details | **High** | Technical feasibility prototype on Midnight testnet | Weeks 4–8 |
+| 5 | Malpractice insurers will recognize ZK compliance proofs for premium discounts | **Medium** | Outreach to 2–3 malpractice carriers in Idaho/Utah `[assumption]` | Weeks 5–7 |
+| 6 | Modular rule packs can accurately encode jurisdiction-specific rules | **Low** | Encode IRCP as pilot rule pack; validate with practicing Idaho attorneys `[domain expertise]` | Weeks 3–6 |
 
 ### The GeoOracle: Infrastructure That Doesn't Exist Yet
 
@@ -691,3 +720,54 @@ Prepared for Midnight Build Club — Cohort 1
 February 2026
 
 </div>
+
+---
+
+## References
+
+| # | Source | Citation |
+|---|--------|----------|
+| 1 | ABA 2025 Profile of the Legal Profession | 1.37M US attorneys (2025), up from 1.35M in 2024. [americanbar.org/news/profile-legal-profession](https://www.americanbar.org/news/profile-legal-profession/) |
+| 2 | Bureau of Labor Statistics (May 2024) | ~350,000 US paralegals; median wage $61,010. [bls.gov/ooh/legal/paralegals-and-legal-assistants](https://www.bls.gov/ooh/legal/paralegals-and-legal-assistants.htm) |
+| 3 | Thomson Reuters, State of US Small Law Firms (2023) | Solo practices = ~40% of all firms; firms with <6 attorneys = 75%+. |
+| 4 | Research Nester | Global legal technology market $32.2B (2025), projected $77.7B by 2035, 9.2% CAGR. |
+| 5 | Fortune Business Insights | E-discovery is the largest and fastest-growing legal tech segment. |
+| 6 | Grand View Research | US legal tech market leads globally due to AI/automation adoption. |
+| 7 | *Zubulake v. UBS Warburg*, 229 F.R.D. 422 (S.D.N.Y. 2004) | Landmark e-discovery case. Adverse inference instruction for failure to preserve electronic evidence. Jury awarded compensatory + punitive damages. [ABA Journal retrospective](https://www.abajournal.com/magazine/article/looking_back_on_zubulake_10_years_later) |
+| 8 | *Qualcomm v. Broadcom*, 2008 WL 66932 (S.D. Cal. 2008) | $8,568,633 in sanctions; 6 attorneys referred to California State Bar for withholding 46,000+ documents. [Law360](https://www.law360.com/articles/43412); [eDiscoveryLaw.com](https://www.ediscoverylaw.com/2008/01/08/court-sanctions-qualcomm-8568633/) |
+| 9 | *Pennypack Woods Civic Ass'n v. Narberth* (3d Cir.) | Case-dispositive sanctions for spoliation of evidence after duty to preserve arose. |
+| 10 | *City of Los Angeles v. PricewaterhouseCoopers* (Cal. 2022) | Post-dismissal sanctions upheld on appeal for egregious discovery abuse. |
+| 11 | Texas Lawyers' Insurance Exchange (TLIE) | Missed deadlines = #1 legal malpractice complaint. Discovery errors are one of 4 recognized malpractice categories. [tlie.org](https://www.tlie.org/resource/4-common-mistakes-that-can-lead-to-a-legal-malpractice-suit) |
+| 12 | ABA Model Rules of Professional Conduct, Rule 1.6 | Duty of confidentiality — attorneys must not reveal client information without informed consent. |
+| 13 | Federal Rules of Civil Procedure, Rules 26, 37 | Rule 26: mandatory disclosures and discovery scope. Rule 37: sanctions for discovery failures. |
+| 14 | FindLaw, State of Small Law Firms (2023) | 77% of small law firms spend too much time on administrative tasks. |
+| 15 | Above the Law (2024) | 39% of law firms experienced a security breach; 97% have invested in cybersecurity. |
+
+---
+
+## Glossary
+
+| Abbreviation | Definition |
+|-------------|-----------|
+| ABA | American Bar Association |
+| ARR | Annual Recurring Revenue |
+| CAGR | Compound Annual Growth Rate |
+| CCP | California Code of Civil Procedure |
+| CLE | Continuing Legal Education |
+| CPLR | New York Civil Practice Law and Rules |
+| CR | Washington Civil Rules |
+| dApp | Decentralized Application |
+| ESI | Electronically Stored Information |
+| FRCP | Federal Rules of Civil Procedure |
+| GeoOracle | Privacy-preserving geographical compliance oracle (AutoDiscovery) |
+| GTM | Go-to-Market |
+| IRCP | Idaho Rules of Civil Procedure |
+| KPI | Key Performance Indicator |
+| MRR | Monthly Recurring Revenue |
+| MVP | Minimum Viable Product |
+| SAM | Serviceable Addressable Market |
+| SOM | Serviceable Obtainable Market |
+| TAM | Total Addressable Market |
+| URCP | Utah Rules of Civil Procedure |
+| WTP | Willingness to Pay |
+| ZK | Zero-Knowledge (Proof) |
