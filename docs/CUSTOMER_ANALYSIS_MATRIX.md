@@ -15,7 +15,7 @@
 **Team**
 
 **Spy** — Domain Expert · 20-Year Complex Litigation Paralegal · Published Government Researcher
-**John** — Developer · Midnight Builder · Blockchain Architect
+**John** — 4x Midnight Hackathon Winner · Founder, EnterpriseZK Labs LLC · Blockchain Architect
 
 [@SpyCrypto](https://github.com/SpyCrypto) · [@bytewizard42i](https://github.com/bytewizard42i)
 
@@ -607,10 +607,12 @@ Q1 2027    NY + CA rule packs                      100 firms
 │                                                                 │
 │   SPY                                    JOHN                   │
 │   ───                                    ────                   │
-│   20 years complex litigation            Midnight Builder       │
-│   Published gov't researcher             Full-stack developer   │
-│   Idaho/Utah/Washington expertise        Blockchain architect   │
-│   Professional network = pipeline        MCP tooling expert     │
+│   20 years complex litigation            4x Midnight Hackathon  │
+│   Published gov't researcher               winner               │
+│   Idaho/Utah/Washington expertise        Full-stack developer   │
+│   Professional network = pipeline        Blockchain architect   │
+│                                          Founder, EnterpriseZK  │
+│                                            Labs LLC             │
 │                                                                 │
 │              ┌─────────────────────────┐                        │
 │              │     INTERSECTION        │                        │
