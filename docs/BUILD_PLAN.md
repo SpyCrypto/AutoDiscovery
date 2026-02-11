@@ -21,8 +21,8 @@ Everything that must exist before any feature code.
 ### 0.1 ✅ Project Planning & Research
 - ✅ Project docs written (overview, customer matrix, jurisdiction deep dive, UI notes, team)
 - ✅ Deep dive review doc for cross-LLM feedback
-- ✅ Grok data structure review (Ohio rules + schema design)
-- ✅ Jurisdiction rollout order confirmed: **ID → OH → WA → UT → CA → NY**
+- ✅ Grok data structure review (Ohio used as schema design exercise — archived in `docs/reference/`)
+- ✅ Jurisdiction rollout order confirmed: **ID (primary) → OH → WA → UT → CA → NY**
 - ✅ 6-entity data model agreed: Case, DiscoveryStep, JurisdictionRulePack, Document, Party, ComplianceAttestation
 - ✅ 4-contract architecture agreed: discovery-core, jurisdiction-registry, compliance-proof, expert-witness
 
@@ -73,9 +73,8 @@ autodiscovery-contract/src/
 │   ├── registry-witnesses.ts            # Witness implementations for registry
 │   └── compliance-witnesses.ts          # Witness implementations for proofs
 ├── rule-packs/
-│   ├── idaho-ircp.json                  # Idaho rules data
-│   ├── ohio-civr.json                   # Ohio rules data (from Grok research)
-│   └── federal-frcp.json               # Federal rules baseline
+│   ├── idaho-ircp.json                  # Idaho rules data (PRIMARY — MVP)
+│   └── federal-frcp.json               # Federal rules baseline (for removal cases)
 ├── managed/                             # Compiled output (auto-generated)
 ├── test/
 │   ├── discovery-core.test.ts
@@ -268,7 +267,7 @@ export circuit revealAttestationDetails(attestationHash: Bytes<32>): Field
 - Expert qualification attestation (prove qualifications without revealing identity)
 - W-9/I-9 submission tracking (prove collected without revealing tax data)
 - Standard of Care documentation status
-- Affidavit of merit compliance (Ohio/Idaho specific)
+- Affidavit of merit compliance (Idaho specific)
 
 ---
 
@@ -287,7 +286,7 @@ Output: computedDeadline (date)
 Rules:  
   - Calendar days: count all days
   - Business days: exclude weekends + federal/state holidays
-  - Ohio Civ.R. 6: periods < 7 days exclude weekends/holidays
+  - IRCP Rule 6: Idaho business day computation rules
   - Scheduling order overrides replace computed deadlines
 ```
 
@@ -340,21 +339,13 @@ Rules:
 
 **Spy validation required** — we'll draft from IRCP research, then have Spy verify every rule, deadline, and exemption.
 
-### 2.3 ⬜ Ohio Rule Pack (`rule-packs/ohio-civr.json`)
+### 2.3 ⬜ Federal Baseline (`rule-packs/federal-frcp.json`)
 
-**Second jurisdiction.** Grok's research gives us a strong starting point.
+**FRCP as the comparison baseline** — Idaho state cases get removed to federal, so we need this for the jurisdiction-switch workflow.
 
-**Key Ohio-specific items from Grok:**
-- 40 interrogatory limit (vs 25 federal)
-- 28-day response windows across the board
-- Med-mal exempted from initial disclosures (Civ.R. 26(A)(1)(a)(ii))
-- Affidavit of merit at filing (Civ.R. 10(D)(2), R.C. 2323.451) — must name each defendant
-- UIDDA adopted (R.C. 2319.09) for interstate subpoenas
-- County-level local rules (Cuyahoga, Franklin) need override support
+### 2.4 ⏸️ Future Jurisdictions (Post-MVP)
 
-### 2.4 ⬜ Federal Baseline (`rule-packs/federal-frcp.json`)
-
-**FRCP as the comparison baseline** — many state cases get removed to federal, so we need this for the jurisdiction-switch workflow.
+Ohio research archived in `docs/reference/`. Additional jurisdictions (OH, WA, UT, CA, NY) will be added as rule pack JSON files after Idaho is validated and working. No code changes needed — just new data files.
 
 ### 2.5 ⬜ Rule Loader Service (`services/rule-loader.ts`)
 
@@ -410,9 +401,9 @@ Multi-step wizard:
 - Court-ready formatting (no blockchain terminology)
 
 ### 3.6 ⬜ Jurisdiction Browser Page (`pages/jurisdiction-browser/`)
-- Side-by-side comparison of 2+ jurisdictions
+- Side-by-side comparison of 2+ jurisdictions (Idaho vs. Federal for MVP)
 - Color-coded differences (interrogatory limits, response days, deposition caps)
-- Ohio vs. Federal table from Grok's research as initial content
+- Idaho IRCP vs. FRCP comparison as initial content
 
 ### 3.7 ⬜ Navigation & Layout Updates
 - Replace "Midnight Starter Template" branding with AutoDiscovery
@@ -432,8 +423,8 @@ Multi-step wizard:
 
 ### 4.2 ⬜ End-to-End Workflow Test
 - Create case → add steps → complete steps → generate attestation → verify proof
-- Test with Idaho rule pack first, then Ohio
-- Test jurisdiction switch (state → federal removal)
+- Test with Idaho IRCP rule pack (primary focus)
+- Test jurisdiction switch (Idaho state → federal removal)
 
 ### 4.3 ⬜ Spy Validation
 - Walk Spy through Idaho rule pack — verify every rule, deadline, exemption
@@ -491,8 +482,8 @@ Phase 0.2 (pragma resolution)
 |------|--------|------------|
 | Pragma/compiler version incompatibility | Blocks all contract work | Test early in Phase 0.2; fallback to starter template version if needed |
 | Compact language limitations for complex data | May need to simplify on-chain model | Keep on-chain minimal; heavy logic stays off-chain in TypeScript |
-| Idaho IRCP rules inaccuracy | Wrong deadlines = useless product | Spy validates every rule before demo |
-| Hackathon deadline pressure | Scope creep | MVP = Idaho only, 1 case type, basic dashboard. Cut features, not quality |
+| Idaho IRCP rules inaccuracy | Wrong deadlines = useless product | Spy validates every rule before demo — she's THE Idaho expert |
+| Hackathon deadline pressure | Scope creep | MVP = Idaho only, med-mal case type, basic dashboard. Cut features, not quality |
 | Lace wallet UX friction | Users struggle to connect | Comprehensive onboarding wizard, error handling, fallback instructions |
 
 ---

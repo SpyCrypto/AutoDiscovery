@@ -9,9 +9,7 @@
 
 We've been doing a deep dive into the architecture for AutoDiscovery. Here's a quick summary of what we've done:
 
-1. **Grok Review** — John fed a detailed prompt into Grok asking for a full breakdown of Ohio's civil procedure discovery rules (Civ.R. 26-37) and a recommended data schema for automating discovery management. The prompt and full response are in this folder:
-   - `01-PROMPT-ohio-data-structure.md` — What we asked
-   - `02-RESPONSE-ohio-data-structure.md` — What Grok came back with
+1. **Grok Review** — John fed a detailed prompt into Grok asking for a data schema for automating discovery management. We used Ohio as a test case for the schema design exercise. That research is archived in `docs/reference/` for later use — **Idaho is our primary focus now.**
 
 2. **Data Model** — We've converged on a 6-entity data model that both Penny and Grok independently agreed on:
    - **Case** — Case metadata, jurisdiction, type, parties, scheduling overrides
@@ -28,12 +26,14 @@ We've been doing a deep dive into the architecture for AutoDiscovery. Here's a q
    - `expert-witness.compact` — Phase 2, med-mal specific expert management
 
 4. **Jurisdiction Rollout Order** — Confirmed:
-   1. **Idaho** (your home turf — we need you to validate the IRCP rules)
-   2. **Ohio** (Grok deep dive done, large market)
-   3. **Washington**
-   4. **Utah** (unique tiered discovery system)
-   5. **California**
-   6. **New York**
+   1. **Idaho** (your home turf — MVP and hackathon focus. We need you to validate the IRCP rules!)
+   2. Ohio (later — Grok research archived for when we get there)
+   3. Washington
+   4. Utah
+   5. California
+   6. New York
+
+   **Idaho is the ONLY jurisdiction we're building for right now.** Everything else comes after it's working.
 
 5. **Build Plan** — Full plan is in `docs/BUILD_PLAN.md`. It covers 5 phases from foundation through hackathon polish.
 
@@ -74,8 +74,8 @@ Specifically, we need you to review/provide:
    - Cases removed from Idaho state court to federal
    - Any discovery pitfalls you've seen attorneys trip on
 
-5. **Grok's Ohio Analysis** — If you have time, skim `02-RESPONSE-ohio-data-structure.md` and let us know:
-   - Does the schema design make sense from a paralegal's perspective?
+5. **General Schema Feedback** — Based on your experience:
+   - Does the 6-entity model (Case, Step, Rule Pack, Document, Party, Attestation) capture how discovery actually works?
    - Are we missing any discovery steps that should be tracked?
    - Is the automation trigger model (trigger → deadline → warning → escalation) realistic?
 
@@ -83,7 +83,7 @@ Specifically, we need you to review/provide:
 
 ## How to Respond
 
-**Please write your responses in the file `04-SPY-RESPONSE-to-build-plan.md` in this same folder.** John will read it before he starts building.
+**Please write your responses in the file `SPY-RESPONSE-to-build-plan.md` in the `docs/` folder (same level as this file).** John will read it before he starts building.
 
 Don't worry about formatting perfectly — bullet points, notes, corrections, "this is wrong because..." — all great. The more real-world detail you can give us, the better the system will be.
 
