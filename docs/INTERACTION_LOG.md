@@ -127,7 +127,23 @@ Continuing from scaffold. Spy's feedback incorporated. TypeScript data model is 
 ### Commits (continued)
 - `docs: adoption strategy + interaction log`
 - `docs: AI data dump parsing concept + interaction log update`
-- `feat(rule-packs): Idaho IRCP rule pack — first jurisdiction data` *(this commit)*
+- `feat(rule-packs): Idaho IRCP rule pack — first jurisdiction data`
+
+**John**: Shared "shock and awe" stats from Alice about discovery sanctions. Requested a cited pitch fodder file.
+- **Action**: Verified every stat Alice provided against primary sources. Fetched actual IRCP rules, Duke Law Journal study (Willoughby et al.), FJC surveys, Logikcull sanctions history, Minerva 2024 case law trends, and individual case opinions. Built comprehensive `PITCH_FODDER.md` with:
+  - 10 copy-ready pain bullets with citations
+  - Top monetary sanctions (Qualcomm $8.57M, Wachtel $6.72M, Grange Mutual $5.4M, SNET $5.89M)
+  - Mean ($704K) / median ($40K) sanction amounts from 78 published awards
+  - Sanctions trend data (23% grant rate in 2007 → 63% in 2014 → 36% in 2018)
+  - 2024 case law trends (mobile device, AI content, hyperlinked files)
+  - eDiscovery market size ($27.6B projected by 2030)
+  - Idaho-specific angles and Spy's real-world pain points
+  - Quick calculator hook for website/pitch
+  - Full bibliography with 11 citations
+- **Note**: Corrected Alice's $8.83M Grange Mutual figure — actual sanctions were $5.4M default judgment (6th Circuit). Pioneer Hi-Bred v. Monsanto $8.2M figure could not be independently verified as a sanctions amount — omitted from final file.
+
+### Commits (continued)
+- `docs: pitch fodder — cited shock & awe stats for selling autodiscovery.legal` *(this commit)*
 
 ---
 
