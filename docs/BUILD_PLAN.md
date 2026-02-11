@@ -32,7 +32,7 @@ Everything that must exist before any feature code.
 - Decision: Start with `>= 0.16 && <= 0.18` (per global rules + MCP validation); bump only if compilation fails
 - Update `package.json` compact script if compiler version changes
 
-### 0.3 ⬜ TypeScript Data Model (`autodiscovery-contract/src/types/`)
+### 0.3 ✅ TypeScript Data Model (`autodiscovery-contract/src/types/`)
 Create strongly-typed interfaces (no `Record<string, any>` — everything explicit).
 
 **Files to create:**
