@@ -143,7 +143,22 @@ Continuing from scaffold. Spy's feedback incorporated. TypeScript data model is 
 - **Note**: Corrected Alice's $8.83M Grange Mutual figure — actual sanctions were $5.4M default judgment (6th Circuit). Pioneer Hi-Bred v. Monsanto $8.2M figure could not be independently verified as a sanctions amount — omitted from final file.
 
 ### Commits (continued)
-- `docs: pitch fodder — cited shock & awe stats for selling autodiscovery.legal` *(this commit)*
+- `docs: pitch fodder — cited shock & awe stats for selling autodiscovery.legal`
+
+**John**: Shared Grok's expanded deep dive with more case law, systemic stats, and a draft one-pager/synopsis. Requested full merge, deeper research, one-pager and 1000-word synopsis.
+- **Action**: Verified all new Grok data points against primary sources. Merged Alice + Grok + Penny research into comprehensive 8-part PITCH_FODDER.md:
+  - Part I: Core stats (cited & verified)
+  - Part II: 10 landmark cases with full citations (added Coleman v Morgan Stanley $1.58B, Zubulake $29.3M, DR Distributors $2.5M, Captive Alternatives dismissed, Paisley Park, Skanska)
+  - Part III: Systemic impact (vanishing trial, criminal cases 60% longer, budget data)
+  - Part IV: AutoDiscovery differentiator
+  - Part V: 15 copy-ready pain bullets
+  - Part VI: Idaho-specific & Spy angles
+  - Part VII: Shareable one-pager
+  - Part VIII: 1,000-word shareable synopsis
+  - Full bibliography: 21 primary sources
+  - Grok/Alice corrections table (internal reference)
+- **Key corrections**: Grange Mutual was $5.4M not $8.83M; Pioneer Hi-Bred unverifiable (omitted); Captive Alternatives was 2023 not 2024; Grok fabricated "early adopter" stats (removed); RAND $1.8M is narrow sample (caveated).
+- `docs: pitch fodder v2 — deep dive merge with one-pager + 1000-word synopsis` *(this commit)*
 
 ---
 
