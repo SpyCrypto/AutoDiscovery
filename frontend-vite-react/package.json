@@ -11,6 +11,9 @@
     "copy-contract-keys": "mkdir -p ./public/midnight/counter/keys && mkdir -p ./public/midnight/counter/zkir && cp -r ../counter-contract/src/managed/counter/keys/* ./public/midnight/counter/keys && cp -r ../counter-contract/src/managed/counter/zkir/* ./public/midnight/counter/zkir"
   },
   "dependencies": {
+    "@fontsource/ibm-plex-serif": "^5.0.0",
+    "@fontsource/inter": "^5.0.0",
+    "@fontsource/jetbrains-mono": "^5.0.0",
     "@meshsdk/counter-contract": "*",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-dropdown-menu": "^2.1.15",

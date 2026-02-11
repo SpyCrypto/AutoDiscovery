@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 120" width="600" height="120">
+  <defs>
+    <style>
+      .logo-text { font-family: 'Georgia', serif; font-weight: 700; }
+      .tagline { font-family: 'Arial', sans-serif; font-size: 14px; }
+    </style>
+  </defs>
+  
+  <!-- Compass Rose Icon -->
+  <g id="compass-icon">
+    <!-- Outer circle -->
+    <circle cx="60" cy="60" r="40" fill="none" stroke="#1A2B4A" stroke-width="2"/>
+    
+    <!-- Grid lines -->
+    <line x1="20" y1="60" x2="100" y2="60" stroke="#2E5C8A" stroke-width="1" opacity="0.5"/>
+    <line x1="60" y1="20" x2="60" y2="100" stroke="#2E5C8A" stroke-width="1" opacity="0.5"/>
+    <line x1="30" y1="30" x2="90" y2="90" stroke="#2E5C8A" stroke-width="1" opacity="0.3"/>
+    <line x1="90" y1="30" x2="30" y2="90" stroke="#2E5C8A" stroke-width="1" opacity="0.3"/>
+    
+    <!-- Compass needle (North - Gold) -->
+    <polygon points="60,25 55,60 60,55 65,60" fill="#D4AF37"/>
+    
+    <!-- Compass needle (South - Navy) -->
+    <polygon points="60,95 65,60 60,65 55,60" fill="#1A2B4A"/>
+    
+    <!-- Center dot -->
+    <circle cx="60" cy="60" r="4" fill="#D4AF37"/>
+    
+    <!-- Cardinal markers -->
+    <text x="60" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A2B4A">N</text>
+  </g>
+  
+  <!-- AutoDiscovery Text (Deep Navy for light backgrounds) -->
+  <text x="120" y="55" class="logo-text" font-size="36" fill="#1A2B4A">AutoDiscovery</text>
+  
+  <!-- Tagline -->
+  <text x="120" y="80" class="tagline" font-size="13" fill="#4A5568">Build Once. Comply Everywhere.</text>
+</svg>

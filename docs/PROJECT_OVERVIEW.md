@@ -291,6 +291,55 @@ npm run dev:frontend
 
 ---
 
+## Design Philosophy
+
+AutoDiscovery's interface balances **cutting-edge technology** with **legal familiarity**:
+
+### Legal Modernism Aesthetic
+
+Our design language draws from professional legal and financial interfaces while incorporating modern web standards:
+
+- **Legal Modernism:** Clean, structured layouts reminiscent of legal briefs and court filings
+- **Trust & Authority:** Serif typography (IBM Plex Serif) and navy palette convey credibility and professionalism
+- **Clarity First:** Complex compliance data presented with clear visual hierarchy and intuitive interactions
+- **Accessible:** WCAG 2.1 AA compliant color contrast, semantic HTML, keyboard navigation
+
+### Brand Voice
+
+Our brand voice is **authoritative yet approachable**—we speak with confidence about compliance while remaining accessible to legal professionals of all technical backgrounds.
+
+**We are:**
+- **Precise** — Using unambiguous language appropriate for legal contexts
+- **Confident** — Speaking with authority on compliance matters
+- **Modern** — Embracing innovation while respecting legal traditions
+- **Accessible** — Making complex technology understandable
+
+**We avoid:**
+- Overly casual or colloquial language
+- Jargon without explanation
+- Alarmist or sensational messaging
+- Imprecise or vague statements
+
+### Visual Design Principles
+
+1. **Hierarchy & Structure** — Information architecture mirrors legal document organization
+2. **Color as Communication** — Traffic light indicators (🟢🟡🔴) for compliance status
+3. **Typography Scale** — Serif headings for authority, sans-serif UI for readability
+4. **Spatial Rhythm** — Consistent spacing based on 4px increments
+5. **Progressive Disclosure** — Show essential information first, details on demand
+
+### Inspiration
+
+Our design aesthetic draws from:
+- **Bloomberg Terminal** — Professional data visualization
+- **LexisNexis** — Legal research authority
+- **Clio** — Modern legal practice management
+- **Ironclad** — Contract lifecycle elegance
+
+For detailed brand guidelines, see [BRAND_GUIDELINES.md](./BRAND_GUIDELINES.md).
+
+---
+
 ## Resources
 
 - [Midnight Docs](https://docs.midnight.network/)

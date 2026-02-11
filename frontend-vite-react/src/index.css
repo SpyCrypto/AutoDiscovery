@@ -4,6 +4,15 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* AutoDiscovery Brand Colors */
+  --color-brand-deep-navy: #1A2B4A;
+  --color-brand-legal-blue: #2E5C8A;
+  --color-brand-slate-gray: #4A5568;
+  --color-brand-oracle-gold: #D4AF37;
+  --color-brand-compliance-green: #10B981;
+  --color-brand-alert-red: #DC2626;
+  
+  /* Existing theme tokens */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -39,6 +48,11 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  
+  /* AutoDiscovery Font Families */
+  --font-serif: "IBM Plex Serif", Georgia, serif;
+  --font-sans: "Inter", -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
 }
 
 :root {

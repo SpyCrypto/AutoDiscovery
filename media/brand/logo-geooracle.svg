@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="400" height="120">
+  <defs>
+    <style>
+      .logo-text { font-family: 'Georgia', serif; font-weight: 700; }
+      .sub-brand { font-family: 'Arial', sans-serif; font-size: 11px; letter-spacing: 1px; }
+    </style>
+  </defs>
+  
+  <!-- Simplified Geo Icon -->
+  <g id="geo-icon">
+    <!-- Globe outline -->
+    <circle cx="50" cy="60" r="35" fill="none" stroke="#2E5C8A" stroke-width="2"/>
+    
+    <!-- Latitude lines -->
+    <ellipse cx="50" cy="60" rx="35" ry="15" fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.6"/>
+    <ellipse cx="50" cy="60" rx="35" ry="25" fill="none" stroke="#2E5C8A" stroke-width="0.8" opacity="0.4"/>
+    
+    <!-- Longitude line -->
+    <ellipse cx="50" cy="60" rx="15" ry="35" fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.6"/>
+    
+    <!-- Oracle dot -->
+    <circle cx="50" cy="60" r="5" fill="#D4AF37"/>
+  </g>
+  
+  <!-- GeoOracle Text -->
+  <text x="100" y="55" class="logo-text" font-size="32" fill="#1A2B4A">Geo</text>
+  <text x="170" y="55" class="logo-text" font-size="32" fill="#D4AF37">Oracle</text>
+  
+  <!-- Sub-brand indicator -->
+  <text x="100" y="75" class="sub-brand" fill="#4A5568">AUTO COMPLIANCE ENGINE</text>
+</svg>

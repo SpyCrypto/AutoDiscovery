@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Compass Rose Icon -->
+  <g id="compass-icon">
+    <!-- Outer circle -->
+    <circle cx="60" cy="60" r="40" fill="none" stroke="#1A2B4A" stroke-width="2.5"/>
+    
+    <!-- Grid lines -->
+    <line x1="20" y1="60" x2="100" y2="60" stroke="#2E5C8A" stroke-width="1.5" opacity="0.5"/>
+    <line x1="60" y1="20" x2="60" y2="100" stroke="#2E5C8A" stroke-width="1.5" opacity="0.5"/>
+    <line x1="30" y1="30" x2="90" y2="90" stroke="#2E5C8A" stroke-width="1" opacity="0.3"/>
+    <line x1="90" y1="30" x2="30" y2="90" stroke="#2E5C8A" stroke-width="1" opacity="0.3"/>
+    
+    <!-- Compass needle (North - Gold) -->
+    <polygon points="60,22 54,60 60,56 66,60" fill="#D4AF37"/>
+    
+    <!-- Compass needle (South - Navy) -->
+    <polygon points="60,98 66,60 60,64 54,60" fill="#1A2B4A"/>
+    
+    <!-- East-West indicators -->
+    <polygon points="98,60 60,54 64,60 60,66" fill="#2E5C8A" opacity="0.6"/>
+    <polygon points="22,60 60,66 56,60 60,54" fill="#2E5C8A" opacity="0.6"/>
+    
+    <!-- Center dot -->
+    <circle cx="60" cy="60" r="5" fill="#D4AF37"/>
+    
+    <!-- Cardinal markers -->
+    <text x="60" y="16" text-anchor="middle" font-size="14" font-weight="bold" fill="#1A2B4A" font-family="Georgia, serif">N</text>
+    <text x="106" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#2E5C8A" font-family="Georgia, serif">E</text>
+    <text x="60" y="110" text-anchor="middle" font-size="12" font-weight="bold" fill="#2E5C8A" font-family="Georgia, serif">S</text>
+    <text x="14" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#2E5C8A" font-family="Georgia, serif">W</text>
+  </g>
+</svg>
