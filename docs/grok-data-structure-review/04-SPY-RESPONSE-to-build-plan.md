@@ -7,38 +7,38 @@
 ## Idaho IRCP Rules (26-37) — Corrections & Confirmations
 
 ### Initial Disclosures
-- [ ] Accurate? (yes/no)
+- [Y] Accurate? (yes/no)
 - Notes:
 
 ### Interrogatories
-- [ ] Accurate? (yes/no)
+- [Y] Accurate? (yes/no)
 - Limit in Idaho:
 - Response window:
 - Notes:
 
 ### Request for Production
-- [ ] Accurate? (yes/no)
+- [Y] Accurate? (yes/no)
 - Notes:
 
 ### Depositions
-- [ ] Accurate? (yes/no)
+- [Y] Accurate? (yes/no)
 - Limit per side:
 - Duration cap:
 - Notes:
 
 ### Request for Admissions
-- [ ] Accurate? (yes/no)
+- [Y] Accurate? (yes/no)
 - Limit:
 - Deemed-admitted rule:
 - Notes:
 
 ### Expert Witness Disclosure
-- [ ] Accurate? (yes/no)
+- [Y] Accurate? (yes/no)
 - Deadline:
 - Notes:
 
 ### Privilege Log
-- [ ] Accurate? (yes/no)
+- [Y] Accurate? (yes/no)
 - Notes:
 
 ### E-Discovery
@@ -53,18 +53,18 @@
 ## Medical Malpractice — Idaho Specifics
 
 ### Affidavit of Merit
-- Required in Idaho? (yes/no)
+- Required in Idaho? NO
 - If yes, when? At filing? Later?
 - Must it name each defendant specifically?
 - Notes:
 
 ### Med-Mal Discovery Exemptions
 - Are initial disclosures exempted for med-mal (like Ohio)?
-- Other exemptions:
+- Other exemptions: 
 
 ### Expert Witness Requirements (Med-Mal)
-- Qualifications required:
-- Standard of Care documentation:
+- Qualifications required: SAME AS EXPERT SUPPORTING 
+- Standard of Care documentation: YES
 - Notes:
 
 ---
@@ -72,18 +72,18 @@
 ## Local Court Rules
 
 ### Ada County
-- Any local rules overriding IRCP?
+- Any local rules overriding IRCP? NO
 - Notes:
 
 ### Canyon County
-- Notes:
+- Notes: SAME IRCP
 
 ### Other Counties
-- Notes:
+- Notes: SAME IRCO
 
 ### Judge-Specific Patterns
 - Any scheduling order patterns you've seen repeatedly?
-- Notes:
+- Notes: NO
 
 ---
 
@@ -97,8 +97,8 @@
 - How does it work in practice?
 
 ### State-to-Federal Removal
-- Common in Idaho?
-- What changes in the discovery process?
+- Common in Idaho? Only if jurisdiction determines Federal (for example higher $$$ requested)
+- What changes in the discovery process? Federal Rules
 
 ### Discovery Pitfalls
 - Things you've seen attorneys get wrong:
@@ -120,7 +120,7 @@
 
 ### Automation Triggers — Realistic?
 - Is the trigger → deadline → warning → escalation model realistic?
-- Would paralegals actually use this?
+- Would paralegals actually use this? 
 
 ---
 
