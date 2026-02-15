@@ -369,6 +369,8 @@ The **original hash** may only exist in the producing party's instance (access-c
 
 ### 2. Format Conversions (Native → Produced)
 
+> **📎 See also**: [`TWIN_PROTOCOL.md`](./TWIN_PROTOCOL.md) — for digitized physical documents, the image scan and OCR'd digital file are permanently bonded as "twins" with a combined bond hash at Level 1.
+
 Discovery often requires converting native files to produced format:
 
 ```
