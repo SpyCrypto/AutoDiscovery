@@ -61,19 +61,33 @@ Every item in the blob should be **tagged** with at least one category. This is 
 Every document has a **relationship** to one or more parties. The parties in a case:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        CASE PARTIES                          │
-├──────────────┬──────────────┬──────────┬────────────────────┤
-│   DEFENSE    │ PROSECUTION  │  COURT   │   THIRD PARTIES    │
-│    (DEF)     │  / PLAINTIFF │ (JUDGE)  │     (3P)           │
-│              │    (PRO)     │          │                    │
-│ • Defendant  │ • Plaintiff  │ • Judge  │ • Expert witnesses │
-│ • Def atty   │ • Prosecutor │ • Clerk  │ • Law enforcement  │
-│ • Def para-  │ • Pro atty   │ • Staff  │ • Fact witnesses   │
-│   legal      │ • Pro para-  │          │ • Custodians       │
-│              │   legal      │          │ • Government       │
-│              │              │          │   agencies         │
-└──────────────┴──────────────┴──────────┴────────────────────┘
+┌──────────────┬──────────────┬──────────┬──────────────────────────────────┐
+│   DEFENSE    │ PROSECUTION  │  COURT   │   THIRD PARTIES (3P)             │
+│    (DEF)     │  / PLAINTIFF │ (JUDGE)  │   ┌──────────────────────────┐   │
+│              │    (PRO)     │          │   │ WITNESSES                │   │
+│ • Defendant  │ • Plaintiff  │ • Judge  │   │ • Expert witnesses       │   │
+│ • Def atty   │ • Prosecutor │ • Clerk  │   │ • Fact/percipient        │   │
+│ • Def para-  │ • Pro atty   │ • Staff  │   │ • Character witnesses    │   │
+│   legal      │ • Pro para-  │          │   ├──────────────────────────┤   │
+│              │   legal      │          │   │ LAW ENFORCEMENT          │   │
+│              │              │          │   │ • Investigating officer  │   │
+│              │              │          │   │ • Crime scene / forensic │   │
+│              │              │          │   │ • Agency (FBI, ATF, etc) │   │
+│              │              │          │   ├──────────────────────────┤   │
+│              │              │          │   │ JURY                     │   │
+│              │              │          │   │ • Seated jurors          │   │
+│              │              │          │   │ • Alternates             │   │
+│              │              │          │   │ • Venire (jury pool)     │   │
+│              │              │          │   ├──────────────────────────┤   │
+│              │              │          │   │ OTHER                    │   │
+│              │              │          │   │ • Record custodians      │   │
+│              │              │          │   │ • Government agencies    │   │
+│              │              │          │   │ • Mediators/arbitrators  │   │
+│              │              │          │   │ • Guardian ad litem      │   │
+│              │              │          │   │ • Court reporters        │   │
+│              │              │          │   │ • Interpreters           │   │
+│              │              │          │   └──────────────────────────┘   │
+└──────────────┴──────────────┴──────────┴──────────────────────────────────┘
 ```
 
 Each document gets tagged with:
