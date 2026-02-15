@@ -36,7 +36,7 @@ Before we split by party, we need to define **what kinds of things** exist in th
 | 9 | **Digital Evidence (ESI)** | Electronically Stored Information | Emails, texts, databases, metadata, social media |
 | 10 | **Medical Records** | Health-related documentation | Hospital records, therapy notes, imaging |
 | 11 | **Financial Records** | Money-related documentation | Bank statements, tax returns, invoices |
-| 12 | **Communications** | Messages between parties or witnesses | Emails, letters, text messages, voicemails |
+| 12 | **Communications** *(see enrichment below)* | Messages between parties or witnesses | Emails, letters, text messages, voicemails |
 | 13 | **Photographs / Video / Audio** | Visual or audio evidence | Surveillance footage, body cam, scene photos |
 | 14 | **Law Enforcement Reports** | Reports from police, investigators, agencies | Arrest reports, incident reports, forensic lab reports |
 | 15 | **Witness Statements** | Accounts from percipient or character witnesses | Written statements, interview transcripts |
@@ -53,6 +53,143 @@ Before we split by party, we need to define **what kinds of things** exist in th
 ### Why This Matters
 
 Every item in the blob should be **tagged** with at least one category. This is the first axis of the partition. An untagged item is a red flag — it means someone dumped it without classification.
+
+### Communications Enrichment — AI-Extracted Metadata
+
+Communications (Category #12) are the highest-volume, highest-risk category in discovery. A single case can produce hundreds of thousands of emails, texts, and letters. A simple category tag isn't enough — we need **deep metadata** on every communication.
+
+#### The Subcategory Problem
+
+We *could* offer a dropdown of subcategories:
+
+| Subcategory | Examples |
+|-------------|----------|
+| Settlement / Negotiation | Demand letters, offers, counteroffers |
+| Contract / Transaction | Terms, amendments, approvals |
+| Scheduling / Logistics | Meeting requests, calendar invites |
+| Legal Advice (privileged?) | Attorney-client communications |
+| Complaint / Dispute | Grievances, threats, escalations |
+| Employment / HR | Hiring, firing, discipline, harassment |
+| Financial / Billing | Invoices, payment disputes, accounting |
+| Medical / Health | Treatment discussions, records requests |
+| Witness Contact | Interviews, statements, follow-ups |
+| Law Enforcement | Reports, requests, notifications |
+| Personal / Social | Non-business communications |
+| Administrative / Internal | Company memos, policy updates |
+| Evidence Discussion | Discussing, referencing, or forwarding evidence |
+| Case Strategy | (almost always privileged) |
+
+**⚠️ THE RISK**: If someone tags a settlement negotiation as "Administrative / Internal" — whether by mistake or intent — it gets miscategorized in the system. Later, when opposing counsel requests "all communications related to settlement," the automated aggregation misses it. This is **exactly** the kind of error that leads to sanctions.
+
+#### The Solution: AI Synopsis + Entity Extraction
+
+**Don't rely on human-assigned subcategories as the primary classification.** Instead, treat them as *optional hints* and let AI do the heavy lifting automatically at intake.
+
+Every communication entering the protocol gets an **AI-generated metadata envelope**:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│            COMMUNICATION METADATA ENVELOPE                    │
+│            (auto-generated at intake by protocol AI)         │
+├─────────────────────────────────────────────────────────────┤
+│                                                               │
+│  Document ID:       [hash]                                   │
+│  Format:            EMAIL | TEXT | LETTER | VOICEMAIL | ...   │
+│  Date:              [original timestamp]                     │
+│                                                               │
+│  ── HUMAN-ASSIGNED (optional, supplementary) ──              │
+│  Subcategory:       [dropdown selection — may be wrong]      │
+│                                                               │
+│  ── AI-EXTRACTED (automatic, authoritative) ──               │
+│                                                               │
+│  SYNOPSIS:          2-3 sentence plain-language summary      │
+│                     of what this communication is about.     │
+│                                                               │
+│  KEY ELEMENTS:                                                │
+│  • Topic(s):        [settlement, contract dispute, ...]      │
+│  • Action Items:    [deadline mentioned, request made, ...]  │
+│  • Sentiment:       [neutral, adversarial, cooperative, ...] │
+│  • Legal Relevance: [high, medium, low, unknown]             │
+│                                                               │
+│  PARTIES MENTIONED:  (comprehensive — anyone named or        │
+│                       referenced, even indirectly)            │
+│  ┌───────────────┬──────────┬────────────────────────┐       │
+│  │ Name          │ Role     │ Context                │       │
+│  ├───────────────┼──────────┼────────────────────────┤       │
+│  │ John Smith    │ Victim   │ Discussed throughout   │       │
+│  │ Jane Doe      │ Witness  │ Referenced on page 2   │       │
+│  │ Acme Corp     │ Entity   │ Defendant's employer   │       │
+│  │ Det. Rodriguez│ LEO      │ Forwarded report from  │       │
+│  │ Dr. Chen      │ Expert   │ Medical opinion cited  │       │
+│  └───────────────┴──────────┴────────────────────────┘       │
+│                                                               │
+│  ENTITIES MENTIONED: (non-person references)                  │
+│  • Locations:     [123 Main St, Boise ID]                    │
+│  • Dates/Times:   [Jan 15 meeting, March deadline]           │
+│  • Dollar Amounts: [$50,000 settlement offer]                │
+│  • Case Numbers:   [CV-2025-1234]                            │
+│  • Documents Ref:  ["the contract," "Exhibit B"]             │
+│                                                               │
+│  THREAD CONTEXT:  (if part of a chain)                        │
+│  • Thread ID:     [groups related messages together]         │
+│  • Position:      [3 of 7 in chain]                          │
+│  • Original From: [who started the thread]                   │
+│  • Summary Drift: [did the topic change mid-thread?]         │
+│                                                               │
+│  AI CONFIDENCE:   [0.0 — 1.0 score on extraction quality]   │
+│  FLAGGED FOR HUMAN REVIEW: [yes/no — low confidence items]   │
+│                                                               │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### How Searches Work With This
+
+Instead of relying on a subcategory dropdown, queries hit the AI-extracted metadata:
+
+```
+QUERY: "Fetch all communications speaking to or about 
+        Mr. Smith the victim"
+
+SEARCH PROCESS:
+├─ Full-text search:    "Smith" across all communications
+├─ Parties Mentioned:   Name="Smith" OR Name="John Smith"
+├─ Synopsis search:     semantic match for "Mr. Smith" / "victim"
+├─ Entity search:       Role="Victim" across all envelopes
+└─ Thread expansion:    if Smith is in message 3 of a 7-message 
+                        chain, return the whole chain
+
+RESULTS:
+├─ 142 communications directly mention "Smith"
+├─ 23 communications reference "the victim" (resolved to Smith)
+├─ 8 communications in threads where Smith was discussed earlier
+└─ 3 communications flagged: low AI confidence — human review
+   recommended (e.g., "he" pronoun — likely Smith but ambiguous)
+```
+
+#### Why This Is Better Than Subcategories Alone
+
+| Approach | Pros | Cons |
+|----------|------|------|
+| **Subcategory dropdown only** | Simple, fast | Miscategorization risk → missed documents → sanctions |
+| **AI metadata only** | Comprehensive, searchable, hard to game | AI can hallucinate, needs confidence scoring |
+| **Both (our approach)** | Human hint + AI extraction + human review flag = defense in depth | Slightly more complex at intake |
+
+#### The Miscategorization Safety Net
+
+If a human tags something as "Administrative" but the AI synopsis says "Discussion of $50,000 settlement offer with opposing counsel" — the system flags the **mismatch**:
+
+```
+⚠️  CATEGORIZATION MISMATCH — Doc [ID]
+Human subcategory:   Administrative / Internal
+AI-detected topics:  Settlement, Negotiation, Opposing Counsel
+AI confidence:       0.94
+
+Recommendation: Review subcategory assignment.
+This document may be responsive to RFP #7 
+(all settlement communications).
+```
+
+This catches both honest mistakes *and* intentional miscategorization (data dump obfuscation tactic #5 from Step 6). The AI doesn't replace human judgment — it backs it up and catches errors before they become sanctions.
 
 ---
 
