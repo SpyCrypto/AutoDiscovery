@@ -146,11 +146,11 @@ AutoDiscovery/
 | # | Jurisdiction | Rules | Priority | Notes |
 |---|--------------|-------|----------|-------|
 | 1 | **Idaho** | IRCP (Idaho Rules of Civil Procedure) | High | Spy's primary jurisdiction — domain-expert validated |
-| 2 | **Ohio** | Civ.R. (Ohio Rules of Civil Procedure) | High | Large market, 2020-2023 modernized rules; Grok deep dive complete |
+| 2 | **Utah** | URCP (Utah Rules of Civil Procedure) | High | Adjacent to Idaho; unique tiered discovery system |
 | 3 | **Washington** | CR (Civil Rules) | High | Pacific Northwest coverage |
-| 4 | **Utah** | URCP (Utah Rules of Civil Procedure) | High | Adjacent to Idaho; unique tiered discovery system |
-| 5 | **California** | CCP (Code of Civil Procedure) | High | Largest state market |
-| 6 | **New York** | CPLR (Civil Practice Law and Rules) | High | Major market, Commercial Division complexity |
+| 4 | **California** | CCP (Code of Civil Procedure) | High | Largest state market |
+| 5 | **New York City** | CPLR (Civil Practice Law and Rules) | High | Major market, Commercial Division complexity |
+| 6 | **Ohio** | Civ.R. (Ohio Rules of Civil Procedure) | Medium | Serendipitous early research; 2020-2023 modernized rules; Grok deep dive complete |
 
 ### Workflow Mapping Strategy
 

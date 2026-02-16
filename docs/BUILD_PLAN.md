@@ -22,7 +22,7 @@ Everything that must exist before any feature code.
 - ✅ Project docs written (overview, customer matrix, jurisdiction deep dive, UI notes, team)
 - ✅ Deep dive review doc for cross-LLM feedback
 - ✅ Grok data structure review (Ohio used as schema design exercise — archived in `docs/reference/`)
-- ✅ Jurisdiction rollout order confirmed: **ID (primary) → OH → WA → UT → CA → NY**
+- ✅ Jurisdiction rollout order confirmed: **ID (primary) → UT → WA → CA → NYC → OH** *(Ohio included early due to serendipitous Grok research)*
 - ✅ 6-entity data model agreed: Case, DiscoveryStep, JurisdictionRulePack, Document, Party, ComplianceAttestation
 - ✅ ~~4-contract~~ **6-contract architecture** agreed: discovery-core, jurisdiction-registry, compliance-proof, **document-registry** (NEW), **access-control** (NEW), expert-witness — see [`SMART_CONTRACT_PARTITIONING.md`](./SMART_CONTRACT_PARTITIONING.md)
 

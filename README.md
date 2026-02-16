@@ -24,27 +24,23 @@
 
 ---
 
-## The Problem
+## 🚨 The Problem
 
 With legal discovery sanctions reaching **$8.5 million in a single case** and **6 attorneys referred to the State Bar** for discipline, discovery management in its current state is a huge problem in the US.
 
 The legal discovery process is messy, time consuming, and varies by jurisdiction — with enormous consequences for compliance failures resulting in lost cases, unfavorable case delays, extremely expensive sanctions, and **the potential of being disbarred.**
 
-<table>
-<tr>
-<td align="center"><strong>$8.5M+</strong><br><sub>Top sanction award<br>(single case)</sub></td>
-<td align="center"><strong>$704,094</strong><br><sub>Average sanction<br>amount</sub></td>
-<td align="center"><strong>38,000+</strong><br><sub>NYC cases dismissed in 2024<br>from discovery failures</sub></td>
-<td align="center"><strong>28%</strong><br><sub>of all legal malpractice claims<br>stem from missed deadlines</sub></td>
-<td align="center"><strong>$30B+</strong><br><sub>annual US litigation cost<br>consumed by discovery</sub></td>
-</tr>
-</table>
+<div align="center">
+
+💰 **$8.5M+** top sanction (single case) · 📊 **$704,094** avg sanction · 🏛️ **38,000+** NYC cases dismissed (2024) · ⚖️ **28%** of malpractice claims from missed deadlines · 💸 **$30B+**/yr litigation cost from discovery
+
+</div>
 
 > In New York City alone, 38,000+ cases were dismissed in 2024 due to discovery compliance failures — and conviction rates dropped from 50% to 25%. Nationally, discovery consumes **20–50% of total litigation costs** — over **$30 billion a year**.
 
 ---
 
-## The Solution
+## 💡 The Solution
 
 With **autoDiscovery.legal**, we aim to organize and formalize a **hard-coded, geographically compliant, law-based protocol** that will help organize, distribute, and give proper, accurate, and secure access control to user-aggregated legal discovery.
 
@@ -56,13 +52,13 @@ It is our hope that autoDiscovery.legal will be the **default protocol for accur
 
 ---
 
-## What AutoDiscovery Does
+## ⚙️ What AutoDiscovery Does
 
 <table>
 <tr>
 <td width="50%">
 
-### Privacy-First Discovery Automation
+### 🔐 Privacy-First Discovery Automation
 - **GeoOracle Compliance** — Detects case jurisdiction and auto-applies the correct procedural rules (IRCP, URCP, CR, FRCP, and more)
 - **9-Step Discovery Protocol** — 24 universal document categories, party attribution, origination tracking, chain-of-custody, and AI-assisted metadata extraction
 - **Zero-Knowledge Proofs** — Compliance attestations become immutable court records without exposing underlying data
@@ -71,7 +67,7 @@ It is our hope that autoDiscovery.legal will be the **default protocol for accur
 </td>
 <td width="50%">
 
-### Intelligent Safeguards
+### 🛡️ Intelligent Safeguards
 - **Email Safety Protocol** — Threat-level classification when composing emails to opposing counsel, judges, or external parties ([details](./docs/EMAIL_SAFETY_PROTOCOL.md))
 - **Tandem Approval** — N sets of eyes must sign off before sensitive emails can send
 - **Attachment Scanning** — Metadata warnings for EXIF data, tracked changes, hidden PDF layers
@@ -83,7 +79,7 @@ It is our hope that autoDiscovery.legal will be the **default protocol for accur
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -101,7 +97,7 @@ It is our hope that autoDiscovery.legal will be the **default protocol for accur
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-### Smart Contract Suite (6 Contracts)
+### 📜 Smart Contract Suite (6 Contracts)
 
 | Contract | Purpose |
 |----------|---------|
@@ -116,7 +112,7 @@ It is our hope that autoDiscovery.legal will be the **default protocol for accur
 
 ---
 
-## Tech Stack
+## 🧰 Tech Stack
 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
@@ -130,7 +126,7 @@ It is our hope that autoDiscovery.legal will be the **default protocol for accur
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 AutoDiscovery/
@@ -155,7 +151,7 @@ AutoDiscovery/
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 
@@ -195,7 +191,7 @@ cp frontend-vite-react/.env_template frontend-vite-react/.env
 
 ---
 
-## Documentation Index
+## 📚 Documentation Index
 
 | Document | Description |
 |----------|-------------|
@@ -213,24 +209,19 @@ cp frontend-vite-react/.env_template frontend-vite-react/.env
 
 ---
 
-## Jurisdiction Coverage
+## 🌎 Jurisdiction Coverage
 
-<table>
-<tr>
-<td align="center" width="16%"><strong>Idaho</strong><br><sub>IRCP</sub><br>Primary</td>
-<td align="center" width="16%"><strong>Ohio</strong><br><sub>ORCP</sub><br>Phase 2</td>
-<td align="center" width="16%"><strong>Washington</strong><br><sub>CR</sub><br>Phase 3</td>
-<td align="center" width="16%"><strong>Utah</strong><br><sub>URCP</sub><br>Phase 4</td>
-<td align="center" width="16%"><strong>California</strong><br><sub>CCP</sub><br>Phase 5</td>
-<td align="center" width="16%"><strong>New York</strong><br><sub>CPLR</sub><br>Phase 6</td>
-</tr>
-</table>
+<div align="center">
 
-> Modular jurisdiction rule packs — add new states/federal circuits without code changes.
+🥇 **Idaho** (IRCP) · 🥈 **Utah** (URCP) · 🥉 **Washington** (CR) · 4️⃣ **California** (CCP) · 5️⃣ **New York City** (CPLR) · 6️⃣ **Ohio** (Civ.R.)
+
+</div>
+
+> Modular jurisdiction rule packs — add new states/federal circuits without code changes. Ohio included early due to serendipitous research.
 
 ---
 
-## Email Safety Protocol
+## 📧 Email Safety Protocol
 
 One of AutoDiscovery's standout features — a multi-layered protection system that prevents accidental disclosure to the wrong party.
 
@@ -247,7 +238,7 @@ Features include **recipient auto-detection** against the case contacts database
 
 ---
 
-## Team
+## 👥 Team
 
 <table>
 <tr>
