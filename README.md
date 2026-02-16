@@ -18,7 +18,7 @@
 
 ---
 
-**[Project Overview](./docs/PROJECT_OVERVIEW.md)** · **[Build Plan](./docs/BUILD_PLAN.md)** · **[Architecture](./docs/SMART_CONTRACT_PARTITIONING.md)** · **[Discovery Protocol](./docs/discovery-automation/README.md)** · **[Email Safety](./docs/EMAIL_SAFETY_PROTOCOL.md)**
+**[Project Overview](./docs/PROJECT_OVERVIEW.md)** · **[Build Plan](./docs/BUILD_PLAN.md)** · **[Architecture](./docs/SMART_CONTRACT_PARTITIONING.md)** · **[Discovery Protocol](./docs/discovery-automation/README.md)** · **[Email Safety](./docs/EMAIL_SAFETY_PROTOCOL.md)** · **[GeoZ Oracle](./docs/GEOZ_ARCHITECTURE.md)**
 
 </div>
 
@@ -206,6 +206,7 @@ cp frontend-vite-react/.env_template frontend-vite-react/.env
 | **[Jurisdiction Deep Dive](./docs/JURISDICTION_DEEP_DIVE.md)** | ID, OH, WA, UT, CA, NY rule mapping |
 | **[Customer Analysis Matrix](./docs/CUSTOMER_ANALYSIS_MATRIX.md)** | Market research and adoption strategy |
 | **[UI Design Notes](./docs/UI_DESIGN_NOTES.md)** | Brand palette, glass morphism, component guidelines |
+| **[GeoZ Architecture](./docs/GEOZ_ARCHITECTURE.md)** | 🌐 Privacy-preserving geolocation oracle on Midnight *(separate project — GeoZ.us / GeoZ.app)* |
 
 ---
 
