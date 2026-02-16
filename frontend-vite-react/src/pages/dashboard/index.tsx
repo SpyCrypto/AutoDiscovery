@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FolderOpen, Clock, AlertTriangle, CheckCircle2, FileText,
-  ArrowRight, Shield, TrendingUp, Scale, Sparkles,
+  ArrowRight, Shield, TrendingUp, Scale, Sparkles, Gavel,
 } from 'lucide-react';
 import { useProviders } from '@/providers/context';
-import type { Case, ComplianceStatus } from '@/providers/types';
+import type { Case, ComplianceStatus, DiscoveryStep } from '@/providers/types';
 
 function ComplianceBadge({ score }: { score: number }) {
   if (score >= 0.9) {
@@ -63,6 +63,7 @@ export function Dashboard() {
   const navigate = useNavigate();
   const [caseList, setCaseList] = useState<Case[]>([]);
   const [statuses, setStatuses] = useState<Record<string, ComplianceStatus>>({});
+  const [dueThisWeek, setDueThisWeek] = useState<(DiscoveryStep & { caseTitle: string })[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -76,6 +77,18 @@ export function Dashboard() {
         statusMap[c.id] = await compliance.getComplianceStatus(c.id);
       }
       setStatuses(statusMap);
+
+      // Load steps due this week (daysRemaining <= 7 and not complete)
+      const weekItems: (DiscoveryStep & { caseTitle: string })[] = [];
+      for (const c of allCases) {
+        const steps = await cases.getCaseSteps(c.id);
+        steps
+          .filter((s) => s.status !== 'complete' && s.daysRemaining !== undefined && s.daysRemaining <= 7)
+          .forEach((s) => weekItems.push({ ...s, caseTitle: c.title }));
+      }
+      weekItems.sort((a, b) => (a.daysRemaining ?? 99) - (b.daysRemaining ?? 99));
+      setDueThisWeek(weekItems);
+
       setLoading(false);
     }
     load();
@@ -128,6 +141,57 @@ export function Dashboard() {
           accent={overdueCount > 0 ? 'red' : 'emerald'}
         />
       </div>
+
+      {/* What's Due This Week */}
+      {dueThisWeek.length > 0 && (
+        <div className="bg-card border border-border rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Clock className="w-4 h-4 text-ad-gold" />
+            <h2 className="text-sm font-bold uppercase tracking-wider">Due This Week</h2>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-500 font-bold">{dueThisWeek.length}</span>
+          </div>
+          <div className="space-y-2">
+            {dueThisWeek.map((item) => (
+              <div
+                key={item.id}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border ${
+                  item.status === 'overdue'
+                    ? 'bg-red-500/5 border-red-500/20'
+                    : item.daysRemaining !== undefined && item.daysRemaining <= 3
+                    ? 'bg-amber-500/5 border-amber-500/20'
+                    : 'bg-muted/30 border-border'
+                }`}
+              >
+                {item.status === 'overdue' ? (
+                  <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
+                ) : item.ruleReference === 'IRCP 36' ? (
+                  <Gavel className="w-4 h-4 text-amber-500 shrink-0" />
+                ) : (
+                  <Clock className="w-4 h-4 text-muted-foreground shrink-0" />
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium truncate">{item.title}</p>
+                  <p className="text-[10px] text-muted-foreground truncate">{item.caseTitle}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className={`text-xs font-bold ${
+                    item.status === 'overdue' ? 'text-red-500' :
+                    item.daysRemaining !== undefined && item.daysRemaining <= 3 ? 'text-amber-500' : 'text-foreground'
+                  }`}>
+                    {item.status === 'overdue' ? 'OVERDUE' : `${item.daysRemaining}d`}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">{item.deadline}</p>
+                </div>
+                {item.ruleReference === 'IRCP 36' && item.status !== 'overdue' && (
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-500 font-bold uppercase shrink-0">
+                    Deemed Admitted
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Case List */}
       <div>

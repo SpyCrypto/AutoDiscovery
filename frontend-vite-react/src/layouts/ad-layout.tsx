@@ -4,7 +4,7 @@ import {
   Scale, ChevronLeft, ChevronRight, Shield, BookOpen, Sparkles,
   Bell, Users,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth, useMode } from '@/providers/context';
 import { ModeToggle } from '@/components/mode-toggle';
 import { JurisdictionPanel } from '@/components/jurisdiction-panel';
@@ -17,9 +17,20 @@ const navItems = [
   { to: '/settings', icon: Settings, label: 'Settings', end: false },
 ];
 
+// Mock notification data for demoLand
+const demoNotifications = [
+  { id: 'n1', type: 'deadline' as const, title: 'RFA Response Due in 5 Days', body: 'Henderson v. St. Alphonsus — IRCP 36 deadline approaching', time: '2 hours ago', read: false },
+  { id: 'n2', type: 'obfuscation' as const, title: 'Haystack Alert — Production Set 1', body: 'Obfuscation score 0.62 detected on DEF production', time: '4 hours ago', read: false },
+  { id: 'n3', type: 'compliance' as const, title: 'ZK Attestation Verified', body: 'Document hash attestation confirmed on-chain', time: '1 day ago', read: true },
+  { id: 'n4', type: 'deadline' as const, title: 'Interrogatories Overdue', body: 'Henderson v. St. Alphonsus — IRCP 33 past deadline', time: '2 days ago', read: true },
+];
+
 export function ADLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [showJurisdiction, setShowJurisdiction] = useState(true);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState(demoNotifications);
+  const notifRef = useRef<HTMLDivElement>(null);
   const { session, logout } = useAuth();
   const mode = useMode();
   const navigate = useNavigate();
@@ -31,6 +42,23 @@ export function ADLayout() {
   };
 
   const isOnCase = location.pathname.startsWith('/cases/');
+
+  // Close notification dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setShowNotifications(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const markAllRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -194,10 +222,57 @@ export function ADLayout() {
                   {session.publicKey.slice(0, 10)}...{session.publicKey.slice(-6)}
                 </span>
               )}
-              <button className="relative p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
-                <Bell className="w-4 h-4" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-ad-gold" />
-              </button>
+              <div ref={notifRef} className="relative">
+                <button
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="relative p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                >
+                  <Bell className="w-4 h-4" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-ad-gold text-[9px] font-bold text-amber-950 flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {/* Notification Dropdown */}
+                {showNotifications && (
+                  <div className="absolute right-0 top-full mt-2 w-80 bg-card border border-border rounded-xl shadow-2xl shadow-black/20 z-50 overflow-hidden ad-animate-fade-up">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                      <span className="text-xs font-bold uppercase tracking-wider">Notifications</span>
+                      {unreadCount > 0 && (
+                        <button onClick={markAllRead} className="text-[10px] text-ad-gold hover:underline font-medium">
+                          Mark all read
+                        </button>
+                      )}
+                    </div>
+                    <div className="max-h-72 overflow-y-auto ad-scrollbar">
+                      {notifications.map((n) => (
+                        <div
+                          key={n.id}
+                          className={`px-4 py-3 border-b border-border last:border-0 hover:bg-muted/50 transition-colors cursor-pointer ${
+                            !n.read ? 'bg-ad-gold/5' : ''
+                          }`}
+                          onClick={() =>
+                            setNotifications((prev) =>
+                              prev.map((x) => (x.id === n.id ? { ...x, read: true } : x))
+                            )
+                          }
+                        >
+                          <div className="flex items-start gap-2">
+                            {!n.read && <span className="mt-1.5 w-2 h-2 rounded-full bg-ad-gold shrink-0" />}
+                            <div className={!n.read ? '' : 'ml-4'}>
+                              <p className={`text-xs font-medium ${!n.read ? 'text-foreground' : 'text-muted-foreground'}`}>{n.title}</p>
+                              <p className="text-[11px] text-muted-foreground mt-0.5">{n.body}</p>
+                              <p className="text-[10px] text-muted-foreground/60 mt-1">{n.time}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
               <ModeToggle />
             </div>
           </header>

@@ -346,4 +346,61 @@ Major ideation session. Synced repos, reviewed Penny's new research, created fea
 
 ---
 
-*Log maintained by Cassie — updated before each push*
+## Session: February 16, 2026 (Evening — "Sunday Night Penny Upgrades")
+
+### Context
+Feature implementation session on branch `sunday-night-penny-upgrades`. Focus: enhance the demoLand mock UI with suggested features identified from earlier sessions. All work scoped to demoLand only — no realDeal or production backend changes.
+
+### Key Interactions
+
+**John**: Implement the suggested ADL features for the demoLand mock UI.
+- **Action**: Implemented 8 features across 3 files (case-view, dashboard, layout):
+
+#### Case View Page (`pages/case-view/index.tsx`)
+1. **Discovery Timeline Visualization** — Full-width chronological timeline on the overview tab showing case events (filing, service, production, motions, attestations) with color-coded icons and date labels
+2. **Sanctions Risk Meter** — Gauge widget on overview tab computing risk from overdue steps, non-compliant documents, and high obfuscation scores. Shows dollar exposure based on $704,094 average sanction amount. Color-coded (green/amber/red) with risk factors listed
+3. **Production Tracker / Scorecard** — Stats panel showing total pages, average fidelity score, average obfuscation score, and flagged document count
+4. **Obfuscation Score Explainer** — Expandable panel showing obfuscation detection results with individual flags, confidence indicators, and AI recommendations. Loads from mock AI provider
+5. **"Deemed Admitted" Countdown** — Warning badge on IRCP 36 (Requests for Admission) steps showing days remaining before unanswered requests are deemed admitted. Color-coded urgency (blue → amber → red) with CRITICAL/WARNING labels
+6. **One-Click Compliance Report Export** — Export button on compliance tab that generates a JSON compliance report and triggers browser download
+
+#### Dashboard Page (`pages/dashboard/index.tsx`)
+7. **"What's Due This Week" Widget** — Aggregates all discovery steps due within 7 days across all cases. Shows step title, case name, days remaining, deadline date. Special "Deemed Admitted" badge for IRCP 36 items. Sorted by urgency
+
+#### Layout (`layouts/ad-layout.tsx`)
+8. **Notification Bell Dropdown** — Replaced static bell icon with functional dropdown. Shows 4 mock notifications (deadline warnings, haystack alerts, ZK attestation confirmations). Unread count badge, "Mark all read" action, click-to-dismiss, outside-click-to-close
+
+### Technical Notes
+- All features use existing provider pattern and mock data from demoLand
+- Timeline data sourced from `getComplianceReport()` which returns `demoTimeline`
+- Obfuscation data sourced from `detectObfuscation()` in mock AI provider
+- Steps data accessed via `getCaseSteps()` for due-this-week and deemed-admitted features
+- No new dependencies added — all using existing lucide-react icons and Tailwind classes
+- IDE lint errors are all environment-related (missing node_modules for type resolution) — not code issues. App compiles and runs correctly with Vite
+
+### Files Modified
+| File | Changes |
+|------|---------|
+| `frontend-vite-react/src/pages/case-view/index.tsx` | +~300 lines: timeline, sanctions meter, obfuscation explainer, production tracker, deemed admitted countdown, export button |
+| `frontend-vite-react/src/pages/dashboard/index.tsx` | +~65 lines: "What's Due This Week" widget with step aggregation |
+| `frontend-vite-react/src/layouts/ad-layout.tsx` | +~70 lines: notification bell dropdown with mock data |
+
+### Decisions Made This Session
+| Decision | Rationale |
+|----------|-----------|
+| All features demoLand only | Matches build order: demo first, wire up real providers later |
+| No new components/files | Keep features inline to minimize file sprawl; extract later if reused |
+| Mock notifications in layout | Notifications are global (not case-specific), so layout is correct home |
+| $704,094 sanctions exposure | Uses verified mean from Willoughby study (already in PITCH_FODDER.md) |
+| Obfuscation loads on demand | Only fetches when case has documents with productionId, avoids unnecessary API calls |
+
+### Open Items for Next Session
+- Visual QA: spin up dev server and verify all new widgets render correctly
+- Consider extracting reusable components (SanctionsRiskMeter, TimelineVisualization) if needed elsewhere
+- Implement Sanctions Risk Meter on case cards (dashboard list) — currently only on case-view overview
+- Review with Spy for legal accuracy of deemed-admitted language and sanctions calculation
+- Merge `sunday-night-penny-upgrades` → main after review
+
+---
+
+*Log maintained by Penny — updated before each push*
