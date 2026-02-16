@@ -8,24 +8,38 @@
 
 AutoDiscovery is a **Midnight-based dApp** that automates legal discovery workflows with **jurisdiction-aware compliance**. Using a GeoOracle, the platform automatically applies the correct regional legislation and procedural rules based on case location—eliminating the risk of discovery non-compliance that leads to sanctions, dismissed cases, or suppressed evidence.
 
+With **autoDiscovery.legal**, we aim to organize and formalize a hard-coded, geographically compliant, law-based protocol that will help organize, distribute, and give proper, accurate, and secure access control to user-aggregated legal discovery. This protocol will **abstract away liability**, reduce man hours and overall costs, increase profits, and form an **immutable (existing forever) proof of compliance, custody, provenance, and access.**
+
 ---
 
 ## Problem Statement
 
 ### The Discovery Compliance Crisis
 
-Legal discovery—the pre-trial process where parties exchange evidence—is governed by different rules in every jurisdiction:
+With legal discovery sanctions reaching **$8.5 million in a single case** and **6 attorneys referred to the State Bar** for discipline, discovery management in its current state is a huge problem in the US.
+
+The legal discovery process is messy, time consuming, and varies by jurisdiction—with enormous consequences for compliance failures resulting in lost cases, unfavorable case delays, extremely expensive sanctions (fines, e.g., $$$), and **the potential of being disbarred.**
+
+**The scale of the crisis:**
+
+| Stat | Impact |
+|------|--------|
+| **$8.5M+** | Top sanction award in a single case (*Qualcomm v. Broadcom*, 2008) |
+| **$704,094** | Average eDiscovery sanction amount |
+| **$40,207** | Median sanction amount |
+| **38,000+** | NYC cases dismissed in 2024 from discovery compliance failures |
+| **50% → 25%** | NYC conviction rate drop due to discovery failures |
+| **28%** | Of all legal malpractice claims stem from missed deadlines |
+| **20–50%** | Of total litigation costs consumed by discovery |
+| **$30B+/year** | Annual US litigation cost attributable to discovery |
+
+In New York City alone, 38,000+ cases were dismissed in 2024 due to discovery compliance failures — and conviction rates dropped from 50% to 25%. Nationally, 28% of all legal malpractice claims stem from missed deadlines, and discovery consumes 20–50% of total litigation costs — over $30 billion a year.
+
+Legal discovery is governed by different rules in every jurisdiction:
 
 - **Federal courts** follow the Federal Rules of Civil Procedure (FRCP)
 - **Each state** has its own civil procedure rules (e.g., Idaho IRCP, Utah URCP, Washington CR)
 - **Specialized courts** (bankruptcy, family, etc.) add additional layers
-
-**Consequences of non-compliance:**
-- Evidence suppression
-- Case dismissal
-- Sanctions against attorneys
-- Malpractice liability
-- Retrials and appeals
 
 ### Current Pain Points
 
@@ -41,6 +55,10 @@ Legal discovery—the pre-trial process where parties exchange evidence—is gov
 
 ### Core Concept
 
+With **autoDiscovery.legal**, we aim to organize and formalize a **hard-coded, geographically compliant, law-based protocol** that will help organize, distribute, and give proper, accurate, and secure access control to user-aggregated legal discovery.
+
+This protocol will **abstract away liability**, reduce man hours and overall costs, increase profits, and form an **immutable (existing forever) proof of compliance, custody, provenance, and access.** It is our hope that autoDiscovery.legal will be the **default protocol for accurate and dependable discovery/evidence management** — backed with error insurance that will protect law firms from errors and omissions.
+
 AutoDiscovery provides:
 
 1. **Automated Workflow Engine** — Step-by-step discovery process execution
@@ -55,6 +73,7 @@ AutoDiscovery provides:
 - *"Automated legal discovery that adapts to location."*
 - *"Remove the risks of failing to disclose or handle discovery properly with Midnight's GeoOracle—where regional compliance is baked in."*
 - *"Prove compliance in an immutable fashion that can be entered as factual record."*
+- *"AutoDiscovery doesn't just help you manage discovery — it mathematically proves you did it right."*
 
 ---
 

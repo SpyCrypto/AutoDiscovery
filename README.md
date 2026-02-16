@@ -26,11 +26,33 @@
 
 ## The Problem
 
-Legal discovery — the pre-trial process where parties exchange evidence — is governed by **different rules in every jurisdiction**. Miss a deadline, apply the wrong rule, or accidentally disclose privileged material and the consequences are severe:
+With legal discovery sanctions reaching **$8.5 million in a single case** and **6 attorneys referred to the State Bar** for discipline, discovery management in its current state is a huge problem in the US.
 
-> **Evidence suppression · Case dismissal · Attorney sanctions · Malpractice liability · Retrials**
+The legal discovery process is messy, time consuming, and varies by jurisdiction — with enormous consequences for compliance failures resulting in lost cases, unfavorable case delays, extremely expensive sanctions, and **the potential of being disbarred.**
 
-Attorneys currently navigate this manually. AutoDiscovery makes it automatic.
+<table>
+<tr>
+<td align="center"><strong>$8.5M+</strong><br><sub>Top sanction award<br>(single case)</sub></td>
+<td align="center"><strong>$704,094</strong><br><sub>Average sanction<br>amount</sub></td>
+<td align="center"><strong>38,000+</strong><br><sub>NYC cases dismissed in 2024<br>from discovery failures</sub></td>
+<td align="center"><strong>28%</strong><br><sub>of all legal malpractice claims<br>stem from missed deadlines</sub></td>
+<td align="center"><strong>$30B+</strong><br><sub>annual US litigation cost<br>consumed by discovery</sub></td>
+</tr>
+</table>
+
+> In New York City alone, 38,000+ cases were dismissed in 2024 due to discovery compliance failures — and conviction rates dropped from 50% to 25%. Nationally, discovery consumes **20–50% of total litigation costs** — over **$30 billion a year**.
+
+---
+
+## The Solution
+
+With **autoDiscovery.legal**, we aim to organize and formalize a **hard-coded, geographically compliant, law-based protocol** that will help organize, distribute, and give proper, accurate, and secure access control to user-aggregated legal discovery.
+
+This protocol will **abstract away liability**, reduce man hours and overall costs, increase profits, and form an **immutable (existing forever) proof of compliance, custody, provenance, and access.**
+
+It is our hope that autoDiscovery.legal will be the **default protocol for accurate and dependable discovery/evidence management** — backed with error insurance that will protect law firms from errors and omissions.
+
+> *"AutoDiscovery doesn't just help you manage discovery — it mathematically proves you did it right."*
 
 ---
 

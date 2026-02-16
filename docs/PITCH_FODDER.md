@@ -261,20 +261,28 @@ Per Spy (retired Idaho paralegal, 20+ years med-mal experience):
 | Motions to compel | ~10% of federal cases | Judicial intervention, delays, costs |
 | Spoliation sanctions | 0.15–3% of cases | Fines avg $704K, up to $8.5M+ |
 | Case dismissals/defaults | 9% of sanctioned cases | Total loss — case wiped out |
+| NYC cases dismissed (2024) | 38,000+ | Discovery compliance failures |
+| Malpractice claims from deadlines | 28% of all claims | Missed deadlines = career risk |
 | Adverse inference | 13% of sanctioned cases | Jury told to assume the worst |
 | Attorney discipline | Rising trend | Bar referrals, ethics probes, disbarment |
+| Discovery cost burden | 20–50% of litigation costs | Over $30 billion/year nationally |
 
 ### The Headlines
 
 - **$8.5M** — Largest single eDiscovery sanction (*Qualcomm v. Broadcom*, 2008)
 - **$1.58B** — Jury verdict after discovery default (*Coleman v. Morgan Stanley*, 2005)
+- **38,000+** — NYC cases dismissed in 2024 from discovery compliance failures
+- **28%** — Of all legal malpractice claims stem from missed deadlines
+- **50% → 25%** — NYC conviction rate drop from discovery failures
+- **$30B+/year** — Discovery consumes 20–50% of total litigation costs
 - **165+** — Court orders issued in one case trying to get compliance (*Wachtel v. Health Net*)
 - **60%** — Increase in federal criminal case duration from eDiscovery overload (2018→2023)
-- **10.4 months** — Current median criminal case closure time, up from 6.5 months
 
 ### The Solution: AutoDiscovery.legal
 
-AutoDiscovery automates the entire discovery compliance workflow — from deadline computation to privilege logging to production tracking — with **jurisdiction-specific rule packs** hard-coded for each state's civil procedure.
+With autoDiscovery.legal, we aim to organize and formalize a **hard-coded, geographically compliant, law-based protocol** that will help organize, distribute, and give proper, accurate, and secure access control to user-aggregated legal discovery. This protocol will **abstract away liability**, reduce man hours and overall costs, increase profits, and form an **immutable (existing forever) proof of compliance, custody, provenance, and access.**
+
+It is our hope that autoDiscovery.legal will be the **default protocol for accurate and dependable discovery/evidence management** — backed with error insurance that will protect law firms from errors and omissions.
 
 **What makes us different**: Zero-knowledge compliance proofs on the **Midnight blockchain** let you **mathematically prove** discovery compliance without revealing privileged content. Courts and insurers can verify independently.
 
