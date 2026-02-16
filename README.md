@@ -1,44 +1,132 @@
+<div align="center">
+
+<img src="./media/autodiscovery-logo.png" alt="AutoDiscovery Logo" width="280" />
+
 # AutoDiscovery
 
-**A Midnight-based, geographically compliant template for attaining full and legal discovery for a variety of court applications.**
+### *GeoOracle Auto Compliance: build once, comply everywhere.*
 
-> *GeoOracle Auto Compliance: build once, comply everywhere.*
+**A Midnight-based dApp that automates legal discovery with jurisdiction-aware compliance,<br>zero-knowledge proofs, and privacy-first architecture.**
+
+[![Built on Midnight](https://img.shields.io/badge/Built_on-Midnight_Network-6C3FC5?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMiIvPjwvc3ZnPg==)](https://midnight.network)
+[![License](https://img.shields.io/badge/License-Proprietary-1a1a2e?style=for-the-badge)](./LICENSE)
+[![Target](https://img.shields.io/badge/Hackathon-Midnight_Vegas_2026-D4AF37?style=for-the-badge)]()
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)]()
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)]()
 
 ---
 
-## Vision
+**[Project Overview](./docs/PROJECT_OVERVIEW.md)** · **[Build Plan](./docs/BUILD_PLAN.md)** · **[Architecture](./docs/SMART_CONTRACT_PARTITIONING.md)** · **[Discovery Protocol](./docs/discovery-automation/README.md)** · **[Email Safety](./docs/EMAIL_SAFETY_PROTOCOL.md)**
 
-AutoDiscovery automates legal discovery workflows with **jurisdiction-aware compliance**. Using a GeoOracle, it automatically applies the correct regional legislation based on case location—eliminating discovery non-compliance risks.
+</div>
 
-**Key Features:**
-- **Automated Discovery Workflows** — Step-by-step process execution
-- **GeoOracle Auto Compliance** — Location-aware rule application
-- **Modular Jurisdiction Rules** — Plug-in legislation for Idaho, Utah, Washington, New York City, California
-- **Immutable Compliance Proofs** — ZK proofs as factual court record
-- **Selective Disclosure** — Reveal only what's required
+---
 
-📖 **[Full Project Overview →](./docs/PROJECT_OVERVIEW.md)**
+## The Problem
+
+Legal discovery — the pre-trial process where parties exchange evidence — is governed by **different rules in every jurisdiction**. Miss a deadline, apply the wrong rule, or accidentally disclose privileged material and the consequences are severe:
+
+> **Evidence suppression · Case dismissal · Attorney sanctions · Malpractice liability · Retrials**
+
+Attorneys currently navigate this manually. AutoDiscovery makes it automatic.
+
+---
+
+## What AutoDiscovery Does
+
+<table>
+<tr>
+<td width="50%">
+
+### Privacy-First Discovery Automation
+- **GeoOracle Compliance** — Detects case jurisdiction and auto-applies the correct procedural rules (IRCP, URCP, CR, FRCP, and more)
+- **9-Step Discovery Protocol** — 24 universal document categories, party attribution, origination tracking, chain-of-custody, and AI-assisted metadata extraction
+- **Zero-Knowledge Proofs** — Compliance attestations become immutable court records without exposing underlying data
+- **Selective Disclosure** — Reveal only what's required, nothing more
+
+</td>
+<td width="50%">
+
+### Intelligent Safeguards
+- **Email Safety Protocol** — Threat-level classification when composing emails to opposing counsel, judges, or external parties ([details](./docs/EMAIL_SAFETY_PROTOCOL.md))
+- **Tandem Approval** — N sets of eyes must sign off before sensitive emails can send
+- **Attachment Scanning** — Metadata warnings for EXIF data, tracked changes, hidden PDF layers
+- **Case Contact Management** — Team-based contact organization with role-aware visual cues, precedence ratings, and connected-contact highlighting
+
+</td>
+</tr>
+</table>
+
+---
+
+## Architecture
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                        USER'S MACHINE                                │
+│  Local state: documents, AI metadata, search indexes, encryption     │
+├──────────────────────────────────────────────────────────────────────┤
+│                     PRIVATE LEDGER (on-chain, encrypted)             │
+│  Document metadata · Party records · Deadlines · Case details        │
+├──────────────────────────────────────────────────────────────────────┤
+│                   PUBLIC LEDGER (on-chain, immutable)                 │
+│  Compliance proof hashes · Timestamps · Production Merkle roots      │
+├──────────────────────────────────────────────────────────────────────┤
+│                    SEALED LEDGER (write-once)                        │
+│  Commitment schemes · Pre-disclosure freezes                         │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+### Smart Contract Suite (6 Contracts)
+
+| Contract | Purpose |
+|----------|---------|
+| **discovery-core** | Case lifecycle, discovery steps, obligation tracking |
+| **jurisdiction-registry** | GeoOracle rule packs per jurisdiction |
+| **compliance-proof** | ZK attestation generation and verification |
+| **document-registry** | Production tracking, Merkle trees, Twin Protocol bonds |
+| **access-control** | YubiKey-based authentication, role-gated permissions |
+| **expert-witness** | W-9/I-9 workflows, qualification attestation |
+
+> 📐 **[Full Architecture →](./docs/SMART_CONTRACT_PARTITIONING.md)** · **[YubiKey Access Control →](./docs/YUBIKEY_ACCESS_CONTROL.md)** · **[Discovery Automation →](./docs/discovery-automation/README.md)**
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Frontend | React + Vite + TypeScript |
-| Smart Contracts | Compact (Midnight) |
-| Wallet | Lace Browser Extension |
-| Hosting | Vercel/Netlify + Custom Domain |
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| **Frontend** | React 19 · Vite 6 · TypeScript 5 · Tailwind CSS 4 | Glass-morphism UI with jurisdiction comparatives |
+| **UI Components** | shadcn/ui · Lucide Icons | Accessible, themeable component library |
+| **Smart Contracts** | Compact (Midnight) | Privacy-preserving ZK smart contracts |
+| **Blockchain** | Midnight Network | Dual-ledger (public + private) with ZK proofs |
+| **Wallet** | Lace Browser Extension | User key management and transaction signing |
+| **Build** | Turborepo · npm workspaces | Monorepo orchestration |
+| **Hosting** | Vercel / Netlify | Frontend deployment |
 
 ---
 
 ## Project Structure
 
 ```
-├── autodiscovery-cli/        # CLI tools for deployment
-├── autodiscovery-contract/   # Compact smart contracts
-├── frontend-vite-react/      # React application
-└── docs/                     # Documentation
+AutoDiscovery/
+├── frontend-vite-react/           # React application
+│   ├── src/
+│   │   ├── components/            # Reusable UI (email safety dialog, etc.)
+│   │   ├── layouts/               # App shell, sidebar, navigation
+│   │   ├── pages/                 # Dashboard, case view, contacts, login
+│   │   ├── providers/             # Provider pattern (auth, cases, docs, AI, contacts, email safety)
+│   │   │   └── demoland/          # Mock providers for demo environment
+│   │   └── lib/                   # Utilities
+│   └── public/
+├── autodiscovery-contract/        # Compact smart contracts & TypeScript types
+│   └── src/types/                 # Strongly-typed data model (6 entities)
+├── autodiscovery-cli/             # CLI tools for deployment & operations
+├── docs/                          # Comprehensive documentation (20+ docs)
+│   ├── discovery-automation/      # 9-step discovery protocol deep dives
+│   └── reference/                 # Jurisdiction research archives
+├── media/                         # Brand assets
+└── turbo.json                     # Monorepo configuration
 ```
 
 ---
@@ -47,47 +135,135 @@ AutoDiscovery automates legal discovery workflows with **jurisdiction-aware comp
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v23+) & npm (v11+)
-- [Docker](https://docs.docker.com/get-docker/)
-- [Git LFS](https://git-lfs.com/)
-- [Compact Tools](https://docs.midnight.network/relnotes/compact-tools)
-- [Lace Wallet](https://chromewebstore.google.com/detail/hgeekaiplokcnmakghbdfbgnlfheichg)
+| Tool | Version | Link |
+|------|---------|------|
+| Node.js | v23+ | [nodejs.org](https://nodejs.org/) |
+| npm | v11+ | Bundled with Node.js |
+| Docker | Latest | [docker.com](https://docs.docker.com/get-docker/) |
+| Git LFS | Latest | [git-lfs.com](https://git-lfs.com/) |
+| Compact Compiler | Latest | [docs.midnight.network](https://docs.midnight.network/relnotes/compact-tools) |
+| Lace Wallet | Latest | [Chrome Web Store](https://chromewebstore.google.com/detail/hgeekaiplokcnmakghbdfbgnlfheichg) |
 
 ### Setup
 
 ```bash
-# Clone
+# Clone the repository
 git clone git@github.com:bytewizard42i/AutoDiscovery.git
 cd AutoDiscovery
 
-# Install dependencies
+# Install all dependencies (monorepo)
 npm install
 
-# Build contracts
+# Build smart contracts
 npm run build
 
-# Start frontend
+# Start frontend in demoLand mode
 npm run dev:frontend
 ```
 
 ### Environment Variables
 
-1. Copy `autodiscovery-cli/.env_template` → `.env`
-2. Copy `frontend-vite-react/.env_template` → `.env`
+```bash
+# Copy environment templates
+cp autodiscovery-cli/.env_template autodiscovery-cli/.env
+cp frontend-vite-react/.env_template frontend-vite-react/.env
+```
+
+---
+
+## Documentation Index
+
+| Document | Description |
+|----------|-------------|
+| **[Project Overview](./docs/PROJECT_OVERVIEW.md)** | Executive summary, problem statement, solution architecture |
+| **[Build Plan](./docs/BUILD_PLAN.md)** | Living roadmap with phase tracking |
+| **[Smart Contract Partitioning](./docs/SMART_CONTRACT_PARTITIONING.md)** | 6-contract architecture, private/public/sealed state mapping |
+| **[Discovery Automation](./docs/discovery-automation/README.md)** | 9-step protocol, 24 categories, Merkle hashing, Twin Protocol |
+| **[Email Safety Protocol](./docs/EMAIL_SAFETY_PROTOCOL.md)** | Threat levels, recipient flags, attachment scanning, tandem approval |
+| **[Case Contacts Feature](./docs/CASE_CONTACTS_FEATURE.md)** | Team-based contacts, star precedence, connected glow, drag reorder |
+| **[YubiKey Access Control](./docs/YUBIKEY_ACCESS_CONTROL.md)** | Hardware key auth design (3 modes) |
+| **[DemoLand vs RealDeal](./docs/DEMOLAND_VS_REALDEAL.md)** | Mock vs production architecture split |
+| **[Jurisdiction Deep Dive](./docs/JURISDICTION_DEEP_DIVE.md)** | ID, OH, WA, UT, CA, NY rule mapping |
+| **[Customer Analysis Matrix](./docs/CUSTOMER_ANALYSIS_MATRIX.md)** | Market research and adoption strategy |
+| **[UI Design Notes](./docs/UI_DESIGN_NOTES.md)** | Brand palette, glass morphism, component guidelines |
+
+---
+
+## Jurisdiction Coverage
+
+<table>
+<tr>
+<td align="center" width="16%"><strong>Idaho</strong><br><sub>IRCP</sub><br>Primary</td>
+<td align="center" width="16%"><strong>Ohio</strong><br><sub>ORCP</sub><br>Phase 2</td>
+<td align="center" width="16%"><strong>Washington</strong><br><sub>CR</sub><br>Phase 3</td>
+<td align="center" width="16%"><strong>Utah</strong><br><sub>URCP</sub><br>Phase 4</td>
+<td align="center" width="16%"><strong>California</strong><br><sub>CCP</sub><br>Phase 5</td>
+<td align="center" width="16%"><strong>New York</strong><br><sub>CPLR</sub><br>Phase 6</td>
+</tr>
+</table>
+
+> Modular jurisdiction rule packs — add new states/federal circuits without code changes.
+
+---
+
+## Email Safety Protocol
+
+One of AutoDiscovery's standout features — a multi-layered protection system that prevents accidental disclosure to the wrong party.
+
+| Threat Level | Trigger | Action |
+|:---:|---|---|
+| **SAFE** | All recipients on our team | Standard send |
+| **CAUTION** | Court staff, unknown recipients | Review content |
+| **DANGER** | Opposing counsel or their team | Attachment review + tandem recommended |
+| **CRITICAL** | Judge or magistrate | Tandem approval **REQUIRED** (2 approvers) |
+
+Features include **recipient auto-detection** against the case contacts database, **attachment metadata scanning** (EXIF, tracked changes, hidden PDF layers), **image preview before send**, and a **tandem approval workflow** where N approvers must sign off on sensitive communications.
+
+> 📧 **[Full Protocol Documentation →](./docs/EMAIL_SAFETY_PROTOCOL.md)**
 
 ---
 
 ## Team
 
-- **Spy ([@SpyCrypto](https://github.com/SpyCrypto))** — Experienced as a complex litigation paralegal and researcher; accented with numerous published statistics reports for government agencies in Idaho, Spy brings her energy and skills to further the worlds' needs. [📄 Dossier](./docs/TEAM_SPY.md)
-- **John ([@bytewizard42i](https://github.com/bytewizard42i))** — Developer, Midnight Builder
+<table>
+<tr>
+<td align="center" width="50%">
+
+### Spy
+**[@SpyCrypto](https://github.com/SpyCrypto)**
+
+Domain Expert · Legal Discovery Specialist
+
+20 years complex litigation paralegal experience. Published statistics reports for Idaho government agencies. Jurisdiction expertise across Idaho, Utah, and Washington.
+
+**[Full Dossier →](./docs/TEAM_SPY.md)**
+
+</td>
+<td align="center" width="50%">
+
+### John
+**[@bytewizard42i](https://github.com/bytewizard42i)**
+
+Developer · Midnight Builder · Architect
+
+Full-stack development, smart contract architecture, ZK protocol design, and the vision behind privacy-first legal technology.
+
+</td>
+</tr>
+</table>
 
 ---
 
-## Hackathon Target
+<div align="center">
 
-**Midnight Vegas Hackathon** — April 2026
+### Midnight Vegas Hackathon — April 2026
+
+*Privacy meets compliance. Built on [Midnight Network](https://midnight.network).*
+
+**Where every document has a chain of custody, every deadline is tracked,<br>and no one accidentally emails the judge.**
 
 ---
 
-*Built with Midnight Network — Privacy meets compliance.*
+<sub>Copyright 2026 AutoDiscovery Team. All rights reserved.</sub>
+
+</div>
