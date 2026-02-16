@@ -304,7 +304,7 @@ npm run dev:frontend
 
 | Partner | Role | Notes |
 |---------|------|-------|
-| **Charli3 Oracles** | GeoOracle Infrastructure | May build the privacy-preserving geographical oracle layer |
+| **Charli3 Oracles** | Oracle Infrastructure | Potential data feed partner for [GeoZ Oracle](https://github.com/bytewizard42i/GeoZ_us_app_Midnight-Oracle) (GeoZ.us / GeoZ.app) |
 | **OpenZeppelin** | Smart Contract Security | Compact contract templates and security patterns |
 | **NMKR** | NFT/Token Infrastructure | Potential integration for compliance credential tokens |
 

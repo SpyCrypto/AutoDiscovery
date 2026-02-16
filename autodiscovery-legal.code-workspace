@@ -9,6 +9,9 @@
     },
     {
         "path": "../PixyPi"
+    },
+    {
+        "path": "../utils_GeoZ_Midnight-Oracle"
     }
 ],
   "settings": {
