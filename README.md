@@ -80,7 +80,7 @@ npm run dev:frontend
 ## Team
 
 - **Spy ([@SpyCrypto](https://github.com/SpyCrypto))** — Experienced as a complex litigation paralegal and researcher; accented with numerous published statistics reports for government agencies in Idaho, Spy brings her energy and skills to further the worlds' needs. [📄 Dossier](./docs/TEAM_SPY.md)
-- **John ([@bytewizard42i](https://github.com/bytewizard42i))** — Developer, Midnight Builder
+- **John ([@bytewizard42i](https://github.com/bytewizard42i))** — Developer, Midnight Builder, 4-time Midnight Hackathon winner, Midnight Aliit Cohort-0 (inactive), Midnight NightForce Alpha LEVEL-1, Certified Cardano Blockchain Associate, Certified Emurgo Blockchain Business Consultant
 
 ---
 
