@@ -4,6 +4,8 @@
 
 # AutoDiscovery
 
+<img src="./media/autodiscovery-banner.png" alt="The Cost of Discovery Failure — autoDiscovery.legal" width="600" />
+
 ### *GeoOracle Auto Compliance: build once, comply everywhere.*
 
 **A Midnight-based dApp that automates legal discovery with jurisdiction-aware compliance,<br>zero-knowledge proofs, and privacy-first architecture.**
