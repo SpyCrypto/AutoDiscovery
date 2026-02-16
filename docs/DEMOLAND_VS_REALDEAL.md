@@ -1,6 +1,6 @@
 # demoLand vs realDeal — Architecture Split
 
-> **Date**: February 15, 2026
+> **Date**: February 15, 2026 (updated with implementation status)
 > **Authors**: John + Cassie
 > **Branch**: `johnny5i-branch`
 > **Status**: Architecture design — critical path for hackathon
@@ -392,6 +392,77 @@ WEBSITE (marketing):
 ├── Blog, docs, pricing
 └── URL: autodiscovery.legal
 ```
+
+---
+
+## Authentication Options — 3 Methods
+
+All three methods are mock placeholders in demoLand. In realDeal, each connects to real hardware/services.
+
+| Method | demoLand | realDeal | Key Type | Best For |
+|--------|----------|----------|----------|----------|
+| **Email/Password** | Simulated login → mock PK | Derived key from credentials (Argon2id) | secp256k1 derived | Attorneys unfamiliar with hardware |
+| **YubiKey** | Simulated WebAuthn tap | Real FIDO2/WebAuthn ceremony | ECDSA P-256 (FIDO2) | Firm-issued security keys |
+| **Trezor 5** | Simulated device connection | Trezor Connect SDK + Ed25519 signing | **Ed25519 native** | Best fit for Midnight's curve |
+
+### Why Trezor 5?
+
+- **Ed25519 native** — Unlike YubiKey (ECDSA P-256 only), Trezor 5 speaks the same signing curve as Midnight
+- **Color touchscreen** — Transaction details visible on-device for confirmation
+- **Dual-purpose** — Acts as both a crypto wallet (Midnight signing) AND a FIDO2 security key
+- **USB-C** — Modern connectivity, works with laptops attorneys already carry
+
+### Auth Flow in demoLand
+
+```
+Email:   [type creds] → 800ms delay → mock session → dashboard
+YubiKey: [click]       → 1500ms "Touch your key..." → mock session → dashboard
+Trezor:  [click]       → 2000ms "Confirm on device..." → mock session → dashboard
+```
+
+All three produce the same `AuthSession` object. The UI doesn't care how you authenticated.
+
+---
+
+## Guardrails — demoLand vs realDeal Separation Rules
+
+> These rules prevent us from confusing the two worlds during development.
+
+1. **Smart contract `.compact` files live ONLY in `autodiscovery-contract/src/`** — never in the frontend folder
+2. **demoLand UI lives in `frontend-vite-react/src/`** with mock providers in `providers/demoland/`
+3. **realDeal providers** will go in `providers/realdeal/` — same interfaces, real backends
+4. **Complete demoLand UI first** → then create realDeal providers → then wire them up
+5. **The "clone" is at build time**, not file duplication: `npm run dev:demo` vs `npm run dev:real`
+6. **Never import Midnight SDK in demoLand providers** — if you see `@midnight-ntwrk` in a demoland file, something is wrong
+7. **The MeshJS starter modules** (`modules/midnight/`) are preserved as reference for realDeal wiring — not deleted
+8. **Environment files** control the mode: `.env.demoland` and `.env.realdeal`
+
+---
+
+## Implementation Status (Feb 15, 2026)
+
+### ✅ Completed
+- Provider type interfaces (`providers/types.ts`) — all 5 provider interfaces defined
+- Mock auth provider — 3 methods (email, yubikey, trezor)
+- Mock case provider — 3 demo cases with full step/deadline data
+- Mock document provider — 12 documents with AI synopses, twin bonds, entity extraction
+- Mock compliance provider — attestations, timeline, ZK proof generation
+- Mock AI provider — synopsis, entity extraction, obfuscation detection, fidelity scoring
+- React context + auth guard + provider injection
+- Login page — 3 auth method selector with simulated flows
+- Dashboard — case list, stats cards, compliance scores, obfuscation alerts
+- Case View — 5-tab detail (Overview, Steps, Documents, Parties, Compliance)
+- Sidebar layout with collapsible nav + demo mode banner
+- Environment files + npm scripts (`dev:demo`, `dev:real`, `build:demo`, `build:real`)
+- Dark mode default
+
+### 🔲 Pending
+- Global document search page
+- Compliance reports page
+- Settings page
+- Document upload/register flow
+- New case wizard
+- realDeal providers (Phase 2)
 
 ---
 
