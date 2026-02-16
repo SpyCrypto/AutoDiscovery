@@ -160,6 +160,33 @@ Continuing from scaffold. Spy's feedback incorporated. TypeScript data model is 
 - **Key corrections**: Grange Mutual was $5.4M not $8.83M; Pioneer Hi-Bred unverifiable (omitted); Captive Alternatives was 2023 not 2024; Grok fabricated "early adopter" stats (removed); RAND $1.8M is narrow sample (caveated).
 - `docs: pitch fodder v2 — deep dive merge with one-pager + 1000-word synopsis` *(this commit)*
 
+**John**: Extracted top 10 banger stats with source URLs for Alice to create an advertisement image.
+
+### Alice Ad Prompt (sent Feb 11, 2026)
+
+> Here is a list of the top 10 bangers. What Id like you to do is make a picture with an angry judge at the top smashing her gavel down. Under that the list of bangers and somewhere on the page: Title: autoDiscovery.legal (keep my capitalization please for the title), then a triangle with 1. abstact away liability and prevent sanctions, 2. reduce workload and manhours reducing costs, 3. increase profits with the tagline: Hard-coded, multi-jurisdictional discovery law for modern discovery management.
+
+**Top 10 bangers provided:**
+1. 1 in 10 federal civil cases requires a judge to resolve discovery disputes. (FJC 2009)
+2. $8,568,633 sanctions in one case — 6 attorneys referred to state bar. (Qualcomm v. Broadcom)
+3. $1.58 billion jury verdict followed a discovery sanctions default. (Coleman v. Morgan Stanley)
+4. Average eDiscovery sanction: $704,094. Median: $40,207. (Willoughby, Duke L.J. 2010)
+5. In 2014, 63% of spoliation motions resulted in sanctions. (Gibson Dunn / Logikcull)
+6. Federal criminal cases 60% longer — 10.4 months vs 6.5 in 2018. (U.S. Courts 2024)
+7. Defendant erased 20,000 files with anti-forensic software — default judgment. (SNET v. Global NAPs)
+8. 165+ court orders in one case, then $6.7M sanctions. (Wachtel v. Health Net)
+9. 36 dismissals/defaults from discovery abuse. Defendants sanctioned 3.3x more. (Willoughby 2010)
+10. Document review = 73% of eDiscovery costs. Market → $27.6B by 2030. (RAND + ElectroIQ)
+
+### Alice Stat Verification (Feb 11, 2026)
+
+Alice cross-checked the mean/median sanctions figures against Willoughby/Jones/Rose Appendix C (78 monetary awards):
+- **Mean: $704,094.12** → our $704,094 ✅
+- **Median: $40,207.34** → our $40,207 ✅
+- Recommended clean phrasing: "~$704k" / "~$40.2k" with citation to Appendix C
+
+**Still outstanding**: Ad image says "$8.8 Million Top Sanction Award" — should be **$8.5M+** or **$8,568,633** (Qualcomm v. Broadcom). The $8.8M traces to unverified Grange Mutual figure. Alice flagged for next revision.
+
 ---
 
 ## Session: February 15, 2026 (Afternoon — Evening)
