@@ -1,100 +1,119 @@
 # AutoDiscovery.legal — 3-Minute Pitch Video Script
 
-> **Recording tips**: Use Loom (free). Screenshare the HTML deck, advance slides as you talk. Camera on (top corner). Speak with conviction, not speed.
+> **Recording tips**: Use Loom (free). Screenshare the PDF deck, advance slides as you talk. Camera on (top corner). Speak with conviction — not speed. Pause on the big numbers. Let the slides breathe.
 
 ---
 
-## SLIDE 1: The Elephant (0:00–0:25)
+## SLIDES 1–2: The Hook (0:00–0:20)
 
-> "Eight point five million dollars. That's the largest single eDiscovery sanction in U.S. history. Qualcomm failed to produce emails in a patent case. The court sanctioned them eight and a half million dollars and referred six of their attorneys to the state bar.
+**[Start on Slide 1 — ADL elephant image. Pause 2 seconds. Advance to Slide 2 — Sanctions elephant.]**
 
-> This isn't an outlier. This is the system. And it's broken."
-
-**[Advance to Slide 2]**
-
-## SLIDE 2: The Problem (0:25–0:50)
-
-> "One in ten federal civil cases needs a judge to step in and resolve discovery disputes. The average sanction is seven hundred thousand dollars. Discovery failures have produced billion-dollar jury verdicts. And federal cases now take sixty percent longer, largely because of eDiscovery overload.
-
-> The most common offense? Just failing to preserve information. Not fraud. Not fabrication. Missing a deadline. Losing a text message. Recycling a backup tape."
+> "What is the most terrifying word a lawyer can hear?
+>
+> *Sanctions.*
+>
+> In law, a sanction is a court-imposed penalty for failing to follow the rules of discovery — the process of exchanging evidence before trial. Sanctions can mean fines, default judgments, even disbarment. And they're happening more than ever."
 
 **[Advance to Slide 3]**
 
-## SLIDE 3: The User Story (0:50–1:15)
+## SLIDE 3: The Elephant in the Room (0:20–0:40)
 
-> "Meet Sarah. She's a paralegal managing twelve active cases across three attorneys. She tracks deadlines in spreadsheets and Outlook reminders. When she's sick, nobody knows what's due. Each case follows different state rules — different deadlines, different limits, different traps.
-
-> There's no way to prove they complied. It's their word against opposing counsel.
-
-> With AutoDiscovery, Sarah's cases auto-load the correct jurisdiction rules. Deadlines are computed automatically. And every completed step generates a cryptographic proof that courts can verify independently."
+> "Eight point five million dollars. That's the largest single discovery sanction in U.S. history. A law firm failed to produce emails. The court didn't just fine them — they referred six attorneys to the state bar for discipline.
+>
+> Discovery compliance is broken. Everyone in legal knows it. We built the fix."
 
 **[Advance to Slide 4]**
 
-## SLIDE 4: The Solution (1:15–1:35)
+## SLIDE 4: The Problem (0:40–1:00)
 
-> "AutoDiscovery doesn't just help you manage discovery — it mathematically proves you did it right.
-
-> We combine jurisdiction-aware rule packs, an automated deadline engine, and zero-knowledge compliance proofs on the Midnight blockchain. The system knows the rules. It computes the deadlines. And it generates immutable, privacy-preserving proof of compliance."
+> "One in ten federal cases needs a judge to intervene on discovery disputes. The average sanction? Seven hundred thousand dollars. And these aren't cases of fraud — it's missed deadlines, lost text messages, human error.
+>
+> Every state has different rules, different timelines, different traps. And right now, firms track all of this in spreadsheets and Outlook reminders. There's no system. There's no proof. There's just risk."
 
 **[Advance to Slide 5]**
 
-## SLIDE 5: How It Works (1:35–1:50)
+## SLIDE 5: The User Story (1:00–1:20)
 
-> "Here's the workflow. A new case comes in. Our GeoOracle detects the jurisdiction — privately. The correct rule pack loads automatically — Idaho, Utah, federal, whatever applies. The workflow engine generates every deadline and checklist. And when each step is completed, a zero-knowledge proof is written to the Midnight blockchain.
-
-> The result: a court-ready compliance record that proves what was done, when, without revealing any privileged content."
+> "Meet Sarah. She's a paralegal managing twelve cases across three attorneys. Each case follows different state rules. When she's out sick, nobody knows what's due. Last month, a set-number error almost triggered a spoliation motion.
+>
+> With AutoDiscovery, her cases auto-load the correct rules. Deadlines compute themselves. And every completed step generates a proof that a court can verify independently. Sarah goes from guessing to *proving*."
 
 **[Advance to Slide 6]**
 
-## SLIDE 6: Privacy Advantage (1:50–2:10)
+## SLIDE 6: The Solution (1:20–1:40)
 
-> "This is what makes AutoDiscovery fundamentally different. Legal data is the most sensitive information in any industry — HIPAA, attorney-client privilege, work product. Traditional tools store your case data on their servers and require you to reveal documents to prove compliance.
+> "AutoDiscovery doesn't just help you manage discovery. It mathematically proves you did it right.
+>
+> We combine jurisdiction-aware rule packs — hard-coded state and federal rules — with an automated deadline engine and compliance proofs on blockchain. The system knows the rules. It computes the deadlines. And it creates an immutable, verifiable record that courts can trust."
 
-> On Midnight, sensitive data never leaves your system. Zero-knowledge proofs verify compliance without revealing content. And selective disclosure means you share only what the law requires — nothing more."
+**[Advance quickly through Slides 7–8]**
 
-**[Advance to Slide 7]**
+## SLIDES 7–8: How It Works + Privacy (1:40–2:05)
 
-## SLIDE 7: Market Opportunity (2:10–2:20)
+> "Here's the workflow: case comes in, our system detects the jurisdiction, loads the right rule pack, generates every deadline, and when each step is completed — a cryptographic proof is written to the Midnight blockchain.
+>
+> And here's what makes this different from every other legal tech tool: we never see your data. Legal information is the most sensitive data in any industry — privilege, work product, medical records. On Midnight, sensitive data stays on *your* system. We prove compliance without revealing content. That's not a feature — that's the entire architecture."
 
-> "The U.S. legal tech market is five billion dollars and growing at nine percent annually. Our beachhead is medical malpractice firms in Idaho — a focused market we know deeply. No existing tool combines jurisdiction-aware automation with cryptographic compliance proofs. We occupy an empty niche."
+**[Advance to Slide 9]**
 
-**[Advance to Slide 8]**
+## SLIDE 9: Market Opportunity (2:05–2:15)
 
-## SLIDE 8: Business Model (2:20–2:30)
+> "The U.S. legal tech market is five billion dollars. No existing tool — not Relativity, not Clio, not spreadsheets — combines jurisdiction-aware automation with verifiable compliance proofs. We're not competing. We're creating a category."
 
-> "SaaS subscriptions from ninety-nine to fifteen hundred a month, plus twenty-five dollars per compliance proof. Year two target: two hundred eighty-five thousand in revenue from fifty Idaho firms. The ROI pitch writes itself — our annual cost is a fraction of one sanction."
+**[Advance to Slide 10]**
 
-**[Advance to Slides 9-10]**
+## SLIDE 10: Business Model (2:15–2:25)
 
-## SLIDES 9-10: Traction & Team (2:30–2:50)
+> "SaaS subscriptions from ninety-nine to fifteen hundred a month, plus per-proof revenue. Year two target: two hundred eighty-five thousand from fifty Idaho firms. And the ROI pitch writes itself — our annual cost is a fraction of *one* sanction."
 
-> "We've built the smart contract architecture, the frontend, the compliance proof circuits, and validated our rule packs with a domain expert who spent fifteen years in litigation.
+**[Advance to Slides 11–12]**
 
-> Our team combines real courtroom experience — Spy, a retired paralegal with deep med-mal expertise — with blockchain-native engineering. We're not guessing at the problem. We've lived it."
+## SLIDES 11–12: Traction + Team (2:25–2:45)
 
-**[Advance to Slide 11]**
+> "We've built the smart contract architecture, the frontend, and the compliance proof system. Our rule packs are validated by someone who spent fifteen years in the courtroom.
+>
+> Spy brings deep litigation experience — medical malpractice, personal injury, discovery workflows. I bring the blockchain engineering — Midnight smart contracts, zero-knowledge systems, full-stack development. We're not guessing at this problem. We've lived it."
 
-## SLIDE 11: The Ask (2:50–3:00)
+**[Advance to Slide 13]**
 
-> "We're targeting the Midnight Vegas Hackathon in April for our MVP demo. We're looking for pilot law firms, ecosystem collaboration, and the chance to set a legal precedent that changes how courts think about compliance.
+## SLIDE 13: The Close (2:45–3:00)
 
-> If blockchain earns the trust of the legal system, everything changes. AutoDiscovery is how we get there.
+> "Courts guard precedent fiercely. Once a court accepts a cryptographic proof as factual record, that precedent binds every case after it.
+>
+> We're not just building legal software. We're building the bridge that brings blockchain into the most conservative, highest-stakes industry in the world.
+>
+> AutoDiscovery dot legal. We'd love to talk."
 
-> Thank you."
+**[Hold on final slide. Smile. End recording.]**
 
 ---
+
+## Pacing Guide
+
+| Section | Slides | Time | Duration |
+|---------|--------|------|----------|
+| The Hook | 1–2 | 0:00–0:20 | 20s |
+| The Elephant | 3 | 0:20–0:40 | 20s |
+| The Problem | 4 | 0:40–1:00 | 20s |
+| User Story | 5 | 1:00–1:20 | 20s |
+| The Solution | 6 | 1:20–1:40 | 20s |
+| How It Works + Privacy | 7–8 | 1:40–2:05 | 25s |
+| Market | 9 | 2:05–2:15 | 10s |
+| Business Model | 10 | 2:15–2:25 | 10s |
+| Traction + Team | 11–12 | 2:25–2:45 | 20s |
+| The Close | 13 | 2:45–3:00 | 15s |
 
 ## Recording Checklist
 
 - [ ] Loom account set up (free at loom.com)
-- [ ] Screenshare the HTML pitch deck (open in Chrome, full screen)
+- [ ] Screenshare the PDF deck (full screen, dark background)
 - [ ] Camera on (small circle, top corner)
 - [ ] Quiet room, good lighting
-- [ ] Speak at a natural pace — 3 minutes is tight but not rushed
-- [ ] Practice once before recording
-- [ ] Export deck to PDF before submitting (Ctrl+P → Save as PDF in Chrome)
+- [ ] Read through once silently, once aloud before recording
+- [ ] Speak at a natural pace — let the big numbers land
+- [ ] Hit record, breathe, begin
 
 ## Submission
 
-- [ ] Upload pitch deck PDF to shared workspace
+- [ ] Upload pitch deck PDF to shared workspace (Google Drive / Notion)
 - [ ] Share Loom video link
