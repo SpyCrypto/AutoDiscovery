@@ -9,19 +9,21 @@
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* ── AutoDiscovery Brand Colors ────────────────────────── */
     :root {
-      --bg: #0a0a1a;
-      --surface: #12122a;
-      --card: #1a1a3a;
-      --border: #2a2a5a;
-      --text: #e8e8f0;
-      --muted: #8888aa;
-      --accent: #6c5ce7;
-      --accent-light: #a29bfe;
-      --green: #00e676;
-      --red: #ff5252;
-      --gold: #ffd740;
-      --blue: #448aff;
+      --bg: #0b1120;
+      --surface: #111827;
+      --card: #111827;
+      --border: rgba(148,163,184,0.12);
+      --text: #e8ecf4;
+      --muted: #94a3b8;
+      --primary: #60a5fa;
+      --gold: #fbbf24;
+      --gold-dim: #d4a017;
+      --navy: #1e3a5f;
+      --emerald: #34d399;
+      --red: #ef4444;
+      --blue: #3b82f6;
     }
 
     body {
@@ -30,285 +32,293 @@
       color: var(--text);
     }
 
-    /* Slide container */
+    /* ── Slide Container ──────────────────────────────────── */
     .slide {
       width: 100%;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 60px 80px;
+      padding: 48px 72px;
       position: relative;
       page-break-after: always;
       overflow: hidden;
     }
 
-    /* Subtle gradient backgrounds per slide */
     .slide::before {
       content: '';
       position: absolute;
-      top: -50%;
-      right: -30%;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(108,92,231,0.08) 0%, transparent 70%);
+      top: -40%;
+      right: -20%;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(251,191,36,0.06) 0%, transparent 60%);
       pointer-events: none;
     }
 
     .slide-number {
       position: absolute;
-      bottom: 24px;
+      bottom: 20px;
       right: 40px;
       color: var(--muted);
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 16px;
+      font-weight: 600;
     }
 
     .slide-brand {
       position: absolute;
-      bottom: 24px;
+      bottom: 20px;
       left: 40px;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    /* Typography */
-    h1 { font-size: 52px; font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
-    h2 { font-size: 38px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; }
-    h3 { font-size: 24px; font-weight: 600; margin-bottom: 12px; }
-    p { font-size: 18px; line-height: 1.6; color: var(--muted); }
-    .big-text { font-size: 22px; line-height: 1.6; color: var(--text); }
-    .highlight { color: var(--accent-light); }
-    .danger { color: var(--red); }
-    .success { color: var(--green); }
-    .gold { color: var(--gold); }
-
-    /* Big stat */
-    .stat-row {
-      display: flex;
-      gap: 40px;
-      margin: 32px 0;
-      flex-wrap: wrap;
-    }
-    .stat {
-      text-align: center;
-    }
-    .stat .number {
-      font-size: 56px;
-      font-weight: 900;
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-    .stat .label {
-      font-size: 14px;
-      color: var(--muted);
-      text-transform: uppercase;
+      color: var(--gold-dim);
+      font-size: 16px;
+      font-weight: 600;
       letter-spacing: 1px;
     }
 
-    /* Elephant stat (slide 1) */
-    .elephant-stat {
-      font-size: 120px;
+    /* ── Typography — BIG & BOLD ──────────────────────────── */
+    h1 { font-size: 72px; font-weight: 900; line-height: 1.05; margin-bottom: 20px; }
+    h2 { font-size: 52px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
+    h3 { font-size: 32px; font-weight: 700; margin-bottom: 14px; }
+    p  { font-size: 24px; line-height: 1.5; color: var(--muted); }
+    .big-text { font-size: 28px; line-height: 1.5; color: var(--text); }
+    .highlight { color: var(--gold); }
+    .danger { color: var(--red); }
+    .success { color: var(--emerald); }
+    .gold { color: var(--gold); }
+
+    /* ── Stats — Visible from Space ──────────────────────── */
+    .stat-row {
+      display: flex;
+      gap: 48px;
+      margin: 36px 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .stat { text-align: center; flex: 1; min-width: 200px; }
+    .stat .number {
+      font-size: 80px;
       font-weight: 900;
       line-height: 1;
-      margin: 20px 0;
-      background: linear-gradient(135deg, var(--red), #ff8a80);
+      margin-bottom: 8px;
+    }
+    .stat .label {
+      font-size: 18px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+    }
+
+    .elephant-stat {
+      font-size: 160px;
+      font-weight: 900;
+      line-height: 1;
+      margin: 16px 0;
+      background: linear-gradient(135deg, var(--red), #fca5a5);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
-    /* Tables */
+    /* ── Tables — Large & Readable ───────────────────────── */
     table {
       width: 100%;
       border-collapse: collapse;
       margin: 20px 0;
-      font-size: 15px;
+      font-size: 20px;
     }
     th {
       text-align: left;
-      padding: 12px 16px;
+      padding: 16px 20px;
       background: var(--card);
-      color: var(--accent-light);
-      font-weight: 600;
-      font-size: 13px;
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 18px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid var(--accent);
+      letter-spacing: 1px;
+      border-bottom: 3px solid var(--gold-dim);
     }
     td {
-      padding: 10px 16px;
+      padding: 14px 20px;
       border-bottom: 1px solid var(--border);
       color: var(--text);
+      font-size: 20px;
     }
     tr:last-child td { border-bottom: none; }
 
-    /* Cards grid */
+    /* ── Cards — Bold & Spacious ─────────────────────────── */
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin: 24px 0;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin: 28px 0;
     }
     .card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
+      border-radius: 20px;
+      padding: 32px;
     }
     .card h4 {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 8px;
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 10px;
     }
     .card p {
-      font-size: 14px;
+      font-size: 20px;
       line-height: 1.5;
     }
     .card .icon {
-      font-size: 32px;
-      margin-bottom: 12px;
+      font-size: 48px;
+      margin-bottom: 14px;
     }
 
-    /* Comparison table */
+    /* ── Comparison Table ────────────────────────────────── */
     .vs-table td:first-child {
       color: var(--muted);
       width: 45%;
+      font-size: 20px;
     }
     .vs-table td:last-child {
-      color: var(--green);
-      font-weight: 500;
+      color: var(--emerald);
+      font-weight: 600;
+      font-size: 20px;
     }
 
-    /* Flow diagram */
+    /* ── Flow Diagram — Big & Clear ──────────────────────── */
     .flow {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin: 24px 0;
+      gap: 16px;
+      margin: 32px 0;
       flex-wrap: wrap;
     }
     .flow-step {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 20px;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 28px;
       text-align: center;
-      min-width: 140px;
+      min-width: 160px;
+      flex: 1;
     }
-    .flow-step .icon { font-size: 28px; margin-bottom: 6px; }
-    .flow-step .label { font-size: 13px; font-weight: 600; }
-    .flow-step .desc { font-size: 11px; color: var(--muted); margin-top: 4px; }
-    .flow-arrow { font-size: 24px; color: var(--accent-light); }
+    .flow-step .icon { font-size: 44px; margin-bottom: 8px; }
+    .flow-step .label { font-size: 18px; font-weight: 700; }
+    .flow-step .desc { font-size: 14px; color: var(--muted); margin-top: 4px; font-weight: 500; }
+    .flow-arrow { font-size: 36px; color: var(--gold); font-weight: 900; }
     .flow-step.accent {
-      border-color: var(--accent);
-      background: rgba(108,92,231,0.15);
+      border-color: var(--gold-dim);
+      background: rgba(251,191,36,0.08);
+      box-shadow: 0 0 20px rgba(251,191,36,0.1);
     }
 
-    /* Timeline */
+    /* ── Timeline — Bold Phases ──────────────────────────── */
     .timeline {
       margin: 20px 0;
-      padding-left: 24px;
-      border-left: 3px solid var(--accent);
+      padding-left: 28px;
+      border-left: 4px solid var(--gold-dim);
     }
     .timeline-item {
-      padding: 12px 0 12px 20px;
+      padding: 16px 0 16px 24px;
       position: relative;
     }
     .timeline-item::before {
       content: '';
       position: absolute;
-      left: -31px;
-      top: 18px;
-      width: 12px;
-      height: 12px;
+      left: -36px;
+      top: 22px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
-      background: var(--accent);
+      background: var(--blue);
     }
-    .timeline-item.done::before { background: var(--green); }
-    .timeline-item.current::before { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
-    .timeline-item h4 { font-size: 16px; font-weight: 600; }
-    .timeline-item p { font-size: 13px; margin-top: 2px; }
+    .timeline-item.done::before { background: var(--emerald); }
+    .timeline-item.current::before { background: var(--gold); box-shadow: 0 0 12px var(--gold); }
+    .timeline-item h4 { font-size: 22px; font-weight: 700; }
+    .timeline-item p { font-size: 18px; margin-top: 4px; }
 
-    /* Pricing cards */
+    /* ── Pricing — Big Numbers ───────────────────────────── */
     .pricing {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin: 20px 0;
+      gap: 20px;
+      margin: 24px 0;
     }
     .price-card {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 32px 24px;
       text-align: center;
     }
     .price-card.featured {
-      border-color: var(--accent);
-      background: rgba(108,92,231,0.1);
+      border-color: var(--gold-dim);
+      background: rgba(251,191,36,0.06);
+      box-shadow: 0 0 24px rgba(251,191,36,0.1);
     }
-    .price-card .tier { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 4px; }
-    .price-card .price { font-size: 32px; font-weight: 800; margin: 8px 0; }
-    .price-card .desc { font-size: 12px; color: var(--muted); }
+    .price-card .tier { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 4px; font-weight: 700; }
+    .price-card .price { font-size: 44px; font-weight: 900; margin: 10px 0; }
+    .price-card .desc { font-size: 16px; color: var(--muted); line-height: 1.6; }
 
-    /* Team cards */
+    /* ── Team — Spacious Cards ───────────────────────────── */
     .team {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 32px;
-      margin: 24px 0;
+      gap: 36px;
+      margin: 28px 0;
     }
     .team-card {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 36px;
     }
     .team-card .role {
-      font-size: 13px;
-      color: var(--accent-light);
+      font-size: 18px;
+      color: var(--gold);
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+      font-weight: 700;
     }
-    .team-card h4 { font-size: 22px; margin-bottom: 12px; }
+    .team-card h4 { font-size: 30px; margin-bottom: 16px; font-weight: 800; }
     .team-card ul { list-style: none; padding: 0; }
     .team-card li {
-      font-size: 14px;
+      font-size: 20px;
       color: var(--muted);
-      padding: 4px 0;
-      padding-left: 20px;
+      padding: 6px 0;
+      padding-left: 28px;
       position: relative;
     }
     .team-card li::before {
       content: '→';
       position: absolute;
       left: 0;
-      color: var(--accent-light);
+      color: var(--gold);
+      font-weight: 700;
     }
     .team-card .quote {
-      margin-top: 16px;
+      margin-top: 20px;
       font-style: italic;
-      font-size: 14px;
+      font-size: 20px;
       color: var(--text);
-      padding: 12px;
-      border-left: 3px solid var(--accent);
-      background: rgba(108,92,231,0.05);
+      padding: 16px;
+      border-left: 4px solid var(--gold-dim);
+      background: rgba(251,191,36,0.04);
+      border-radius: 0 12px 12px 0;
     }
 
-    /* Subtitle */
+    /* ── Subtitle Label ──────────────────────────────────── */
     .subtitle {
-      font-size: 16px;
-      color: var(--accent-light);
+      font-size: 22px;
+      color: var(--gold);
       text-transform: uppercase;
-      letter-spacing: 2px;
-      font-weight: 600;
-      margin-bottom: 8px;
+      letter-spacing: 3px;
+      font-weight: 800;
+      margin-bottom: 10px;
     }
 
-    /* Two column */
+    /* ── Two Column ──────────────────────────────────────── */
     .two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -316,110 +326,116 @@
       margin: 20px 0;
     }
 
-    /* Quote block */
+    /* ── Quote Block ─────────────────────────────────────── */
     .quote-block {
-      border-left: 4px solid var(--accent);
-      padding: 16px 24px;
-      margin: 20px 0;
-      background: rgba(108,92,231,0.05);
-      border-radius: 0 12px 12px 0;
+      border-left: 5px solid var(--gold-dim);
+      padding: 20px 28px;
+      margin: 24px 0;
+      background: rgba(251,191,36,0.04);
+      border-radius: 0 16px 16px 0;
     }
     .quote-block p {
-      font-size: 20px;
+      font-size: 26px;
       color: var(--text);
       font-style: italic;
     }
     .quote-block .source {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 8px;
-      font-style: normal;
-    }
-
-    /* CTA */
-    .cta-box {
-      background: linear-gradient(135deg, rgba(108,92,231,0.2), rgba(68,138,255,0.1));
-      border: 1px solid var(--accent);
-      border-radius: 20px;
-      padding: 40px;
-      text-align: center;
-      margin: 24px 0;
-    }
-
-    /* Bullet lists */
-    .bullets { list-style: none; padding: 0; margin: 12px 0; }
-    .bullets li {
-      padding: 8px 0 8px 28px;
-      position: relative;
       font-size: 16px;
+      color: var(--muted);
+      margin-top: 10px;
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    /* ── CTA Box ─────────────────────────────────────────── */
+    .cta-box {
+      background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(59,130,246,0.08));
+      border: 2px solid var(--gold-dim);
+      border-radius: 24px;
+      padding: 44px;
+      text-align: center;
+      margin: 28px 0;
+      box-shadow: 0 0 40px rgba(251,191,36,0.08);
+    }
+
+    /* ── Bullet Lists ────────────────────────────────────── */
+    .bullets { list-style: none; padding: 0; margin: 14px 0; }
+    .bullets li {
+      padding: 10px 0 10px 36px;
+      position: relative;
+      font-size: 22px;
     }
     .bullets li::before {
       content: '✓';
       position: absolute;
       left: 0;
-      color: var(--green);
-      font-weight: 700;
+      color: var(--emerald);
+      font-weight: 900;
+      font-size: 24px;
     }
     .bullets.x li::before { content: '✕'; color: var(--red); }
 
-    /* Market funnel */
+    /* ── Market Funnel ───────────────────────────────────── */
     .funnel {
-      margin: 24px auto;
+      margin: 28px auto;
       max-width: 600px;
     }
     .funnel-level {
-      padding: 14px 24px;
-      margin: 4px auto;
-      border-radius: 8px;
+      padding: 18px 28px;
+      margin: 6px auto;
+      border-radius: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 22px;
     }
-    .funnel-level:nth-child(1) { background: rgba(108,92,231,0.15); width: 100%; }
-    .funnel-level:nth-child(2) { background: rgba(108,92,231,0.2); width: 85%; }
-    .funnel-level:nth-child(3) { background: rgba(108,92,231,0.3); width: 65%; }
-    .funnel-level:nth-child(4) { background: rgba(108,92,231,0.45); width: 45%; font-size: 14px; }
-    .funnel-level .amount { color: var(--accent-light); }
+    .funnel-level:nth-child(1) { background: rgba(59,130,246,0.12); width: 100%; }
+    .funnel-level:nth-child(2) { background: rgba(59,130,246,0.18); width: 85%; }
+    .funnel-level:nth-child(3) { background: rgba(251,191,36,0.15); width: 65%; }
+    .funnel-level:nth-child(4) { background: rgba(251,191,36,0.25); width: 50%; }
+    .funnel-level .amount { color: var(--gold); font-weight: 900; font-size: 26px; }
 
-    /* Print styles */
+    /* ── Print ────────────────────────────────────────────── */
     @media print {
       .slide {
         height: 100vh;
         page-break-after: always;
         page-break-inside: avoid;
       }
-      body { background: #0a0a1a !important; color: #e8e8f0 !important; }
+      body { background: #0b1120 !important; color: #e8ecf4 !important; }
     }
 
-    /* Navigation */
+    /* ── Navigation ──────────────────────────────────────── */
     .nav {
       position: fixed;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      gap: 8px;
+      gap: 10px;
       z-index: 100;
-      background: rgba(10,10,26,0.9);
-      padding: 8px 16px;
-      border-radius: 20px;
+      background: rgba(11,17,32,0.95);
+      padding: 10px 20px;
+      border-radius: 24px;
       border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
     }
     .nav button {
       background: var(--card);
       border: 1px solid var(--border);
       color: var(--text);
-      width: 36px; height: 36px;
+      width: 44px; height: 44px;
       border-radius: 50%;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-weight: 700;
     }
-    .nav button:hover { background: var(--accent); }
-    .nav .counter { color: var(--muted); font-size: 13px; display: flex; align-items: center; padding: 0 8px; }
+    .nav button:hover { background: var(--gold-dim); color: #0b1120; }
+    .nav .counter { color: var(--muted); font-size: 16px; font-weight: 600; display: flex; align-items: center; padding: 0 10px; }
 
     @media print { .nav { display: none; } }
   </style>
@@ -443,7 +459,7 @@
 </div>
 
 <!-- ========== SLIDE 3: THE DATA (Stats overlaid on elephant) ========== -->
-<div class="slide" id="slide-3" style="background: linear-gradient(rgba(10,10,26,0.82), rgba(10,10,26,0.88)), url('../media/elephant-sanctions.png') center/cover no-repeat; padding: 60px 80px;">
+<div class="slide" id="slide-3" style="background: linear-gradient(rgba(11,17,32,0.78), rgba(11,17,32,0.88)), url('../media/elephant-sanctions.png') center/cover no-repeat;">
   <div class="subtitle">The Elephant in the Room</div>
   <div class="elephant-stat">$8.5M</div>
   <h2>The largest single eDiscovery sanction in U.S. history.</h2>
@@ -451,13 +467,13 @@
     A law firm failed to produce emails. The court sanctioned them <strong style="color: var(--red);">$8,568,633</strong>
     and referred <strong style="color: var(--red);">6 attorneys to the state bar</strong> for discipline.
   </p>
-  <p style="margin-top: 24px; font-size: 15px;">
+  <p style="margin-top: 24px; font-size: 20px;">
     <em>Qualcomm v. Broadcom</em>, S.D. Cal. (2008)
   </p>
   <div style="margin-top: 40px;">
     <p class="big-text" style="color: var(--text);">
       Discovery compliance is broken. Everyone knows it.<br>
-      <strong style="color: var(--accent-light);">We built the fix.</strong>
+      <strong style="color: var(--gold);">We built the fix.</strong>
     </p>
   </div>
   <span class="slide-brand">autodiscovery.legal</span>
@@ -496,7 +512,7 @@
     <tr><td>Monetary Sanctions</td><td>Mean $704K, up to $8.5M+</td><td>Devastating financial penalty</td></tr>
   </table>
 
-  <p style="margin-top: 12px; font-size: 14px;">Sources: FJC (2009), Willoughby — Duke Law Journal (2010), Gibson Dunn, U.S. Courts (2024)</p>
+  <p style="margin-top: 12px; font-size: 16px;">Sources: FJC (2009), Willoughby — Duke Law Journal (2010), Gibson Dunn, U.S. Courts (2024)</p>
   <span class="slide-brand">autodiscovery.legal</span>
   <span class="slide-number">4 / 13</span>
 </div>
@@ -508,9 +524,9 @@
 
   <div class="two-col">
     <div>
-      <h3 style="color: var(--red);">Today: Manual & Fragile</h3>
-      <div class="card" style="border-color: var(--red); border-color: rgba(255,82,82,0.3);">
-        <p style="font-size: 15px; color: var(--text); line-height: 1.7;">
+      <h3 style="color: var(--red); font-size: 28px;">Today: Manual & Fragile</h3>
+      <div class="card" style="border-color: rgba(239,68,68,0.3);">
+        <p style="font-size: 20px; color: var(--text); line-height: 1.7;">
           Sarah manages <strong>12 active cases</strong> across <strong>3 attorneys</strong>.<br><br>
           She tracks deadlines in <strong>spreadsheets and Outlook reminders</strong>. When she's sick, nobody knows what's due.<br><br>
           Last month, a set number error on a supplementation almost cost the firm a spoliation motion.<br><br>
@@ -520,9 +536,9 @@
       </div>
     </div>
     <div>
-      <h3 style="color: var(--green);">Tomorrow: AutoDiscovery</h3>
-      <div class="card" style="border-color: var(--green); border-color: rgba(0,230,118,0.3);">
-        <p style="font-size: 15px; color: var(--text); line-height: 1.7;">
+      <h3 style="color: var(--emerald); font-size: 28px;">Tomorrow: AutoDiscovery</h3>
+      <div class="card" style="border-color: rgba(52,211,153,0.3);">
+        <p style="font-size: 20px; color: var(--text); line-height: 1.7;">
           Sarah opens AutoDiscovery. Her <strong>12 cases auto-loaded</strong> the correct jurisdiction rules.<br><br>
           Deadlines are <strong>computed automatically</strong> — weekends, holidays, service method extensions all handled.<br><br>
           When her coworker is out, the system knows every obligation and <strong>alerts the team</strong>.<br><br>
@@ -624,7 +640,7 @@
     <tr><td>Medical Records Production</td><td>HIPAA-compliant timeline</td><td>ZK proof: "Records produced, privilege log current"</td></tr>
   </table>
 
-  <p style="margin-top: 12px;"><strong style="color: var(--accent-light);">Every step is tracked. Every deadline is computed. Every completion is cryptographically proven.</strong></p>
+  <p style="margin-top: 12px;"><strong style="color: var(--gold);">Every step is tracked. Every deadline is computed. Every completion is cryptographically proven.</strong></p>
   <span class="slide-brand">autodiscovery.legal</span>
   <span class="slide-number">7 / 13</span>
 </div>
@@ -634,7 +650,7 @@
   <div class="subtitle">Privacy as Core Product Advantage</div>
   <h2>Why <span class="highlight">Midnight Network</span> Changes Everything</h2>
 
-  <p style="margin-bottom: 24px; font-size: 17px; color: var(--text);">Legal data is the most sensitive information in any industry. AutoDiscovery is built on Midnight — the only blockchain designed for data protection by default.</p>
+  <p style="margin-bottom: 24px; font-size: 24px; color: var(--text);">Legal data is the most sensitive information in any industry. AutoDiscovery is built on Midnight — the only blockchain designed for data protection by default.</p>
 
   <table class="vs-table">
     <tr><th style="width:45%">Traditional Legal Tech</th><th>AutoDiscovery on Midnight</th></tr>
@@ -646,21 +662,21 @@
   </table>
 
   <div class="cards" style="margin-top: 24px;">
-    <div class="card" style="border-left: 3px solid var(--green);">
+    <div class="card" style="border-left: 4px solid var(--emerald);">
       <h4>🏥 HIPAA Safe</h4>
       <p>Medical malpractice documents stay encrypted. Only proof hashes touch the blockchain.</p>
     </div>
-    <div class="card" style="border-left: 3px solid var(--green);">
+    <div class="card" style="border-left: 4px solid var(--emerald);">
       <h4>⚖️ Privilege Protected</h4>
       <p>Prove privilege log was maintained without revealing privileged content.</p>
     </div>
-    <div class="card" style="border-left: 3px solid var(--green);">
+    <div class="card" style="border-left: 4px solid var(--emerald);">
       <h4>📝 Work Product Shielded</h4>
       <p>Demonstrate good-faith compliance without exposing legal strategy.</p>
     </div>
   </div>
 
-  <p style="text-align: center; margin-top: 16px; font-size: 18px;"><strong class="highlight">Midnight + Legal = The first privacy-preserving compliance system courts can trust.</strong></p>
+  <p style="text-align: center; margin-top: 20px; font-size: 26px;"><strong class="highlight">Midnight + Legal = the first privacy-preserving compliance system courts can trust.</strong></p>
   <span class="slide-brand">autodiscovery.legal</span>
   <span class="slide-number">8 / 13</span>
 </div>
@@ -680,15 +696,15 @@
       </div>
 
       <div style="margin-top: 20px;">
-        <p style="font-size: 14px;">🏛️ <strong>1.2M</strong> active attorneys in the U.S.</p>
-        <p style="font-size: 14px;">🏢 <strong>190,000+</strong> law firms (majority small-to-mid)</p>
-        <p style="font-size: 14px;">📊 <strong>300,000+</strong> civil cases filed annually (federal alone)</p>
-        <p style="font-size: 14px;">💼 <strong>15,000–19,000</strong> medical malpractice cases/year</p>
+        <p style="font-size: 20px;">🏛️ <strong>1.2M</strong> active attorneys in the U.S.</p>
+        <p style="font-size: 20px;">🏢 <strong>190,000+</strong> law firms (majority small-to-mid)</p>
+        <p style="font-size: 20px;">📊 <strong>300,000+</strong> civil cases filed annually (federal alone)</p>
+        <p style="font-size: 20px;">💼 <strong>15,000–19,000</strong> medical malpractice cases/year</p>
       </div>
     </div>
     <div>
       <h3>The Gap Nobody Fills</h3>
-      <table style="font-size: 14px;">
+      <table style="font-size: 18px;">
         <tr><th>Existing Tools</th><th>What They Miss</th></tr>
         <tr><td>Relativity, Everlaw</td><td>No jurisdiction rules, no deadline computation, no compliance proofs</td></tr>
         <tr><td>Clio, PracticePanther</td><td>No discovery-specific features, no rule packs</td></tr>
@@ -696,7 +712,7 @@
       </table>
 
       <div style="margin-top: 20px; padding: 16px; background: var(--card); border-radius: 12px; border: 1px solid var(--accent);">
-        <p style="font-size: 15px; color: var(--text); text-align: center;">
+        <p style="font-size: 20px; color: var(--text); text-align: center;">
           <strong>AutoDiscovery is the ONLY tool combining:</strong><br>
           <span class="success">✓</span> Jurisdiction-aware automation<br>
           <span class="success">✓</span> Cryptographic compliance proofs<br>
@@ -751,7 +767,7 @@
     <div>
       <div class="card" style="text-align: center;">
         <h4>The ROI Pitch</h4>
-        <p style="font-size: 16px; color: var(--text); margin-top: 8px;">
+        <p style="font-size: 20px; color: var(--text); margin-top: 8px;">
           Average sanction: <strong class="danger">$704,094</strong><br>
           Risk per case: <strong class="danger">~10%</strong><br>
           50 cases/yr × 10% × $704K = <strong class="danger">$3.5M exposure</strong><br><br>
@@ -848,9 +864,8 @@
   </div>
 
   <div style="text-align: center; margin-top: 16px;">
-    <p style="font-size: 16px;">
-      <strong>Why this team wins:</strong> We combine <span class="highlight">real courtroom experience</span> with
-      <span class="highlight">blockchain-native engineering</span>. We don't just understand the problem — we've lived it.
+    <p style="font-size: 24px;">
+      <strong>Why this team wins:</strong> We combine <span class="highlight">real courtroom experience</span> with <span class="highlight">blockchain-native engineering</span>. We don't just understand the problem — we've lived it.
     </p>
   </div>
   <span class="slide-brand">autodiscovery.legal</span>
