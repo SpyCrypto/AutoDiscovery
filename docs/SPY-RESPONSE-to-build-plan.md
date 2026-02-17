@@ -4,7 +4,12 @@
 The medical malpractice process in Idaho and Ohio is not the same. While both states share the general goal of proving negligence, they differ significantly in their specific laws, timelines, damages caps, and pre-litigation requirements. 
 Here is a breakdown of the key differences:
 1. Statute of Limitations (Time Limits to File)
-Idaho: Generally, you have two years from the date of the injury to file a lawsuit, though exceptions exist for discovery.
+Idaho: Generally, you have two years from the date of the injury to file a lawsuit, though exceptions exist for discovery. Key limitations and exceptions include:
+Government Entities: Claims against a government entity require a notice of claim within 180 days.
+Medical Malpractice: Generally two years from the date of the act or omission.
+Minors: If the victim is a minor, the statute of limitations may not start running until they turn 18, but it is generally delayed no more than six years.
+Written Contracts: 5 years.
+Oral Contracts: 4 years.
 Ohio: The deadline is generally much tighter—usually one year from when the cause of action accrued (when the malpractice occurred or was discovered), with specific rules for extensions. 
 2. Damages Caps (Limits on Compensation)
 Both states limit non-economic damages (pain and suffering), but the calculations differ: 
