@@ -10,7 +10,7 @@
 
 ---
 
-*GeoOracle Auto Compliance: build once, comply everywhere.*
+*Automated discovery compliance: build once, comply everywhere.*
 
 ---
 
@@ -387,7 +387,7 @@ Each pain point scored on three axes: **severity** (career/case impact), **frequ
 | **HIPAA** | Medical records in malpractice cases require strict handling | ZK proofs verify compliance without exposing PHI |
 | **Attorney-Client Privilege** | Must be identified, logged, and protected | Automated privilege detection + immutable log |
 | **Work Product Doctrine** | Must exclude from production | Selective disclosure — prove existence, withhold content |
-| **State Privacy Laws** | Varying PII protections by jurisdiction | GeoOracle loads jurisdiction-specific privacy rules |
+| **State Privacy Laws** | Varying PII protections by jurisdiction | Jurisdiction rule packs load state-specific privacy rules |
 
 ---
 
@@ -497,7 +497,7 @@ Each pain point scored on three axes: **severity** (career/case impact), **frequ
 | **Prove compliance without revealing case details** | Public blockchains expose everything; databases can be altered | ZK proofs verify compliance while case data stays private |
 | **Create court-admissible records** | Databases can be edited; timestamps can be faked | Immutable ledger that courts can independently verify |
 | **Share only what opposing counsel needs** | Binary choice: share everything or nothing | Selective disclosure at the data field level |
-| **Detect jurisdiction automatically** | No privacy-preserving location oracle exists | GeoOracle — a new infrastructure primitive |
+| **Detect jurisdiction automatically** | Manual lookup error-prone and time-consuming | Jurisdiction selected at case creation based on filing court; rule pack auto-loaded |
 | **Handle privileged information** | Any system that "sees" privileged data risks waiver | Zero-knowledge architecture never exposes raw content |
 
 ### What Must Be True
@@ -509,41 +509,41 @@ These are the critical assumptions underpinning AutoDiscovery. Each must be vali
 | 1 | Courts will accept ZK proofs as compliance evidence | **High** | Research court precedent for blockchain evidence; consult with judges in Phase 1 jurisdictions | Weeks 3–5 |
 | 2 | Paralegals will adopt a new tool into their existing workflow | **Medium** | User testing with 5–10 paralegals via Spy's professional network `[domain expertise]` | Weeks 2–4 |
 | 3 | Attorneys will pay for compliance automation vs. manual processes | **Medium** | Semi-structured interviews with 3–5 solo/small firm attorneys in Idaho `[assumption]` | Weeks 2–3 |
-| 4 | GeoOracle can reliably determine jurisdiction without exposing case details | **High** | Technical feasibility prototype on Midnight testnet | Weeks 4–8 |
+| 4 | Modular rule packs can be selected and loaded reliably at case creation | **Low** | Filing court determines jurisdiction; rule pack loaded automatically | Weeks 2–4 |
 | 5 | Malpractice insurers will recognize ZK compliance proofs for premium discounts | **Medium** | Outreach to 2–3 malpractice carriers in Idaho/Utah `[assumption]` | Weeks 5–7 |
 | 6 | Modular rule packs can accurately encode jurisdiction-specific rules | **Low** | Encode IRCP as pilot rule pack; validate with practicing Idaho attorneys `[domain expertise]` | Weeks 3–6 |
 
-### The GeoOracle: Infrastructure That Doesn't Exist Yet
+### Jurisdiction Determination: Simple by Design
 
-**No privacy-preserving geographical oracle exists today.** AutoDiscovery requires — and will catalyze the creation of — a new infrastructure layer.
+AutoDiscovery does **not** need a geolocation oracle to determine jurisdiction. The filing court determines which rules apply — and the attorney knows this at case creation. The `jurisdiction-registry` contract simply loads the correct modular rule pack based on the court selected.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     GEOORACLE ARCHITECTURE                      │
+│             JURISDICTION RULE PACK LOADING                      │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  ┌──────────┐     ┌──────────────┐     ┌───────────────────┐   │
-│  │ Case     │────▶│  GeoOracle   │────▶│  Rule Pack        │   │
-│  │ Location │     │  (Privacy-   │     │  Loader           │   │
-│  │ Input    │     │  Preserving) │     │                   │   │
+│  │ Filing   │────▶│ Jurisdiction │────▶│  Rule Pack        │   │
+│  │ Court    │     │ Registry     │     │  Loader           │   │
+│  │ (known)  │     │ (on-chain)   │     │                   │   │
 │  └──────────┘     └──────────────┘     └───────────────────┘   │
-│                          │                       │              │
-│                          ▼                       ▼              │
-│              ┌─────────────────┐    ┌────────────────────────┐  │
-│              │ Proves location │    │ Loads correct rules:   │  │
-│              │ WITHOUT sharing │    │ • IRCP (Idaho)         │  │
-│              │ exact address   │    │ • URCP (Utah)          │  │
-│              │ or case details │    │ • CR (Washington)      │  │
-│              └─────────────────┘    │ • FRCP (Federal)       │  │
-│                                     └────────────────────────┘  │
+│                                         │              │
+│                                         ▼              │
+│                              ┌────────────────────────┐  │
+│                              │ Loads correct rules:   │  │
+│                              │ • IRCP (Idaho)         │  │
+│                              │ • URCP (Utah)          │  │
+│                              │ • CR (Washington)      │  │
+│                              │ • FRCP (Federal)       │  │
+│                              └────────────────────────┘  │
 │                                                                 │
 │  Result: "This case follows Idaho IRCP rules"                   │
-│  Revealed: Nothing else about the case.                         │
+│  No oracle needed — the attorney knows the filing court.        │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-Potential infrastructure partner: **Charli3 Oracles** — already building oracle infrastructure in the Cardano/Midnight ecosystem.
+> **Note:** Our companion project [GeoZ](https://github.com/bytewizard42i/GeoZ_us_app_Midnight-Oracle) (GeoZ.us / GeoZ.app) is a standalone privacy-preserving geolocation oracle on Midnight — a separate protocol by the same team, not a dependency of AutoDiscovery.
 
 ---
 
@@ -749,8 +749,8 @@ AutoDiscovery sits at the intersection of **urgent legal pain** and **unpreceden
 ║   ends careers         privacy-preserving     Every regulated     ║
 ║                        blockchain             industry follows    ║
 ║                                                                  ║
-║   $32B legal tech      GeoOracle Auto         Midnight becomes    ║
-║   market with          Compliance:            the global trust    ║
+║   $32B legal tech      Automated discovery    Midnight becomes    ║
+║   market with          compliance:            the global trust    ║
 ║   zero privacy-        build once,            infrastructure      ║
 ║   aware solutions      comply everywhere      for compliance      ║
 ║                                                                  ║
@@ -819,7 +819,7 @@ February 2026
 | dApp | Decentralized Application |
 | ESI | Electronically Stored Information |
 | FRCP | Federal Rules of Civil Procedure |
-| GeoOracle | Privacy-preserving geographical compliance oracle (AutoDiscovery) |
+| GeoZ | Privacy-preserving geolocation oracle on Midnight — [companion project](https://github.com/bytewizard42i/GeoZ_us_app_Midnight-Oracle) (not a dependency of AutoDiscovery) |
 | GTM | Go-to-Market |
 | IRCP | Idaho Rules of Civil Procedure |
 | KPI | Key Performance Indicator |

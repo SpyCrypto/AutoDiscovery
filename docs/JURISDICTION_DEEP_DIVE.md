@@ -321,7 +321,7 @@ AutoDiscovery can generate ZK proofs asserting:
 - ✅ "All handlers were authenticated attorneys/paralegals"
 - ✅ "Privilege review was completed before production"
 - ✅ "Document was produced within [X] days of request"
-- ✅ "Proper jurisdiction rules were applied" (via GeoOracle)
+- ✅ "Proper jurisdiction rules were applied" (via jurisdiction rule pack)
 
 ---
 
@@ -419,7 +419,7 @@ AutoDiscovery can generate ZK proofs asserting:
 
 ---
 
-### 5.8 🌐 GeoOracle for Witness Location
+### 5.8 🌐 Witness Location-Aware Routing
 
 **Concept:** Beyond case jurisdiction, track witness locations for:
 - UIDDA subpoena routing

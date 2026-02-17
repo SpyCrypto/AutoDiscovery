@@ -162,4 +162,161 @@ Continuing from scaffold. Spy's feedback incorporated. TypeScript data model is 
 
 ---
 
-*Log maintained by Penny 🎀 — updated before each push*
+## Session: February 15, 2026 (Afternoon — Evening)
+
+### Context
+Major ideation session. Synced repos, reviewed Penny's new research, created feature branch, then deep-dove into discovery protocol architecture. Produced ~2,500 lines of design documentation across 8 files.
+
+### Key Interactions
+
+**John**: Sync both repos with remotes, merge upstream changes, commit new slide content, share updates with Penny.
+- **Action**: Fetched and merged upstream changes in both ADL and PixyPi repos. Committed `BUILD_CLUB_SLIDE_CONTENT.md`. Created `CASSIE_UPDATE_2026-02-15.md` in PixyPi for Penny with ADL progress summary and Agent-MCP feedback.
+- **Outcome**: Both repos clean and synced.
+
+**John**: Pull Penny's new updates and review them.
+- **Action**: Pulled Penny's two new files — `AGENT_MCP_DEEP_DIVE.md` (247 lines on multi-agent MCP collaboration) and `OPENCLAW_NOTES.md` (118 lines on AI assistant gateway for Signal). Provided detailed analysis of both.
+- **Decision**: Agent-MCP is promising for sister-to-sister communication but adds complexity. OpenClaw is interesting for Signal integration. Neither adopted yet — parked for future evaluation.
+
+**John**: Check for merge conflicts with Spy's upstream changes, push to main, create a "johnny5i-branch" for future work.
+- **Action**: Confirmed clean merge with Spy's upstream (IRCP rule packs, TypeScript data model, contract scaffold, pitch docs). Pushed main. Created `johnny5i-branch` from main.
+- **Decision**: All new discovery protocol work goes on `johnny5i-branch`.
+
+**John**: Start designing how we'll automate discovery. How do we partition the blob? Define universal categories, party attribution, origination tracking, chain of custody, memorandums, and handle data dump obfuscation.
+- **Action**: Created `docs/discovery-automation/` folder. Wrote comprehensive 417-line `HOW_SHOULD_WE_PARTITION_THE_DISCOVERY_BLOB.md` with 6 steps:
+  1. Universal Categories (18 document types)
+  2. Party Attribution (DEF, PRO, COURT, 3P)
+  3. Origination tracking with SHA-256 content hashes + ZK proofs on Midnight
+  4. Chain-of-custody transfer ledger with delivery/receipt confirmations
+  5. Memorandum system for periodic status reports
+  6. Data dump obfuscation detection with scoring and "Haystack Alert" mechanism
+- Also created `FOR_LATER_TO_BE_CONSIDERED.md` with 15 parking lot items (privilege logs, redaction tracking, deadline cascades, proportionality analysis, insurance integration, etc.)
+- **Decision**: Protocol is jurisdiction-agnostic by design. ZK proofs anchor integrity without revealing content.
+
+**John**: Include court transcripts as a daily audit ledger, judge instructions and commentary tracking, and jury materials (selection, instructions, notes, verdict forms).
+- **Action**: Extended main doc from 18 to 24 universal categories. Added three major new sections:
+  - Step 7: Court Transcripts as daily-entry audit layer (tag discovery-relevant excerpts)
+  - Step 8: Judge Instructions/Commentary tracking (oral rulings, discovery admonishments)
+  - Step 9: Jury Materials lifecycle (voir dire → instructions → deliberation notes → verdict)
+- Updated full flow diagram to include all 9 layers.
+- **Decision**: Transcripts become the "daily audit ledger" — every hearing day generates a transcript entry linked to discovery events.
+
+**John**: 3P will be broken down further into things such as expert witness, witness, law enforcement, juror etc.
+- **Action**: Expanded the 3P column in the Party Attribution diagram into 4 subcategories:
+  - **Witnesses**: Expert, fact/percipient, character
+  - **Law Enforcement**: Investigating officer, crime scene/forensic, agencies (FBI, ATF, etc.)
+  - **Jury**: Seated jurors, alternates, venire (pool)
+  - **Other**: Record custodians, government agencies, mediators/arbitrators, guardian ad litem, court reporters, interpreters
+- **Decision**: Each 3P subcategory will need its own role type and access permissions in the data model.
+
+**John**: Communications should have subcategories like "what about," with a monster list. But won't miscategorization hurt us with automated aggregation? Perhaps AI synopsis with key elements and a comprehensive list of all parties mentioned should be added as metadata automatically. Then you could search "fetch all communications about Mr. Smith the victim."
+- **Action**: Added Communications Enrichment section to main doc with:
+  - 14 subcategory options (Settlement, Contract, HR, Medical, etc.) — but flagged the **miscategorization risk** prominently
+  - **AI-Generated Metadata Envelope**: auto-generated at intake with synopsis, key elements (topics, action items, sentiment, legal relevance), comprehensive parties mentioned (name + role + context), entities mentioned (locations, dates, dollar amounts, case numbers), thread context (position in chain, topic drift)
+  - Multi-axis search: full-text + entity extraction + synopsis semantic match + thread expansion
+  - **Mismatch detection**: if human tags "Administrative" but AI detects "Settlement + Opposing Counsel" at 0.94 confidence → system flags it
+- **Key insight from John**: Don't rely on human-assigned subcategories as primary classification. Treat them as optional hints. Let AI do the heavy lifting. This catches both honest mistakes and intentional obfuscation.
+- **Decision**: Three-layer defense: human hint + AI extraction + mismatch detection. AI metadata is authoritative for search; human tag is supplementary.
+
+**John**: Should every document have its own hash? What about multi-page docs — hash each page plus a compendium hash? What about when several documents form a single document?
+- **Action**: Created `DEEP_DIVE_HASHING_STRATEGY.md` (616 lines) with:
+  - 5-level Merkle tree hierarchy: Raw Bytes → Page/Segment → Document → Package → Production → Case Root
+  - Page-level hashing aligned with Bates numbering (courts reference specific pages)
+  - Compound document handling: expert reports + appendices, deposition packages, contract + amendments, email threads, medical records compilations
+  - Non-page content: audio/video uses 60-second time segments, databases use row-group batches
+  - Special cases: redacted docs (two hashes, linked), format conversions (native + produced), supplemental productions (Git-like versioning, never delete history), identical docs from multiple sources (content-addressable deduplication), audio/video gap detection
+  - On-chain efficiency: only Level 4-5 go to Midnight. Any page verifiable via Merkle proof path in O(log n) steps.
+- Updated main doc to reference the deep dive and added summary table. Resolved Open Questions #1 (hashing granularity) and #2 (supplementation).
+- **Key insight**: Like Git — blobs (pages), trees (documents), commits (productions), repository (case). Same architecture, legal domain.
+
+**John**: Many documents will have to be digitized. I'd like to keep a copy of the image with the actual digital file, have them considered attached. Come up with a simple clever protocol for this.
+- **Action**: Created `TWIN_PROTOCOL.md` (344 lines):
+  - **Three rules**: Can't have digital without its image. Image is the authority. Bond is permanent.
+  - **Bond Hash**: `SHA-256(image_hash + digital_hash)` — the bond hash IS the page hash in the Merkle tree
+  - **Fidelity scoring**: re-OCR the image, compare to stored digital, character-level diff → percentage score. Low confidence items flagged for human review.
+  - **Visual feature detection**: signatures, handwriting, stamps/seals, highlighting, strikethroughs, ink color, staple marks — things OCR can't capture. System flags these automatically.
+  - **Production rules**: both twins always produced together. On-demand image optimization for million-page cases (digital + bond record inline, image available within 24 hours)
+  - Slots into existing hash architecture: bond hash = Level 1 page hash
+- **Key insight from John**: The image is the source of truth. The digital is the searchable utility layer. The bond proves they match. Born-digital documents don't need twins.
+
+**John**: Have we thoroughly documented everything? If not, let's. Then cleanup and what do you suggest for next steps. Let's start thinking about how we'll split the smart contracts for Midnight. Most documentation lives in user's private state unless shared by the protocol. Also YubiKey — how will we use this for access control? And split the protocol into demoLand (mock UI for demos) and realDeal (connected to Midnight and AI).
+- **Action**: Conducted full documentation audit. Identified 5 gaps. Created 5 new documents:
+  1. `discovery-automation/README.md` — index with relationship diagram linking all protocol docs
+  2. `SMART_CONTRACT_PARTITIONING.md` (~310 lines) — maps entire protocol to Midnight's state model:
+     - 4-tier data location: user's machine (witness) → private ledger → sealed ledger → public ledger
+     - Expanded from 4 to **6 contracts**: added `document-registry.compact` (hash anchoring, twin bonds, custody) and `access-control.compact` (roles, permissions, sharing, YubiKey hooks)
+     - Full circuit/ledger design for each contract with public/private/sealed field assignments
+     - Sharing protocol: how private state becomes selectively visible during discovery production
+     - `MerkleTree<20, Bytes<32>>` native Compact type holds ~1M hash commitments
+  3. `YUBIKEY_ACCESS_CONTROL.md` (~250 lines):
+     - **Option A**: Key generated ON YubiKey (most secure, hardest recovery, ECDSA P-256 ≠ Ed25519 issue)
+     - **Option B**: Midnight Ed25519 key imported to YubiKey PIV slot (high security, backup possible)
+     - **Option C**: YubiKey as FIDO2/WebAuthn 2FA alongside Lace wallet (easiest, browser-native, MVP recommendation)
+     - Sensitive operation matrix (which operations require YubiKey)
+     - Recovery strategies for each option
+     - Implementation phases: MVP = wallet only → Phase 2 = FIDO2 → Phase 3 = PKCS#11 → Phase 4 = hardware-native
+  4. `DEMOLAND_VS_REALDEAL.md` (~300 lines):
+     - **Provider pattern**: shared TypeScript interfaces, different implementations
+     - `VITE_AD_MODE=demoland|realdeal` environment variable switches everything
+     - demoLand: mock JSON data, no wallet, no blockchain, instant — bulletproof for hackathon demos
+     - realDeal: Midnight testnet, Lace wallet, real AI, real ZK proofs — the actual product
+     - Mock data spec: "Smith v. Acme Corp" fictional Idaho med-mal case with all 24 categories
+     - UI indicators: demoLand shows prominent "DEMO MODE" banner
+     - Build order: demoLand first (fast iteration), wire up realDeal after
+  5. Updated `BUILD_PLAN.md`: added Phase 0.5 (Discovery Protocol Design — complete), updated to 6-contract architecture, added Phase 4.5 (demoLand/realDeal split)
+- **Decisions**:
+  - Almost everything lives in user's private state. Public ledger only has hashes, Merkle roots, compliance proofs.
+  - YubiKey Option C (2FA) is the MVP default. Options A/B for post-MVP security-conscious firms.
+  - demoLand first, realDeal second. Same UI, different providers.
+
+**John**: Don't forget to document the prompts (our conversations) — this is crucial ideation and I'd like it saved.
+- **Action**: This entry. Full session documented with all prompts, actions, decisions, and outcomes.
+
+### Commits (johnny5i-branch)
+- `e64abaa` — feat(docs): Discovery Blob Partition — 6-step protocol design + 15 'for later' considerations
+- `bbc5577` — feat(docs): Steps 7-9 — Court Transcripts daily ledger, Judge Instructions authority layer, Jury Materials trial layer
+- `4c9645a` — docs: expand 3P party attribution — subcategories for witnesses, law enforcement, jury, other
+- `c4e724a` — feat(docs): Communications enrichment — AI metadata extraction, entity resolution, miscategorization safety net
+- `33ef558` — feat(docs): Deep Dive — 5-level Merkle hashing architecture, compound documents, special cases
+- `4531639` — feat(docs): Twin Protocol — image + digital pairing with fidelity scoring and bond hashing
+- `1b8c095` — feat(docs): Architecture docs — smart contract partitioning (6 contracts), YubiKey access control, demoLand/realDeal split, discovery-automation index, BUILD_PLAN updated
+
+### Decisions Made This Session
+| Decision | Rationale |
+|----------|-----------|
+| 24 universal discovery categories | Covers all document types including court transcripts, jury materials, and court orders |
+| 3P expanded into 4 subcategories | Witnesses, LEO, Jury, Other — each needs distinct role types and access permissions |
+| AI metadata envelopes > subcategory dropdowns | Miscategorization risk with human-assigned categories; AI extraction is authoritative for search |
+| 5-level Merkle tree hashing | Page-level granularity catches which specific page was tampered; only Level 4-5 go on-chain |
+| Twin Protocol for digitized documents | Image = truth, digital = tool, bond = proof they match. Bond hash = Level 1 page hash |
+| 6 contracts (up from 4) | Added document-registry.compact and access-control.compact for discovery protocol |
+| Almost everything in private state | Document content never touches the chain. Public ledger = hashes + proofs only |
+| YubiKey Option C (2FA) for MVP | WebAuthn is browser-native, easy to implement, works with any FIDO2 key |
+| demoLand first, realDeal second | Provider pattern: same UI, different backends. Mock data for demos, real chain for production |
+| Branch: johnny5i-branch | All discovery protocol work isolated from main until ready for merge |
+
+### Files Created/Modified This Session
+| File | Action | Lines |
+|------|--------|-------|
+| `docs/discovery-automation/HOW_SHOULD_WE_PARTITION_THE_DISCOVERY_BLOB.md` | Created + extended | ~920 |
+| `docs/discovery-automation/DEEP_DIVE_HASHING_STRATEGY.md` | Created | ~620 |
+| `docs/discovery-automation/TWIN_PROTOCOL.md` | Created | ~345 |
+| `docs/discovery-automation/FOR_LATER_TO_BE_CONSIDERED.md` | Created | ~150 |
+| `docs/discovery-automation/README.md` | Created | ~60 |
+| `docs/SMART_CONTRACT_PARTITIONING.md` | Created | ~310 |
+| `docs/YUBIKEY_ACCESS_CONTROL.md` | Created | ~250 |
+| `docs/DEMOLAND_VS_REALDEAL.md` | Created | ~300 |
+| `docs/BUILD_PLAN.md` | Updated | +30 |
+| `docs/BUILD_CLUB_SLIDE_CONTENT.md` | Created (earlier) | ~100 |
+| `PixyPi/CASSIE_UPDATE_2026-02-15.md` | Created | ~56 |
+
+### Open Items for Next Session
+- Resolve pragma/compiler version (Phase 0.2) — unblocks all contract work
+- Define TypeScript provider interfaces (ICaseProvider, IDocumentProvider, etc.)
+- Build demoLand mock data — "Smith v. Acme Corp" demo case
+- Scaffold `document-registry.compact` and `access-control.compact`
+- Get Spy's review on discovery protocol + contract partitioning
+- Fix GitHub MCP PAT authentication (still broken)
+
+---
+
+*Log maintained by Cassie — updated before each push*

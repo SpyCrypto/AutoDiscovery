@@ -39,75 +39,89 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-ad-gold: var(--ad-gold);
+  --color-ad-gold-dim: var(--ad-gold-dim);
+  --color-ad-navy: var(--ad-navy);
+  --color-ad-emerald: var(--ad-emerald);
 }
 
+/* ── AutoDiscovery Brand: Light ──────────────────────────── */
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #f8f9fc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #1e3a5f;
+  --primary-foreground: #f1f5f9;
+  --secondary: #e2e8f0;
+  --secondary-foreground: #1e293b;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f0f4ff;
+  --accent-foreground: #1e3a5f;
+  --destructive: #dc2626;
+  --border: #cbd5e1;
+  --input: #e2e8f0;
+  --ring: #3b82f6;
+  --chart-1: #1e3a5f;
+  --chart-2: #d4a017;
+  --chart-3: #059669;
+  --chart-4: #6366f1;
+  --chart-5: #f59e0b;
+  --sidebar: #0f172a;
+  --sidebar-foreground: #e2e8f0;
+  --sidebar-primary: #d4a017;
+  --sidebar-primary-foreground: #0f172a;
+  --sidebar-accent: #1e293b;
+  --sidebar-accent-foreground: #f1f5f9;
+  --sidebar-border: rgba(255,255,255,0.08);
+  --sidebar-ring: #3b82f6;
+  --ad-gold: #d4a017;
+  --ad-gold-dim: #b8860b;
+  --ad-navy: #1e3a5f;
+  --ad-emerald: #059669;
 }
 
+/* ── AutoDiscovery Brand: Dark ───────────────────────────── */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #0b1120;
+  --foreground: #e8ecf4;
+  --card: #111827;
+  --card-foreground: #e8ecf4;
+  --popover: #111827;
+  --popover-foreground: #e8ecf4;
+  --primary: #60a5fa;
+  --primary-foreground: #0b1120;
+  --secondary: #1e293b;
+  --secondary-foreground: #e2e8f0;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #172554;
+  --accent-foreground: #93c5fd;
+  --destructive: #ef4444;
+  --border: rgba(148,163,184,0.12);
+  --input: rgba(148,163,184,0.15);
+  --ring: #3b82f6;
+  --chart-1: #60a5fa;
+  --chart-2: #fbbf24;
+  --chart-3: #34d399;
+  --chart-4: #a78bfa;
+  --chart-5: #fb923c;
+  --sidebar: #060d1b;
+  --sidebar-foreground: #cbd5e1;
+  --sidebar-primary: #fbbf24;
+  --sidebar-primary-foreground: #0b1120;
+  --sidebar-accent: #0f1d32;
+  --sidebar-accent-foreground: #e2e8f0;
+  --sidebar-border: rgba(148,163,184,0.08);
+  --sidebar-ring: #3b82f6;
+  --ad-gold: #fbbf24;
+  --ad-gold-dim: #d4a017;
+  --ad-navy: #1e3a5f;
+  --ad-emerald: #34d399;
 }
 
 @layer base {
@@ -116,5 +130,101 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
+}
+
+/* ── AutoDiscovery Custom Utilities ──────────────────────── */
+
+.ad-glass {
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.ad-glass-light {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(203, 213, 225, 0.4);
+}
+
+.ad-glow-gold {
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.15), 0 0 60px rgba(251, 191, 36, 0.05);
+}
+
+.ad-glow-blue {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.15), 0 0 60px rgba(59, 130, 246, 0.05);
+}
+
+.ad-glow-emerald {
+  box-shadow: 0 0 20px rgba(52, 211, 153, 0.15), 0 0 60px rgba(52, 211, 153, 0.05);
+}
+
+.ad-gradient-navy {
+  background: linear-gradient(135deg, #0b1120 0%, #1e3a5f 50%, #172554 100%);
+}
+
+.ad-gradient-card {
+  background: linear-gradient(145deg, rgba(17,24,39,0.8) 0%, rgba(15,23,42,0.95) 100%);
+}
+
+.ad-gradient-gold {
+  background: linear-gradient(135deg, #d4a017 0%, #fbbf24 50%, #f59e0b 100%);
+}
+
+.ad-border-glow {
+  position: relative;
+}
+
+.ad-border-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(251,191,36,0.3), rgba(59,130,246,0.2), rgba(52,211,153,0.2));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+@keyframes ad-pulse-gold {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes ad-slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes ad-fade-up {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.ad-animate-fade-up {
+  animation: ad-fade-up 0.4s ease-out;
+}
+
+.ad-animate-slide-in {
+  animation: ad-slide-in-right 0.3s ease-out;
+}
+
+/* Scrollbar styling for the jurisdiction panel */
+.ad-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.ad-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ad-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 2px;
+}
+.ad-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
 }

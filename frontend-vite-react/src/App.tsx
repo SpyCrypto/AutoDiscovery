@@ -1,37 +1,43 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import * as pino from "pino";
-import { MainLayout } from "./layouts/layout";
-import { Home } from "./pages/home/";
-import { Counter } from "./pages/counter";
-import { WalletUI } from "./pages/wallet-ui";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { ThemeProvider } from "./components/theme-provider";
-import { MidnightMeshProvider } from "./modules/midnight/wallet-widget/contexts/wallet";
-import { CounterAppProvider } from "./modules/midnight/counter-sdk/contexts";
+import { ProvidersProvider } from "./providers/context";
+import { ADLayout } from "./layouts/ad-layout";
+import { LoginPage } from "./pages/login";
+import { Dashboard } from "./pages/dashboard";
+import { CaseView } from "./pages/case-view";
+import { CaseContacts } from "./pages/case-contacts";
+import { AuthGuard } from "./components/auth-guard";
 
-export const logger = pino.pino({
-  level: "trace",
-});
-
-// Update this with your deployed contract address
-const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS!; 
-
-function App() { 
+function App() {
   return (
-    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <MidnightMeshProvider logger={logger}>
-        <CounterAppProvider logger={logger} contractAddress={contractAddress}>
-          <BrowserRouter basename="/">
-            <Routes>
-              <Route element={<MainLayout />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/wallet-ui" element={<WalletUI />} />
-                <Route path="/counter" element={<Counter />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </CounterAppProvider>
-      </MidnightMeshProvider>
+    <ThemeProvider defaultTheme="dark" storageKey="ad-ui-theme">
+      <ProvidersProvider>
+        <BrowserRouter basename="/">
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route element={<AuthGuard><ADLayout /></AuthGuard>}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/cases" element={<Dashboard />} />
+              <Route path="/cases/:caseId" element={<CaseView />} />
+              <Route path="/cases/:caseId/contacts" element={<CaseContacts />} />
+              <Route path="/search" element={<PlaceholderPage title="Search" desc="Global document search across all cases — coming soon" />} />
+              <Route path="/compliance" element={<PlaceholderPage title="Reports" desc="Compliance reports and export — coming soon" />} />
+              <Route path="/settings" element={<PlaceholderPage title="Settings" desc="User preferences, auth method, notifications — coming soon" />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </ProvidersProvider>
     </ThemeProvider>
+  );
+}
+
+function PlaceholderPage({ title, desc }: { title: string; desc: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center h-64 text-center">
+      <h2 className="text-xl font-bold mb-2">{title}</h2>
+      <p className="text-muted-foreground text-sm max-w-md">{desc}</p>
+    </div>
   );
 }
 

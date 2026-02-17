@@ -1,7 +1,7 @@
 # AutoDiscovery — Build Plan
 
 > **Living document** — updated as work progresses.
-> Last updated: February 10, 2026
+> Last updated: February 15, 2026
 
 ---
 
@@ -22,9 +22,21 @@ Everything that must exist before any feature code.
 - ✅ Project docs written (overview, customer matrix, jurisdiction deep dive, UI notes, team)
 - ✅ Deep dive review doc for cross-LLM feedback
 - ✅ Grok data structure review (Ohio used as schema design exercise — archived in `docs/reference/`)
-- ✅ Jurisdiction rollout order confirmed: **ID (primary) → OH → WA → UT → CA → NY**
+- ✅ Jurisdiction rollout order confirmed: **ID (primary) → UT → WA → CA → NYC → OH** *(Ohio included early due to serendipitous Grok research)*
 - ✅ 6-entity data model agreed: Case, DiscoveryStep, JurisdictionRulePack, Document, Party, ComplianceAttestation
-- ✅ 4-contract architecture agreed: discovery-core, jurisdiction-registry, compliance-proof, expert-witness
+- ✅ ~~4-contract~~ **6-contract architecture** agreed: discovery-core, jurisdiction-registry, compliance-proof, **document-registry** (NEW), **access-control** (NEW), expert-witness — see [`SMART_CONTRACT_PARTITIONING.md`](./SMART_CONTRACT_PARTITIONING.md)
+
+### 0.5 ✅ Discovery Protocol Design (Feb 15, 2026)
+
+Comprehensive protocol architecture for automating legal discovery. All documents in [`docs/discovery-automation/`](./discovery-automation/README.md).
+
+- ✅ 9-step protocol: 24 universal categories, party attribution, origination, chain-of-custody, memorandums, data dump obfuscation, court transcripts, judge instructions, jury materials
+- ✅ Communications enrichment: AI-extracted metadata envelopes, entity resolution, miscategorization safety net
+- ✅ 5-level Merkle hashing architecture: page → document → package → production → case root
+- ✅ Twin Protocol: image + digital pairing for digitized documents
+- ✅ Smart contract partitioning: private vs. public vs. sealed state mapping — see [`SMART_CONTRACT_PARTITIONING.md`](./SMART_CONTRACT_PARTITIONING.md)
+- ✅ YubiKey access control design (3 options: hardware-generated, imported, 2FA) — see [`YUBIKEY_ACCESS_CONTROL.md`](./YUBIKEY_ACCESS_CONTROL.md)
+- ✅ demoLand vs realDeal architecture split — see [`DEMOLAND_VS_REALDEAL.md`](./DEMOLAND_VS_REALDEAL.md)
 
 ### 0.2 ⬜ Pragma & Compiler Version Resolution
 - Resolve conflict: MCP reference examples use `>= 0.16 && <= 0.18`, MeshJS starter uses `>= 0.19` with compiler `+0.27.0`
@@ -66,6 +78,8 @@ autodiscovery-contract/src/
 │   ├── discovery-core.compact           # Case lifecycle
 │   ├── jurisdiction-registry.compact    # Rule storage & lookup
 │   ├── compliance-proof.compact         # ZK attestation generation
+│   ├── document-registry.compact        # NEW: Hash anchoring, twin bonds, custody
+│   ├── access-control.compact           # NEW: Roles, permissions, sharing, YubiKey
 │   └── expert-witness.compact           # Phase 2: med-mal experts
 ├── types/                               # TypeScript interfaces (0.3)
 ├── witnesses/
@@ -435,6 +449,24 @@ Multi-step wizard:
 - Configure Vercel deployment (Spy's subscription)
 - Set up environment variables
 - Custom domain: autodiscovery.legal (if available)
+
+---
+
+## Phase 4.5: demoLand / realDeal Split
+
+See [`DEMOLAND_VS_REALDEAL.md`](./DEMOLAND_VS_REALDEAL.md) for full architecture.
+
+### 4.5.1 ⬜ Provider Interfaces
+Define shared TypeScript interfaces (ICaseProvider, IDocumentProvider, IComplianceProvider, IAuthProvider, IAIProvider, ISearchProvider).
+
+### 4.5.2 ⬜ demoLand Mock Providers
+Implement all providers with JSON mock data. Build "Smith v. Acme Corp" demo case (Idaho med-mal, 24 document categories, all protocol features).
+
+### 4.5.3 ⬜ realDeal Midnight Providers
+Implement all providers against compiled Compact contracts + Lace wallet + AI service.
+
+### 4.5.4 ⬜ Environment Switching
+`VITE_AD_MODE=demoland|realdeal` flag, npm scripts for `dev:demo` and `dev:real`, mode indicator banner in UI.
 
 ---
 

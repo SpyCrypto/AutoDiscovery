@@ -1,12 +1,14 @@
 # AutoDiscovery - Project Overview
 
-> **GeoOracle Auto Compliance: build once, comply everywhere.**
+> **Automated discovery compliance: build once, comply everywhere.**
 
 ---
 
 ## Executive Summary
 
-AutoDiscovery is a **Midnight-based dApp** that automates legal discovery workflows with **jurisdiction-aware compliance**. Using a GeoOracle, the platform automatically applies the correct regional legislation and procedural rules based on case location—eliminating the risk of discovery non-compliance that leads to sanctions, dismissed cases, or suppressed evidence.
+AutoDiscovery is a **Midnight-based dApp** that automates legal discovery workflows with **jurisdiction-aware compliance**. The platform uses modular jurisdiction rule packs to apply the correct regional legislation and procedural rules based on the court where the case is filed—eliminating the risk of discovery non-compliance that leads to sanctions, dismissed cases, or suppressed evidence.
+
+With **autoDiscovery.legal**, we aim to organize and formalize a hard-coded, geographically compliant, law-based protocol that will help organize, distribute, and give proper, accurate, and secure access control to user-aggregated legal discovery. This protocol will **abstract away liability**, reduce man hours and overall costs, increase profits, and form an **immutable (existing forever) proof of compliance, custody, provenance, and access.**
 
 ---
 
@@ -14,18 +16,30 @@ AutoDiscovery is a **Midnight-based dApp** that automates legal discovery workfl
 
 ### The Discovery Compliance Crisis
 
-Legal discovery—the pre-trial process where parties exchange evidence—is governed by different rules in every jurisdiction:
+With legal discovery sanctions reaching **$8.5 million in a single case** and **6 attorneys referred to the State Bar** for discipline, discovery management in its current state is a huge problem in the US.
+
+The legal discovery process is messy, time consuming, and varies by jurisdiction—with enormous consequences for compliance failures resulting in lost cases, unfavorable case delays, extremely expensive sanctions (fines, e.g., $$$), and **the potential of being disbarred.**
+
+**The scale of the crisis:**
+
+| Stat | Impact |
+|------|--------|
+| **$8.5M+** | Top sanction award in a single case (*Qualcomm v. Broadcom*, 2008) |
+| **$704,094** | Average eDiscovery sanction amount |
+| **$40,207** | Median sanction amount |
+| **38,000+** | NYC cases dismissed in 2024 from discovery compliance failures |
+| **50% → 25%** | NYC conviction rate drop due to discovery failures |
+| **28%** | Of all legal malpractice claims stem from missed deadlines |
+| **20–50%** | Of total litigation costs consumed by discovery |
+| **$30B+/year** | Annual US litigation cost attributable to discovery |
+
+In New York City alone, 38,000+ cases were dismissed in 2024 due to discovery compliance failures — and conviction rates dropped from 50% to 25%. Nationally, 28% of all legal malpractice claims stem from missed deadlines, and discovery consumes 20–50% of total litigation costs — over $30 billion a year.
+
+Legal discovery is governed by different rules in every jurisdiction:
 
 - **Federal courts** follow the Federal Rules of Civil Procedure (FRCP)
 - **Each state** has its own civil procedure rules (e.g., Idaho IRCP, Utah URCP, Washington CR)
 - **Specialized courts** (bankruptcy, family, etc.) add additional layers
-
-**Consequences of non-compliance:**
-- Evidence suppression
-- Case dismissal
-- Sanctions against attorneys
-- Malpractice liability
-- Retrials and appeals
 
 ### Current Pain Points
 
@@ -41,20 +55,23 @@ Legal discovery—the pre-trial process where parties exchange evidence—is gov
 
 ### Core Concept
 
+With **autoDiscovery.legal**, we aim to organize and formalize a **hard-coded, geographically compliant, law-based protocol** that will help organize, distribute, and give proper, accurate, and secure access control to user-aggregated legal discovery.
+
+This protocol will **abstract away liability**, reduce man hours and overall costs, increase profits, and form an **immutable (existing forever) proof of compliance, custody, provenance, and access.** It is our hope that autoDiscovery.legal will be the **default protocol for accurate and dependable discovery/evidence management** — backed with error insurance that will protect law firms from errors and omissions.
+
 AutoDiscovery provides:
 
 1. **Automated Workflow Engine** — Step-by-step discovery process execution
-2. **GeoOracle Integration** — Detects jurisdiction and loads appropriate rule sets
-3. **Modular Rule Packs** — State/federal rules as pluggable modules
-4. **Immutable Compliance Proofs** — Midnight ZK proofs that can be entered as factual record
-5. **Selective Disclosure** — Reveal only what's required, prove the rest
+2. **Jurisdiction Rule Packs** — Modular, per-state rules loaded at case creation based on filing court
+3. **Immutable Compliance Proofs** — Midnight ZK proofs that can be entered as factual record
+4. **Selective Disclosure** — Reveal only what's required, prove the rest
 
 ### Key Taglines
 
-- *"Discovery that knows where it is."*
-- *"Automated legal discovery that adapts to location."*
-- *"Remove the risks of failing to disclose or handle discovery properly with Midnight's GeoOracle—where regional compliance is baked in."*
+- *"Automated legal discovery — jurisdiction-aware by design."*
+- *"Remove the risks of failing to disclose or handle discovery properly — regional compliance is baked in."*
 - *"Prove compliance in an immutable fashion that can be entered as factual record."*
+- *"AutoDiscovery doesn't just help you manage discovery — it mathematically proves you did it right."*
 
 ---
 
@@ -101,8 +118,8 @@ AutoDiscovery/
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐  │
-│  │  GeoOracle   │───▶│ Rule Loader  │───▶│  Workflow    │  │
-│  │  (Location)  │    │ (Jurisdiction)│    │  Engine      │  │
+│  │ Jurisdiction │───▶│ Rule Loader  │───▶│  Workflow    │  │
+│  │ (Case Filed) │    │ (Rule Pack)  │    │  Engine      │  │
 │  └──────────────┘    └──────────────┘    └──────────────┘  │
 │         │                   │                    │          │
 │         ▼                   ▼                    ▼          │
@@ -127,11 +144,11 @@ AutoDiscovery/
 | # | Jurisdiction | Rules | Priority | Notes |
 |---|--------------|-------|----------|-------|
 | 1 | **Idaho** | IRCP (Idaho Rules of Civil Procedure) | High | Spy's primary jurisdiction — domain-expert validated |
-| 2 | **Ohio** | Civ.R. (Ohio Rules of Civil Procedure) | High | Large market, 2020-2023 modernized rules; Grok deep dive complete |
+| 2 | **Utah** | URCP (Utah Rules of Civil Procedure) | High | Adjacent to Idaho; unique tiered discovery system |
 | 3 | **Washington** | CR (Civil Rules) | High | Pacific Northwest coverage |
-| 4 | **Utah** | URCP (Utah Rules of Civil Procedure) | High | Adjacent to Idaho; unique tiered discovery system |
-| 5 | **California** | CCP (Code of Civil Procedure) | High | Largest state market |
-| 6 | **New York** | CPLR (Civil Practice Law and Rules) | High | Major market, Commercial Division complexity |
+| 4 | **California** | CCP (Code of Civil Procedure) | High | Largest state market |
+| 5 | **New York City** | CPLR (Civil Practice Law and Rules) | High | Major market, Commercial Division complexity |
+| 6 | **Ohio** | Civ.R. (Ohio Rules of Civil Procedure) | Medium | Serendipitous early research; 2020-2023 modernized rules; Grok deep dive complete |
 
 ### Workflow Mapping Strategy
 
@@ -188,10 +205,6 @@ Courts guard precedent fiercely. In one case, a judge refused to let a plaintiff
 
 **The inverse is equally powerful:** Once courts accept ZK proofs as factual record, that precedent binds all future proceedings. No industry can question what the legal system has validated.
 
-### Why GeoOracle?
-
-**No privacy-preserving geographical oracle exists today.** AutoDiscovery + GeoOracle is a prerequisite infrastructure layer for any location-aware compliance system.
-
 ---
 
 ## Roadmap
@@ -204,9 +217,8 @@ Courts guard precedent fiercely. In one case, a judge refused to let a plaintiff
 
 ### Phase 2: Multi-Jurisdiction
 - [ ] Utah, Washington, NYC, California rule packs
-- [ ] GeoOracle prototype integration
 - [ ] Jurisdiction comparison view
-- [ ] Workflow forking based on location
+- [ ] Workflow forking based on filing court
 
 ### Phase 3: Production
 - [ ] Full federal rules integration
@@ -229,7 +241,7 @@ Courts guard precedent fiercely. In one case, a judge refused to let a plaintiff
 
 **Event:** Midnight Vegas Hackathon  
 **Date:** April 2026  
-**Goal:** Working MVP demonstrating GeoOracle Auto Compliance
+**Goal:** Working MVP demonstrating automated jurisdiction-aware discovery compliance
 
 ---
 
@@ -285,7 +297,7 @@ npm run dev:frontend
 
 | Partner | Role | Notes |
 |---------|------|-------|
-| **Charli3 Oracles** | GeoOracle Infrastructure | May build the privacy-preserving geographical oracle layer |
+| **Charli3 Oracles** | Oracle Infrastructure | Potential data feed partner for [GeoZ](https://github.com/bytewizard42i/GeoZ_us_app_Midnight-Oracle) companion project |
 | **OpenZeppelin** | Smart Contract Security | Compact contract templates and security patterns |
 | **NMKR** | NFT/Token Infrastructure | Potential integration for compliance credential tokens |
 
