@@ -70,7 +70,7 @@
 
 ## SLIDE 9: Business Model (2:10–2:20)
 
-> "SaaS subscriptions from ninety-nine to fifteen hundred a month, plus twenty-five dollars per compliance proof. The ROI is obvious: average sanction is seven hundred thousand. Our annual cost is a fraction of *one*."
+> "SaaS subscriptions from ninety-nine to fifteen hundred a month — solo attorneys to regional firms. The ROI is obvious: average sanction is seven hundred thousand dollars. Our annual cost is a fraction of *one*."
 
 **[Advance to Slide 10]**
 
