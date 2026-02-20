@@ -26,7 +26,7 @@
 
 > "Eight point five *million* dollars. That's the largest single discovery sanction in U.S. history.
 >
-> Discovery compliance is broken. Everyone in legal knows it. We built the fix."
+> Discovery compliance is broken. Everyone in legal knows it. We have built the solution."
 
 **[Let 'We built the fix' land. Advance to Slide 4.]**
 
