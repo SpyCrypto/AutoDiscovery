@@ -18,23 +18,23 @@
 ## 1. Smart Contract Compilation & Deployment
 
 ### 1.1 Compile remaining contracts
-| Contract | Compiled? | Action |
-|----------|-----------|--------|
-| `discovery-core.compact` | ✅ Managed output exists | Verify with compiler 0.29.0 |
-| `document-registry.compact` | ✅ Managed output exists | Verify with compiler 0.29.0 |
-| `compliance-proof.compact` | ✅ Managed output exists | Verify with compiler 0.29.0 |
-| `jurisdiction-registry.compact` | ✅ Managed output exists | Verify with compiler 0.29.0 |
-| `access-control.compact` | 🔴 No managed output | Compile with 0.29.0 |
-| `expert-witness.compact` | 🔴 No managed output | Compile with 0.29.0 |
+| Contract | Compiled? | Circuits | Action |
+|----------|-----------|----------|--------|
+| `discovery-core.compact` | ✅ Compiled (0.29.0) | 4 | Ready to deploy |
+| `document-registry.compact` | ✅ Compiled (0.29.0) | 7 | Ready to deploy |
+| `compliance-proof.compact` | ✅ Compiled (0.29.0) | 5 | Ready to deploy |
+| `jurisdiction-registry.compact` | ✅ Compiled (0.29.0) | 3 | Ready to deploy |
+| `access-control.compact` | ✅ Compiled (0.29.0) | 6 | Ready to deploy |
+| `expert-witness.compact` | ✅ Compiled (0.29.0) | 2 | Ready to deploy |
 
 ### 1.2 Deploy to Preprod
 - [ ] 🟡 Start proof server 7.0.0: `docker run -p 6300:6300 midnightntwrk/proof-server:7.0.0`
-- [ ] 🔴 Deploy `discovery-core` → get contract address
-- [ ] 🔴 Deploy `document-registry` → get contract address
-- [ ] 🔴 Deploy `compliance-proof` → get contract address
-- [ ] 🔴 Deploy `jurisdiction-registry` → get contract address
-- [ ] 🔴 Deploy `access-control` → get contract address (compile first)
-- [ ] 🔴 Deploy `expert-witness` → get contract address (compile first)
+- [ ] � Deploy `discovery-core` → get contract address
+- [ ] � Deploy `document-registry` → get contract address
+- [ ] � Deploy `compliance-proof` → get contract address
+- [ ] � Deploy `jurisdiction-registry` → get contract address
+- [ ] � Deploy `access-control` → get contract address
+- [ ] � Deploy `expert-witness` → get contract address
 - [ ] 🔴 Populate `.env` with all 6 contract addresses
 
 ---

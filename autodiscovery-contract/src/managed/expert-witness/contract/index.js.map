@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "file": "index.js",
+  "sourceRoot": "../../../../",
+  "sources": ["src/contracts/expert-witness.compact"],
+  "names": [],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EAAA;;;;;;;;;;;;;MA8IA,AAAA,qBA4BC;;;;;cA3BG,8BAAuC;;;;;;;;;;;;;;;;;;yCAAvC,8BAAuC;;;;;;;;;uDAAvC,8BAAuC;;;OA2B1C;MAsBD,AAAA,wBAOC;;;;;cANG,8BAAuC;;;;;;;;;;;;;;;;;;yCAAvC,8BAAuC;;;;;;;;;0DAAvC,8BAAuC;;;OAM1C;;;;;;GACA;EAxMD;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;IA+DA;;;;;;;;;yEAA8C;IAM9C;;;;;;;;;;yEAA+D;IAO/D;;;;;;;;;;yEAAkF;IAelF;;;;;;;;;;yEAAsE;IAMtE;;;;;;;;;;yEAAwE;;;;;;;GAuGvE;EAzFD,AAAA,8BAA4E;;iCAAxC,sBAA2B;;;0DAA/D,2BAA4E;sFAAxC,sBAA2B;;;;;;;;;;;;;;GAAa;EA+B5E,AAAA,wBA4BC;;2BA3BG,8BAAuC;;UAMnC,4BAAwE;;;IAK9E;;;;;;;;;;2HAAiD,4BAA0B;;;;;wEAA3C;IAKhC;;;;;;;;;;2HACa,4BAA0B;;;2HAC1B,8BAA4B;;;wEAFD;UAMxC,KAAsB;IAAtB;;;;;;;;;;6FAAA,KAAsB;;;;wEAAA;WAIN,4BAA0B;GAC3C;EAsBD,AAAA,2BAOC;;8BANG,8BAAuC;;mCAKlC;;;;;;;;;;;0JAAiD,8BAA4B;;;;wGAA7C;GACxC;;;;;;;;;;;;;;;;IAxID;qCAAA;;;;;;;;;;;0GAA8C;KAAA;IAM9C;;;;;uCAAA;;;;;;;;;;;;;;;;4GAA+D;;;;;;uCAA/D;;;;;;;;;;;;4GAA+D;;;;;;;;;;;;;;uCAA/D;;;;;;;;;;;;;;;4GAA+D;;;;;;;;;KAAA;IAO/D;;;;;uCAAA;;;;;;;;;;;;;;;;4GAAkF;;;;;;uCAAlF;;;;;;;;;;;;4GAAkF;;;;;;;;;;;;;;uCAAlF;;;;;;;;;;;;;;;4GAAkF;;;;;;;;;;;;;;uCAAlF;;;;;;;;;;;;;;;;;4GAAkF;;;;;;;;;KAAA;;;;;;;;;;;;"
+}

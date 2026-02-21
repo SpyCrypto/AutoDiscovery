@@ -1,4 +1,4 @@
-pragma language_version >= 0.16 && <= 0.18;
+pragma language_version >= 0.20;
 
 import CompactStandardLibrary;
 
@@ -102,9 +102,8 @@ ledger expertCredentialReferenceByIdentifierHash: Map<Bytes<32>, Field>;
 // WITNESSES (off-chain computation)
 // =============================================================================
 
-// Returns the wallet address of whoever is submitting this transaction.
-// Used for authorization — only authorized parties can register experts.
-witness getTransactionCallerAddress(): Opaque<"address">;
+// NOTE: Authorization check deferred to Phase 2.
+// Will use ownPublicKey() to verify caller is authorized to register experts.
 
 // Computes a unique identifier hash for an expert from their credential data.
 // The expert's actual data (name, license, etc.) is processed on the user's
@@ -148,19 +147,19 @@ export circuit registerExpertWitness(
   // Compute a unique identifier hash for this expert.
   // The expert's actual identity data is processed off-chain by the witness;
   // only the hash enters the circuit. The expert remains anonymous on-chain.
-  const expertUniqueIdentifierHash = computeExpertIdentifierHash(embed<Field>());
+  const expertUniqueIdentifierHash = computeExpertIdentifierHash(default<Field>);
 
   // Add the expert to the public registry.
   // After this, anyone can verify "an expert with this hash is registered"
   // without learning who the expert is or what their qualifications are.
-  registeredExpertIdentifierHashes.insert(expertUniqueIdentifierHash);
+  registeredExpertIdentifierHashes.insert(disclose(expertUniqueIdentifierHash));
 
   // Store the qualification proof hash.
   // This links the expert's anonymous on-chain identity to a proof of their
   // credentials. The actual credentials are off-chain; this hash anchors them.
   qualificationProofHashByExpertIdentifier.insert(
-      expertUniqueIdentifierHash,
-      expertQualificationProofHash
+      disclose(expertUniqueIdentifierHash),
+      disclose(expertQualificationProofHash)
   );
 
   // Increment the global expert counter.
@@ -168,7 +167,7 @@ export circuit registerExpertWitness(
 
   // Return the expert's identifier hash for use in future operations
   // (e.g., linking expert reports to the expert, deposition scheduling, etc.).
-  expertUniqueIdentifierHash
+  return disclose(expertUniqueIdentifierHash);
 }
 
 
@@ -197,5 +196,5 @@ export circuit verifyExpertIsRegistered(
 
   // Check if this expert's hash is in the registered set.
   // Simple set membership check — O(1) on Midnight.
-  registeredExpertIdentifierHashes.member(expertIdentifierHashToVerify)
+  return registeredExpertIdentifierHashes.member(disclose(expertIdentifierHashToVerify));
 }

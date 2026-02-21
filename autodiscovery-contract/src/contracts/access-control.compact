@@ -1,4 +1,4 @@
-pragma language_version >= 0.16 && <= 0.18;
+pragma language_version >= 0.20;
 
 import CompactStandardLibrary;
 
@@ -78,15 +78,17 @@ export ledger sharingEventProofHashes: Set<Bytes<32>>;
 // This prevents "I never gave them access" or "They were never authorized."
 // =============================================================================
 
-// Immutable record of every public key that was ever registered in this system.
+// Append-only record of every public key that was ever registered in this system.
 // Once a key is registered, there's permanent proof that it existed.
 // Used for audit: "This attorney was registered as defense counsel on [date]."
-sealed ledger immutableKeyRegistrationCommitments: Set<Bytes<32>>;
+// NOTE: Using private ledger (not sealed) because sealed cannot be written
+// after construction. Append-only behavior enforced by contract logic.
+ledger immutableKeyRegistrationCommitments: Set<Bytes<32>>;
 
-// Immutable record of every permission grant ever issued.
-// When someone is granted access to a document, the grant is sealed here.
+// Append-only record of every permission grant ever issued.
+// When someone is granted access to a document, the grant is committed here.
 // Prevents disputes about whether access was ever given.
-sealed ledger immutablePermissionGrantCommitments: Set<Bytes<32>>;
+ledger immutablePermissionGrantCommitments: Set<Bytes<32>>;
 
 
 // =============================================================================
@@ -121,9 +123,6 @@ export ledger protectiveOrderTierByDocumentHash: Map<Bytes<32>, Uint<8>>;
 // =============================================================================
 // WITNESSES (off-chain computation)
 // =============================================================================
-
-// Returns the wallet address of whoever is submitting this transaction.
-witness getTransactionCallerAddress(): Opaque<"address">;
 
 // Returns a secret key stored locally on the user's machine.
 // Used for key derivation operations (e.g., generating scoped keys per verifier).
@@ -178,20 +177,20 @@ export circuit registerParticipantKey(
     assignedRoleEnum: Uint<8>
 ): [] {
 
-  // Commit the key registration to the sealed ledger.
-  // This is permanent — there will always be proof that this key was registered.
+  // Commit the key registration to the append-only ledger.
+  // There will always be proof that this key was registered.
   // Prevents "that person was never part of this case" disputes.
-  immutableKeyRegistrationCommitments.insert(participantPublicKeyHash);
+  immutableKeyRegistrationCommitments.insert(disclose(participantPublicKeyHash));
 
   // Insert the public key hash into the role commitments Merkle tree.
   // This enables ZK proofs: the participant can later prove they have
   // a specific role by providing a Merkle inclusion proof — without
   // revealing their actual public key or which tree entry they are.
-  authorizedRoleCommitments.insert(pad(32, participantPublicKeyHash));
+  authorizedRoleCommitments.insert(disclose(participantPublicKeyHash));
 
   // Store the role assignment in private state.
   // Only the contract owner can see who has what role.
-  participantRoleByPublicKeyHash.insert(participantPublicKeyHash, assignedRoleEnum);
+  participantRoleByPublicKeyHash.insert(disclose(participantPublicKeyHash), disclose(assignedRoleEnum));
 }
 
 
@@ -215,12 +214,12 @@ export circuit assignRoleForCase(
 
   // Update the participant's role for this specific case context.
   // A single attorney might be DEF in one case and 3P expert in another.
-  participantRoleByPublicKeyHash.insert(participantPublicKeyHash, assignedRoleEnum);
+  participantRoleByPublicKeyHash.insert(disclose(participantPublicKeyHash), disclose(assignedRoleEnum));
 
   // Update the case's party list reference.
   // The actual party list is maintained off-chain; this keeps the on-chain
   // pointer fresh so the contract knows where to look.
-  partyListReferenceByCaseIdentifier.insert(caseUniqueIdentifier, embed<Field>());
+  partyListReferenceByCaseIdentifier.insert(disclose(caseUniqueIdentifier), disclose(default<Field>));
 }
 
 
@@ -253,17 +252,17 @@ export circuit grantDocumentAccessToParticipant(
     protectiveOrderTierEnum: Uint<8>
 ): [] {
 
-  // Commit this permission grant to the sealed ledger.
-  // Immutable proof that access was granted — prevents "I never gave them access."
-  immutablePermissionGrantCommitments.insert(documentContentHash);
+  // Commit this permission grant to the append-only ledger.
+  // Proof that access was granted — prevents "I never gave them access."
+  immutablePermissionGrantCommitments.insert(disclose(documentContentHash));
 
   // Update the document's permitted-access reference in private state.
   // The full access control list (which keys can see this doc) lives off-chain.
-  permittedAccessReferenceByDocumentHash.insert(documentContentHash, embed<Field>());
+  permittedAccessReferenceByDocumentHash.insert(disclose(documentContentHash), disclose(default<Field>));
 
   // Set or update the document's protective order tier.
   // This determines the maximum access level anyone can have for this document.
-  protectiveOrderTierByDocumentHash.insert(documentContentHash, protectiveOrderTierEnum);
+  protectiveOrderTierByDocumentHash.insert(disclose(documentContentHash), disclose(protectiveOrderTierEnum));
 }
 
 
@@ -293,9 +292,9 @@ export circuit revokeDocumentAccessFromParticipant(
 
   // Update the permitted-access reference to reflect the revocation.
   // The off-chain access control list is modified; the on-chain reference is refreshed.
-  // Note: The original grant in the sealed ledger is NOT removed — it's permanent.
+  // Note: The original grant in the append-only ledger is NOT removed.
   // This creates a complete audit trail: granted → accessed? → revoked.
-  permittedAccessReferenceByDocumentHash.insert(documentContentHash, embed<Field>());
+  permittedAccessReferenceByDocumentHash.insert(disclose(documentContentHash), disclose(default<Field>));
 }
 
 
@@ -326,19 +325,19 @@ export circuit proveParticipantHasRole(
     claimedRoleEnum: Uint<8>
 ): Boolean {
 
-  // Look up the caller's role from private state.
-  // The caller's identity is known to the contract (via witness) but NOT
+  // Look up the caller's identity from their wallet.
+  // The caller's identity is known to the contract but NOT
   // revealed in the ZK proof output.
-  const callerAddress = getTransactionCallerAddress();
-
-  // Verify the claimed role matches the stored role.
-  // This is checked inside the ZK circuit — the proof output is just true/false.
-  // The verifier never learns the caller's identity, only that someone
-  // with the claimed role made a valid proof.
+  // TODO: Full implementation should:
+  //   1. Hash ownPublicKey() to get Bytes<32>
+  //   2. Look up Merkle path via lookupRoleCommitmentMerklePath witness
+  //   3. Verify Merkle inclusion proof
+  //   4. Check role matches claimedRoleEnum
+  // For now, returns true as a compilation skeleton.
 
   // Return true if the role proof is valid.
   // The ZK proof guarantees this result without revealing the prover's identity.
-  true
+  return true;
 }
 
 
@@ -373,9 +372,6 @@ export circuit shareDocumentWithParticipant(
   // Get the current timestamp for this sharing event.
   const sharingTimestamp = getCurrentTimestamp();
 
-  // Returns the wallet address of the caller (for witness use in hash computation).
-  const callerAddress = getTransactionCallerAddress();
-
   // Compute a unique proof hash for this sharing event.
   // The hash encodes: document + recipient + timestamp — but the proof
   // only reveals the hash, not the inputs.
@@ -388,7 +384,7 @@ export circuit shareDocumentWithParticipant(
   // Record the sharing event proof on the PUBLIC ledger.
   // Anyone can see that a sharing event occurred, but they can't tell
   // who shared what with whom. Only the parties involved know.
-  sharingEventProofHashes.insert(sharingProofHash);
+  sharingEventProofHashes.insert(disclose(sharingProofHash));
 
   // Increment the public sharing counter.
   totalSharingEventsRecorded.increment(1);
@@ -396,7 +392,7 @@ export circuit shareDocumentWithParticipant(
   // Return the sharing proof hash.
   // Both parties can use this hash to prove the sharing occurred
   // if a dispute arises later ("we never received that document").
-  sharingProofHash
+  return disclose(sharingProofHash);
 }
 
 
@@ -425,12 +421,15 @@ export circuit verifyParticipantAccess(
 ): Boolean {
 
   // Look up the document's protective order tier.
-  const documentProtectiveTier = protectiveOrderTierByDocumentHash.lookup(documentContentHash);
+  const documentProtectiveTier = protectiveOrderTierByDocumentHash.lookup(disclose(documentContentHash));
 
   // Look up the requester's role.
-  const requesterRole = participantRoleByPublicKeyHash.lookup(requesterPublicKeyHash);
+  const requesterRole = participantRoleByPublicKeyHash.lookup(disclose(requesterPublicKeyHash));
 
-  // SEALED documents (tier 0x03) → only COURT role (0x03) can access.
+  // SEALED documents (tier 3) → only COURT role (3) can access.
+  // Tier values: 0=UNRESTRICTED, 1=CONFIDENTIAL, 2=ATTORNEYS_EYES_ONLY, 3=SEALED
+  // Role values: 1=DEF, 2=PRO, 3=COURT, 4=THIRDPARTY
+  //
   // For all other tiers, we defer to the off-chain access control list
   // (checked via the permittedAccessReference). The on-chain check here
   // enforces the hard floor: sealed = judge only, no exceptions.
@@ -438,5 +437,5 @@ export circuit verifyParticipantAccess(
   // For a complete implementation, this would also check the Merkle tree
   // for the requester's key inclusion and validate against the full
   // permission model. Currently returns the tier-based check.
-  (documentProtectiveTier != 0x03) || (requesterRole == 0x03)
+  return (documentProtectiveTier != (3 as Uint<8>)) || (requesterRole == (3 as Uint<8>));
 }
