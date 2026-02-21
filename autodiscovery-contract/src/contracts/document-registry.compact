@@ -1,4 +1,4 @@
-pragma language_version >= 0.16 && <= 0.18;
+pragma language_version >= 0.20;
 
 import CompactStandardLibrary;
 
@@ -80,7 +80,7 @@ export ledger latestCaseRootHashByCaseIdentifier: Map<Bytes<32>, Bytes<32>>;
 
 // Records when each case root was last anchored on-chain.
 // Used for audit trail: "As of [timestamp], this was the state of discovery."
-export ledger caseRootAnchorTimestampByCaseIdentifier: Map<Bytes<32>, Field>;
+export ledger caseRootAnchorTimestampByCaseIdentifier: Map<Bytes<32>, Uint<64>>;
 
 // Total number of individual documents registered across all cases.
 // Each document gets registered exactly once (content-addressable by its hash).
@@ -88,28 +88,30 @@ export ledger totalDocumentsRegistered: Counter;
 
 
 // =============================================================================
-// SEALED STATE (sealed ledger)
+// APPEND-ONLY STATE (export ledger)
 // =============================================================================
-// Write-once, immutable forever. Once a hash is committed here, it CANNOT be
-// modified, removed, or overwritten — not even by the contract owner.
-// This is the mathematical foundation for proving "this document existed at
-// this time and has not been altered since."
+// These use append-only data structures (MerkleTree, Set) that only support
+// insert operations — once committed, entries cannot be modified or removed.
+// This provides the immutability guarantee: "this document existed at this
+// time and has not been altered since."
 //
-// MerkleTree<20, Bytes<32>> is a native Compact type that holds up to
-// 2^20 (~1,048,576) hash entries. If a case exceeds this, we would need
-// to split across multiple trees (see Open Questions in architecture docs).
+// NOTE: We use export ledger (not sealed ledger) because sealed ledger can
+// only be written in the constructor. The append-only nature of MerkleTree
+// and Set provides equivalent immutability guarantees.
+//
+// MerkleTree<20, Bytes<32>> holds up to 2^20 (~1,048,576) hash entries.
 // =============================================================================
 
-// Immutable store of every document hash ever committed to this case.
+// Append-only store of every document hash ever committed to this case.
 // Once inserted, a hash lives here forever — this IS the proof of existence.
 // Supports Merkle inclusion proofs: "prove document X is in this tree"
 // without revealing any other documents in the tree.
-sealed ledger immutableDocumentHashCommitments: MerkleTree<20, Bytes<32>>;
+export ledger immutableDocumentHashCommitments: MerkleTree<20, Bytes<32>>;
 
-// Immutable store of production root + timestamp pairs.
+// Append-only store of production root hashes (true = committed).
 // When a production is finalized, its root hash is permanently committed.
 // Prevents retroactive modification of what was produced and when.
-sealed ledger immutableProductionCommitments: Set<Bytes<32>>;
+export ledger immutableProductionCommitments: Set<Bytes<32>>;
 
 
 // =============================================================================
@@ -126,7 +128,7 @@ sealed ledger immutableProductionCommitments: Set<Bytes<32>>;
 // Maps each document's content hash to a reference for its full metadata.
 // The metadata itself (originator, date, format, Bates number, etc.) lives
 // off-chain in the user's local database. This reference points to it.
-export ledger documentMetadataReferenceByDocumentHash: Map<Bytes<32>, Field>;
+ledger documentMetadataReferenceByDocumentHash: Map<Bytes<32>, Field>;
 
 // Maps each document hash to one of the 24 Universal Discovery Categories:
 //   1=Pleadings, 2=Interrogatories, 3=RFP, 4=RFA, 5=Depositions,
@@ -136,13 +138,13 @@ export ledger documentMetadataReferenceByDocumentHash: Map<Bytes<32>, Field>;
 //   16=Privilege Logs, 17=Protective Orders, 18=Disclosure Statements,
 //   19=Court Transcripts, 20=Court Orders, 21=Jury Selection,
 //   22=Jury Instructions, 23=Jury Notes, 24=Verdict Forms
-export ledger documentCategoryByDocumentHash: Map<Bytes<32>, Uint<8>>;
+ledger documentCategoryByDocumentHash: Map<Bytes<32>, Uint<8>>;
 
 // Maps each document hash to the public key of the party who originated it.
 // "Originator" = who created or first possessed the document.
 // This is the anchor point — every document enters the discovery universe
 // at a single moment from a single source.
-export ledger documentOriginatorPublicKeyByDocumentHash: Map<Bytes<32>, Bytes<32>>;
+ledger documentOriginatorPublicKeyByDocumentHash: Map<Bytes<32>, Bytes<32>>;
 
 // ---- TWIN PROTOCOL BONDS ----
 
@@ -150,7 +152,7 @@ export ledger documentOriginatorPublicKeyByDocumentHash: Map<Bytes<32>, Bytes<32
 // The image twin is the scan/photo; the digital twin is the OCR'd text.
 // These two are permanently bonded — they must travel together in production.
 // If either twin is tampered with, the bond breaks (bond hash won't match).
-export ledger digitalTwinHashByImageTwinHash: Map<Bytes<32>, Bytes<32>>;
+ledger digitalTwinHashByImageTwinHash: Map<Bytes<32>, Bytes<32>>;
 
 // Maps each twin bond hash to its fidelity score (0-100).
 // Fidelity = how faithfully the digital twin represents the image twin.
@@ -160,7 +162,7 @@ export ledger digitalTwinHashByImageTwinHash: Map<Bytes<32>, Bytes<32>>;
 //   70-89  = Moderate (some misreads — human review recommended)
 //   Below 70 = Poor (handwriting, damage, or bad scan — manual transcription needed)
 // This score is IMMUTABLE once set. If digital is corrected, a NEW bond is created.
-export ledger twinBondFidelityScoreByBondHash: Map<Bytes<32>, Uint<8>>;
+ledger twinBondFidelityScoreByBondHash: Map<Bytes<32>, Uint<8>>;
 
 // ---- CHAIN OF CUSTODY ----
 
@@ -168,7 +170,7 @@ export ledger twinBondFidelityScoreByBondHash: Map<Bytes<32>, Uint<8>>;
 // Every time a document moves between parties (DEF→PRO, PRO→COURT, etc.),
 // a new transfer record is created. This points to the most recent one.
 // The full transfer history is maintained off-chain, linked by references.
-export ledger latestCustodyTransferReferenceByDocumentHash: Map<Bytes<32>, Field>;
+ledger latestCustodyTransferReferenceByDocumentHash: Map<Bytes<32>, Field>;
 
 // ---- PRODUCTION TRACKING ----
 
@@ -176,7 +178,7 @@ export ledger latestCustodyTransferReferenceByDocumentHash: Map<Bytes<32>, Field
 // A production is a formal submission (e.g., "DEF's Response to RFP #3")
 // containing potentially hundreds or thousands of documents.
 // The actual document list lives off-chain; this is the on-chain anchor.
-export ledger documentListReferenceByProductionIdentifier: Map<Bytes<32>, Field>;
+ledger documentListReferenceByProductionIdentifier: Map<Bytes<32>, Field>;
 
 
 // =============================================================================
@@ -187,10 +189,6 @@ export ledger documentListReferenceByProductionIdentifier: Map<Bytes<32>, Field>
 // on-chain. The blockchain only sees the RESULT of the computation, not the
 // inputs themselves.
 // =============================================================================
-
-// Returns the wallet address of whoever is submitting this transaction.
-// Used for ownership checks — only the case owner can register documents.
-witness getTransactionCallerAddress(): Opaque<"address">;
 
 // Computes SHA-256 of the document's raw byte content.
 // This happens entirely on the user's machine — the actual file content
@@ -210,7 +208,7 @@ witness buildMerkleRootFromDocumentHashes(documentHashCollection: Field): Bytes<
 
 // Returns the current timestamp from the user's system clock.
 // Used for anchoring "when" events happened (document registration, transfers, etc.).
-witness getCurrentTimestamp(): Field;
+witness getCurrentTimestamp(): Uint<64>;
 
 
 // =============================================================================
@@ -253,17 +251,17 @@ export circuit registerDocument(
   // After this line executes, this hash exists FOREVER in the sealed state.
   // It cannot be modified, removed, or overwritten — not even by the owner.
   // This IS the mathematical proof of "this document existed at this time."
-  immutableDocumentHashCommitments.insert(pad(32, documentContentHash));
+  immutableDocumentHashCommitments.insert(disclose(documentContentHash));
 
   // Store the document's category in private state.
   // Category is one of 24 universal types (Pleadings, Depositions, etc.).
   // This metadata is only visible to the contract owner — not on public chain.
-  documentCategoryByDocumentHash.insert(documentContentHash, documentCategoryNumber);
+  documentCategoryByDocumentHash.insert(disclose(documentContentHash), disclose(documentCategoryNumber));
 
   // Store who originated this document (their public key) in private state.
   // Originator tracking is critical for chain-of-custody: every document
   // enters the discovery universe from a single source at a single moment.
-  documentOriginatorPublicKeyByDocumentHash.insert(documentContentHash, originatorPublicKey);
+  documentOriginatorPublicKeyByDocumentHash.insert(disclose(documentContentHash), disclose(originatorPublicKey));
 
   // Increment the public document counter.
   // This proves to the network that a document was registered, without
@@ -272,7 +270,7 @@ export circuit registerDocument(
 
   // Return the hash so the caller can reference this document in future operations
   // (twin bonds, transfers, productions, etc.)
-  documentContentHash
+  return disclose(documentContentHash);
 }
 
 
@@ -312,16 +310,16 @@ export circuit registerTwinBond(
 
   // Store the image→digital mapping in private state.
   // Given an image hash, you can always look up its digital counterpart.
-  digitalTwinHashByImageTwinHash.insert(imageTwinContentHash, digitalTwinContentHash);
+  digitalTwinHashByImageTwinHash.insert(disclose(imageTwinContentHash), disclose(digitalTwinContentHash));
 
   // Store the fidelity score for this bond.
   // This score is IMMUTABLE once set. If the digital twin is later corrected
   // (e.g., better OCR), a NEW bond must be created with a new fidelity score.
   // The original bond is preserved in history (we never delete, only append).
-  twinBondFidelityScoreByBondHash.insert(twinBondHash, ocrFidelityScorePercent);
+  twinBondFidelityScoreByBondHash.insert(disclose(twinBondHash), disclose(ocrFidelityScorePercent));
 
   // Return the bond hash — this becomes the document's identity in the Merkle tree.
-  twinBondHash
+  return disclose(twinBondHash);
 }
 
 
@@ -360,7 +358,7 @@ export circuit recordCustodyTransfer(
   // This overwrites the previous "latest transfer" pointer for this document.
   // The full transfer history chain is maintained off-chain in the user's
   // local database — each transfer record points to the previous one.
-  latestCustodyTransferReferenceByDocumentHash.insert(documentContentHash, transferTimestamp);
+  latestCustodyTransferReferenceByDocumentHash.insert(disclose(documentContentHash), disclose(transferTimestamp));
 }
 
 
@@ -394,19 +392,19 @@ export circuit anchorProductionMerkleRoot(
   // This is visible to everyone — anyone can verify a document belongs to
   // this production by providing a Merkle proof path from the document's
   // hash up to this root.
-  productionMerkleRootByIdentifier.insert(productionUniqueIdentifier, productionMerkleRootHash);
+  productionMerkleRootByIdentifier.insert(disclose(productionUniqueIdentifier), disclose(productionMerkleRootHash));
 
   // Commit the production root to the SEALED (immutable) ledger.
   // Once committed, this production's root can never be changed.
   // This prevents retroactive modification: "we actually produced different documents."
-  immutableProductionCommitments.insert(productionMerkleRootHash);
+  immutableProductionCommitments.insert(disclose(productionMerkleRootHash));
 
   // Increment the public production counter.
   totalProductionsCreated.increment(1);
 
   // Store a reference to the off-chain document list for this production.
   // The actual list of which documents are in this production lives off-chain.
-  documentListReferenceByProductionIdentifier.insert(productionUniqueIdentifier, embed<Field>());
+  documentListReferenceByProductionIdentifier.insert(disclose(productionUniqueIdentifier), disclose(default<Field>));
 }
 
 
@@ -441,11 +439,11 @@ export circuit anchorCaseRootSnapshot(
   // Store the case root hash on the PUBLIC ledger.
   // This is THE single hash that represents the entire discovery universe
   // for this case at this moment in time.
-  latestCaseRootHashByCaseIdentifier.insert(caseUniqueIdentifier, caseRootMerkleHash);
+  latestCaseRootHashByCaseIdentifier.insert(disclose(caseUniqueIdentifier), disclose(caseRootMerkleHash));
 
   // Record when this snapshot was taken.
   // Creates an audit trail: "Case root was [hash] as of [timestamp]."
-  caseRootAnchorTimestampByCaseIdentifier.insert(caseUniqueIdentifier, snapshotTimestamp);
+  caseRootAnchorTimestampByCaseIdentifier.insert(disclose(caseUniqueIdentifier), disclose(snapshotTimestamp));
 }
 
 
@@ -481,15 +479,15 @@ export circuit verifyDocumentExistsInProduction(
 ): Boolean {
 
   // Look up the stored Merkle root for this production.
-  const storedProductionRoot = productionMerkleRootByIdentifier.lookup(productionUniqueIdentifier);
+  const storedProductionRoot = productionMerkleRootByIdentifier.lookup(disclose(productionUniqueIdentifier));
 
   // Compute what the root SHOULD be given this document and its proof path.
   // This is done off-chain by the witness, which walks the Merkle tree.
-  const computedRootFromProofPath = buildMerkleRootFromDocumentHashes(embed<Field>());
+  const computedRootFromProofPath = buildMerkleRootFromDocumentHashes(disclose(documentContentHash) as Field);
 
   // If the computed root matches the stored root, the document is verified
   // as a member of this production. Mathematically irrefutable.
-  storedProductionRoot == computedRootFromProofPath
+  return disclose(storedProductionRoot == computedRootFromProofPath);
 }
 
 
@@ -526,5 +524,5 @@ export circuit verifyTwinBondIntegrity(
 
   // If the recomputed hash matches the expected hash, both twins are intact.
   // If they don't match, at least one twin has been modified since bonding.
-  expectedTwinBondHash == recomputedBondHash
+  return disclose(expectedTwinBondHash == recomputedBondHash);
 }

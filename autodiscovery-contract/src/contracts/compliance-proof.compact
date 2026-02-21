@@ -1,4 +1,4 @@
-pragma language_version >= 0.16 && <= 0.18;
+pragma language_version >= 0.20;
 
 import CompactStandardLibrary;
 
@@ -75,7 +75,7 @@ export ledger registeredAttestationHashes: Set<Bytes<32>>;
 //   "Attestation [hash] was generated at [timestamp]."
 //   "The deadline was [date]. The attestation was created BEFORE the deadline."
 // Immutable once set — timestamps can't be retroactively changed.
-export ledger attestationGeneratedTimestampByHash: Map<Bytes<32>, Field>;
+export ledger attestationGeneratedTimestampByHash: Map<Bytes<32>, Uint<64>>;
 
 // Maps each attestation hash to its scope level.
 // Scope tells you WHAT kind of compliance is being attested:
@@ -109,13 +109,10 @@ ledger attestationMetadataReferenceByHash: Map<Bytes<32>, Field>;
 // WITNESSES (off-chain computation)
 // =============================================================================
 
-// Returns the wallet address of whoever is submitting this transaction.
-witness getTransactionCallerAddress(): Opaque<"address">;
-
 // Returns the current timestamp from the user's system clock.
 // Used for recording when attestations were generated.
 // This timestamp becomes part of the attestation hash and is stored publicly.
-witness getCurrentTimestamp(): Field;
+witness getCurrentTimestamp(): Uint<64>;
 
 // Computes a unique hash for a compliance attestation.
 // Inputs: case identifier + step/phase hash + timestamp.
@@ -124,7 +121,7 @@ witness getCurrentTimestamp(): Field;
 witness computeUniqueAttestationHash(
     caseIdentifier: Field,
     stepOrPhaseHash: Field,
-    attestationTimestamp: Field
+    attestationTimestamp: Uint<64>
 ): Bytes<32>;
 
 
@@ -168,7 +165,7 @@ witness computeUniqueAttestationHash(
 export circuit attestStepLevelCompliance(
     caseUniqueIdentifier: Field,
     stepUniqueHash: Field,
-    stepDeadlineTimestamp: Field
+    stepDeadlineTimestamp: Uint<64>
 ): Bytes<32> {
 
   // Get the current timestamp — this is when the attestation is being generated.
@@ -179,8 +176,8 @@ export circuit attestStepLevelCompliance(
   // If this fails, the entire transaction reverts — no attestation is created.
   // This is the mathematical guarantee: you CANNOT generate a compliance proof
   // for a step that was completed after its deadline.
-  assert attestationTimestamp <= stepDeadlineTimestamp
-      "Step was not completed before its deadline — cannot attest compliance";
+  assert(attestationTimestamp <= stepDeadlineTimestamp,
+      "Step was not completed before its deadline — cannot attest compliance");
 
   // Compute a unique hash for this attestation.
   // The hash encodes: case + step + timestamp — but only the hash is public.
@@ -194,23 +191,23 @@ export circuit attestStepLevelCompliance(
   // After this, anyone can verify "a compliance attestation exists."
 
   // Add to the master attestation registry.
-  registeredAttestationHashes.insert(attestationUniqueHash);
+  registeredAttestationHashes.insert(disclose(attestationUniqueHash));
 
   // Record when this attestation was generated.
-  attestationGeneratedTimestampByHash.insert(attestationUniqueHash, attestationTimestamp);
+  attestationGeneratedTimestampByHash.insert(disclose(attestationUniqueHash), disclose(attestationTimestamp));
 
-  // Record the scope level as STEP_LEVEL (0x00).
-  attestationScopeLevelByHash.insert(attestationUniqueHash, 0);
+  // Record the scope level as STEP_LEVEL (0).
+  attestationScopeLevelByHash.insert(disclose(attestationUniqueHash), disclose(0 as Uint<8>));
 
   // Increment the global attestation counter.
   totalAttestationsGenerated.increment(1);
 
   // Store the case reference in PRIVATE state.
   // This is only revealed later via selective disclosure if needed.
-  associatedCaseIdentifierByAttestationHash.insert(attestationUniqueHash, caseUniqueIdentifier);
+  associatedCaseIdentifierByAttestationHash.insert(disclose(attestationUniqueHash), disclose(caseUniqueIdentifier));
 
   // Return the attestation hash — the caller's proof of compliance.
-  attestationUniqueHash
+  return disclose(attestationUniqueHash);
 }
 
 
@@ -252,31 +249,32 @@ export circuit attestPhaseLevelCompliance(
 
   // THE ZK ASSERTION: Are ALL steps in this phase completed?
   // If even one step is incomplete, this fails — no partial-phase attestations.
-  assert completedStepsInPhase == totalStepsInPhase
-      "Not all steps in this discovery phase have been completed";
+  assert(completedStepsInPhase == totalStepsInPhase,
+      "Not all steps in this discovery phase have been completed");
 
   // Compute a unique hash for this phase-level attestation.
+  const phaseHashAsField = discoveryPhaseIdentifier as Field;
   const attestationUniqueHash = computeUniqueAttestationHash(
       caseUniqueIdentifier,
-      embed<Field>(),
+      phaseHashAsField,
       attestationTimestamp
   );
 
   // Register the attestation on the PUBLIC ledger.
-  registeredAttestationHashes.insert(attestationUniqueHash);
-  attestationGeneratedTimestampByHash.insert(attestationUniqueHash, attestationTimestamp);
+  registeredAttestationHashes.insert(disclose(attestationUniqueHash));
+  attestationGeneratedTimestampByHash.insert(disclose(attestationUniqueHash), disclose(attestationTimestamp));
 
-  // Record the scope level as PHASE_LEVEL (0x01).
-  attestationScopeLevelByHash.insert(attestationUniqueHash, 1);
+  // Record the scope level as PHASE_LEVEL (1).
+  attestationScopeLevelByHash.insert(disclose(attestationUniqueHash), disclose(1 as Uint<8>));
 
   // Increment the global attestation counter.
   totalAttestationsGenerated.increment(1);
 
   // Store the case reference privately.
-  associatedCaseIdentifierByAttestationHash.insert(attestationUniqueHash, caseUniqueIdentifier);
+  associatedCaseIdentifierByAttestationHash.insert(disclose(attestationUniqueHash), disclose(caseUniqueIdentifier));
 
   // Return the phase-level attestation hash.
-  attestationUniqueHash
+  return disclose(attestationUniqueHash);
 }
 
 
@@ -303,27 +301,28 @@ export circuit attestCaseLevelCompliance(
   const attestationTimestamp = getCurrentTimestamp();
 
   // Compute a unique hash for this case-level attestation.
+  // Use default<Field> as placeholder for step/phase hash at case level.
   const attestationUniqueHash = computeUniqueAttestationHash(
       caseUniqueIdentifier,
-      embed<Field>(),
+      default<Field>,
       attestationTimestamp
   );
 
   // Register the attestation on the PUBLIC ledger.
-  registeredAttestationHashes.insert(attestationUniqueHash);
-  attestationGeneratedTimestampByHash.insert(attestationUniqueHash, attestationTimestamp);
+  registeredAttestationHashes.insert(disclose(attestationUniqueHash));
+  attestationGeneratedTimestampByHash.insert(disclose(attestationUniqueHash), disclose(attestationTimestamp));
 
-  // Record the scope level as CASE_LEVEL (0x02).
-  attestationScopeLevelByHash.insert(attestationUniqueHash, 2);
+  // Record the scope level as CASE_LEVEL (2).
+  attestationScopeLevelByHash.insert(disclose(attestationUniqueHash), disclose(2 as Uint<8>));
 
   // Increment the global attestation counter.
   totalAttestationsGenerated.increment(1);
 
   // Store the case reference privately.
-  associatedCaseIdentifierByAttestationHash.insert(attestationUniqueHash, caseUniqueIdentifier);
+  associatedCaseIdentifierByAttestationHash.insert(disclose(attestationUniqueHash), disclose(caseUniqueIdentifier));
 
   // Return the case-level attestation hash — the ultimate compliance proof.
-  attestationUniqueHash
+  return disclose(attestationUniqueHash);
 }
 
 
@@ -351,7 +350,7 @@ export circuit verifyAttestationExists(
 
   // Check if this hash is a member of the master attestation registry.
   // This is a simple set membership check — O(1) on Midnight.
-  registeredAttestationHashes.member(attestationHashToVerify)
+  return registeredAttestationHashes.member(disclose(attestationHashToVerify));
 }
 
 
@@ -384,12 +383,12 @@ export circuit revealAttestationCaseIdentifier(
 
   // Verify the attestation actually exists before revealing anything.
   // Can't disclose information about a non-existent attestation.
-  assert registeredAttestationHashes.member(attestationHashToReveal)
-      "Cannot reveal details — this attestation does not exist in the registry";
+  assert(registeredAttestationHashes.member(disclose(attestationHashToReveal)),
+      "Cannot reveal details — this attestation does not exist in the registry");
 
   // Look up the case identifier from PRIVATE state.
   const associatedCaseIdentifier = associatedCaseIdentifierByAttestationHash.lookup(
-      attestationHashToReveal
+      disclose(attestationHashToReveal)
   );
 
   // Selectively disclose the case identifier.
@@ -397,5 +396,5 @@ export circuit revealAttestationCaseIdentifier(
   // while keeping everything else (step details, deadlines, etc.) private.
   // The court sees: "Attestation [hash] belongs to case [id]."
   // The court does NOT see: which steps, what deadlines, what documents.
-  disclose(associatedCaseIdentifier)
+  return disclose(associatedCaseIdentifier);
 }

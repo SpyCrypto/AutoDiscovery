@@ -1,0 +1,167 @@
+{
+  "compiler-version": "0.29.0",
+  "language-version": "0.21.0",
+  "runtime-version": "0.14.0",
+  "circuits": [
+    {
+      "name": "attestStepLevelCompliance",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "caseUniqueIdentifier",
+          "type": {
+            "type-name": "Field"
+          }
+        },
+        {
+          "name": "stepUniqueHash",
+          "type": {
+            "type-name": "Field"
+          }
+        },
+        {
+          "name": "stepDeadlineTimestamp",
+          "type": {
+            "type-name": "Uint",
+            "maxval": 18446744073709551615
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "attestPhaseLevelCompliance",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "caseUniqueIdentifier",
+          "type": {
+            "type-name": "Field"
+          }
+        },
+        {
+          "name": "discoveryPhaseIdentifier",
+          "type": {
+            "type-name": "Uint",
+            "maxval": 255
+          }
+        },
+        {
+          "name": "totalStepsInPhase",
+          "type": {
+            "type-name": "Uint",
+            "maxval": 65535
+          }
+        },
+        {
+          "name": "completedStepsInPhase",
+          "type": {
+            "type-name": "Uint",
+            "maxval": 65535
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "attestCaseLevelCompliance",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "caseUniqueIdentifier",
+          "type": {
+            "type-name": "Field"
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "verifyAttestationExists",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "attestationHashToVerify",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Boolean"
+      }
+    },
+    {
+      "name": "revealAttestationCaseIdentifier",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "attestationHashToReveal",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Field"
+      }
+    }
+  ],
+  "witnesses": [
+    {
+      "name": "getCurrentTimestamp",
+      "arguments": [
+      ],
+      "result type": {
+        "type-name": "Uint",
+        "maxval": 18446744073709551615
+      }
+    },
+    {
+      "name": "computeUniqueAttestationHash",
+      "arguments": [
+        {
+          "name": "caseIdentifier",
+          "type": {
+            "type-name": "Field"
+          }
+        },
+        {
+          "name": "stepOrPhaseHash",
+          "type": {
+            "type-name": "Field"
+          }
+        },
+        {
+          "name": "attestationTimestamp",
+          "type": {
+            "type-name": "Uint",
+            "maxval": 18446744073709551615
+          }
+        }
+      ],
+      "result type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    }
+  ],
+  "contracts": [
+  ]
+}
