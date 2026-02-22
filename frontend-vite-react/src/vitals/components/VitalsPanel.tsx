@@ -136,11 +136,12 @@ export function VitalsPanel() {
         </div>
       </div>
 
-      {/* Combined content area: floating cards + wrapping CLI output */}
+      {/* Monitor bar — slim horizontal strip across the top */}
+      <VitalsMonitorBar />
+
+      {/* Console log (scrollable, newest on top) */}
       <div className="flex-1 min-h-0 relative">
-        <VitalsConsole
-          floatingHeader={<VitalsMonitorBar />}
-        />
+        <VitalsConsole />
       </div>
     </div>
   );

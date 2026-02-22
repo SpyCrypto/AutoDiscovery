@@ -6,7 +6,7 @@
 // detail and suggestion paragraphs for errors.
 // =============================================================================
 
-import { useRef, useEffect, useState, type ReactNode } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Trash2, Copy, ChevronUp, Filter, Lightbulb } from 'lucide-react';
 import { useVitals } from '../context';
 import type { LogLevel, VitalsLogEntry } from '../types';
@@ -106,7 +106,7 @@ function LogEntry({ entry }: { entry: VitalsLogEntry }) {
 // Console Component
 // ---------------------------------------------------------------------------
 
-export function VitalsConsole({ floatingHeader }: { floatingHeader?: ReactNode }) {
+export function VitalsConsole() {
   const { state, dispatch } = useVitals();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
@@ -216,19 +216,12 @@ export function VitalsConsole({ floatingHeader }: { floatingHeader?: ReactNode }
         </div>
       </div>
 
-      {/* Scrollable content: floating diagnostic cards + CLI entries wrapping around them */}
+      {/* Scrollable log entries — newest on top */}
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
         className="flex-1 overflow-y-auto px-3 py-2 ad-scrollbar"
       >
-        {/* Diagnostic cards float left — CLI entries wrap around them */}
-        {floatingHeader && (
-          <div className="float-left mr-3 mb-2">
-            {floatingHeader}
-          </div>
-        )}
-
         {reversedEntries.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <p className="text-xs text-zinc-600">
