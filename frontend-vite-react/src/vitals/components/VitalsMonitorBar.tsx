@@ -13,7 +13,7 @@ export function VitalsMonitorBar() {
   const { state, refreshVital } = useVitals();
 
   return (
-    <div className="flex items-stretch gap-2 px-3 py-2.5 border-b border-zinc-800/80 overflow-x-auto">
+    <div className="grid grid-cols-2 gap-2 p-1">
       {state.monitors.map((monitor) => (
         <VitalsTimeWheel
           key={monitor.id}

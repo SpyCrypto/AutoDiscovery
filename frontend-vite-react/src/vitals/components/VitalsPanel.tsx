@@ -6,8 +6,8 @@
 // main content area.
 // =============================================================================
 
-import { useRef, useCallback, useEffect, useState } from 'react';
-import { Activity, Stethoscope, ArrowDown } from 'lucide-react';
+import { useRef, useCallback, useEffect } from 'react';
+import { Activity, Stethoscope } from 'lucide-react';
 import { useVitals } from '../context';
 import { VitalsMonitorBar } from './VitalsMonitorBar';
 import { VitalsConsole } from './VitalsConsole';
@@ -31,15 +31,6 @@ export function VitalsPanel() {
   const isDraggingRef = useRef(false);
   const startYRef = useRef(0);
   const startHeightRef = useRef(0);
-
-  // Show a "scroll down for CLI" hint until user dismisses it
-  const [showScrollHint, setShowScrollHint] = useState(
-    () => localStorage.getItem('midnight-vitals-scroll-hint-dismissed') !== 'true'
-  );
-  const dismissScrollHint = () => {
-    setShowScrollHint(false);
-    localStorage.setItem('midnight-vitals-scroll-hint-dismissed', 'true');
-  };
 
   // -----------------------------------------------------------------------
   // Drag-to-resize logic
@@ -145,26 +136,11 @@ export function VitalsPanel() {
         </div>
       </div>
 
-      {/* Monitor bar (time wheels) */}
-      <VitalsMonitorBar />
-
-      {/* Scroll-down hint arrow — shows users the CLI output is below */}
-      {showScrollHint && (
-        <button
-          onClick={dismissScrollHint}
-          className="flex items-center justify-center gap-2 py-2 bg-emerald-500/10 border-y border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/15 transition-colors shrink-0 group cursor-pointer"
-        >
-          <ArrowDown className="w-5 h-5 animate-bounce" />
-          <span className="text-xs font-bold uppercase tracking-wider">
-            Scroll down for live CLI output
-          </span>
-          <ArrowDown className="w-5 h-5 animate-bounce" />
-        </button>
-      )}
-
-      {/* Console log (scrollable) */}
+      {/* Combined content area: floating cards + wrapping CLI output */}
       <div className="flex-1 min-h-0 relative">
-        <VitalsConsole />
+        <VitalsConsole
+          floatingHeader={<VitalsMonitorBar />}
+        />
       </div>
     </div>
   );

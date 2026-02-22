@@ -6,8 +6,8 @@
 // detail and suggestion paragraphs for errors.
 // =============================================================================
 
-import { useRef, useEffect, useState } from 'react';
-import { Trash2, Copy, ChevronDown, Filter, Lightbulb } from 'lucide-react';
+import { useRef, useEffect, useState, type ReactNode } from 'react';
+import { Trash2, Copy, ChevronUp, Filter, Lightbulb } from 'lucide-react';
 import { useVitals } from '../context';
 import type { LogLevel, VitalsLogEntry } from '../types';
 
@@ -106,7 +106,7 @@ function LogEntry({ entry }: { entry: VitalsLogEntry }) {
 // Console Component
 // ---------------------------------------------------------------------------
 
-export function VitalsConsole() {
+export function VitalsConsole({ floatingHeader }: { floatingHeader?: ReactNode }) {
   const { state, dispatch } = useVitals();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
@@ -117,26 +117,28 @@ export function VitalsConsole() {
     ? state.logEntries
     : state.logEntries.filter((e) => e.level === state.logFilter);
 
-  // Auto-scroll to bottom when new entries arrive (if auto-scroll is enabled)
+  // Reversed: newest entries first
+  const reversedEntries = [...filteredEntries].reverse();
+
+  // Auto-scroll to top when new entries arrive (newest is on top now)
   useEffect(() => {
     if (autoScroll && scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+      scrollContainerRef.current.scrollTop = 0;
     }
   }, [filteredEntries.length, autoScroll]);
 
-  // Detect manual scroll (user scrolled up → pause auto-scroll)
+  // Detect manual scroll — if user scrolled away from top, pause auto-scroll
   const handleScroll = () => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    // If user is within 50px of bottom, re-enable auto-scroll
-    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 50;
-    setAutoScroll(isNearBottom);
+    const isNearTop = container.scrollTop < 50;
+    setAutoScroll(isNearTop);
   };
 
   // Copy all log entries to clipboard as plain text
   const handleCopyLogs = () => {
-    const text = filteredEntries
+    const text = reversedEntries
       .map((e) => {
         let line = `[${formatTime(e.timestamp)}] ${e.message}`;
         if (e.detail) line += `\n  ${e.detail}`;
@@ -214,22 +216,31 @@ export function VitalsConsole() {
         </div>
       </div>
 
-      {/* Scrollable log entries */}
+      {/* Scrollable content: floating diagnostic cards + CLI entries wrapping around them */}
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-3 py-2 space-y-1 ad-scrollbar"
+        className="flex-1 overflow-y-auto px-3 py-2 ad-scrollbar"
       >
-        {filteredEntries.length === 0 ? (
+        {/* Diagnostic cards float left — CLI entries wrap around them */}
+        {floatingHeader && (
+          <div className="float-left mr-3 mb-2">
+            {floatingHeader}
+          </div>
+        )}
+
+        {reversedEntries.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <p className="text-xs text-zinc-600">
               No log entries yet. Interact with the app to see activity here.
             </p>
           </div>
         ) : (
-          filteredEntries.map((entry) => (
-            <LogEntry key={entry.id} entry={entry} />
-          ))
+          <div className="space-y-1">
+            {reversedEntries.map((entry) => (
+              <LogEntry key={entry.id} entry={entry} />
+            ))}
+          </div>
         )}
       </div>
 
@@ -239,12 +250,12 @@ export function VitalsConsole() {
           onClick={() => {
             setAutoScroll(true);
             if (scrollContainerRef.current) {
-              scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+              scrollContainerRef.current.scrollTop = 0;
             }
           }}
-          className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 text-[10px] text-zinc-300 bg-zinc-800 border border-zinc-700 px-3 py-1.5 rounded-full shadow-lg hover:bg-zinc-700 transition-colors"
+          className="absolute top-12 left-1/2 -translate-x-1/2 flex items-center gap-1 text-[10px] text-zinc-300 bg-zinc-800 border border-zinc-700 px-3 py-1.5 rounded-full shadow-lg hover:bg-zinc-700 transition-colors"
         >
-          <ChevronDown className="w-3 h-3" />
+          <ChevronUp className="w-3 h-3" />
           Jump to latest
         </button>
       )}
