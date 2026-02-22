@@ -41,6 +41,7 @@ interface VitalsTimeWheelProps {
   lastCheckTimestamp: number | null;
   checkIntervalSeconds: number;
   onRefresh: () => void;              // Called when user clicks the refresh button
+  compact?: boolean;                  // If true, render as a compact vertical card for sidebar layout
 }
 
 
@@ -55,6 +56,7 @@ export function VitalsTimeWheel({
   lastCheckTimestamp,
   checkIntervalSeconds,
   onRefresh,
+  compact = false,
 }: VitalsTimeWheelProps) {
 
   // Track seconds elapsed since last check for the countdown display
@@ -95,24 +97,62 @@ export function VitalsTimeWheel({
 
   const colors = STATUS_COLORS[status];
 
-  // Compact SVG ring — smaller for inline layout
-  const compactRadius = 10;
-  const compactCircumference = 2 * Math.PI * compactRadius;
-  const compactOffset = compactCircumference * (1 - progress);
+  // SVG ring dimensions — smaller for inline, slightly larger for sidebar cards
+  const ringRadius = compact ? 12 : 10;
+  const ringSize = compact ? 32 : 28;
+  const ringCircumference = 2 * Math.PI * ringRadius;
+  const ringOffset = ringCircumference * (1 - progress);
 
+  // ── Compact / sidebar layout: stacked mini card ──
+  if (compact) {
+    return (
+      <div className="flex items-center gap-2 px-2 py-1.5 bg-zinc-900/80 border border-zinc-800 rounded-lg hover:bg-zinc-800/80 transition-colors">
+        <div className={`relative shrink-0`} style={{ width: ringSize, height: ringSize }}>
+          <svg className="-rotate-90" width={ringSize} height={ringSize} viewBox={`0 0 ${ringSize} ${ringSize}`}>
+            <circle cx={ringSize/2} cy={ringSize/2} r={ringRadius} fill="none" strokeWidth="2.5" className="stroke-zinc-800" />
+            <circle cx={ringSize/2} cy={ringSize/2} r={ringRadius} fill="none" strokeWidth="2.5"
+              className={`${colors.stroke} transition-all duration-1000 ease-linear`}
+              strokeDasharray={ringCircumference} strokeDashoffset={ringOffset} strokeLinecap="round"
+            />
+          </svg>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className={`font-mono text-[8px] font-bold ${colors.text}`}>
+              {lastCheckTimestamp ? `${secondsRemaining}` : '--'}
+            </span>
+          </div>
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-semibold text-zinc-300 truncate">{label}</span>
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.dot} ${status === 'critical' ? 'animate-pulse' : ''}`} />
+          </div>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className={`text-[9px] font-medium ${colors.text}`}>{STATUS_LABELS[status]}</span>
+            <span className="text-[9px] text-zinc-500 truncate">{detailLine}</span>
+          </div>
+        </div>
+        <button onClick={handleRefresh} className="shrink-0 p-0.5 text-zinc-500 hover:text-zinc-200 transition-colors rounded hover:bg-zinc-700/50"
+          aria-label={`Refresh ${label} health check`}>
+          <RotateCw className={`w-2.5 h-2.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+        </button>
+      </div>
+    );
+  }
+
+  // ── Default / top layout: inline horizontal pill ──
   return (
     <div className="flex items-center gap-2 px-2.5 py-1.5 bg-zinc-900/80 border border-zinc-800 rounded-lg hover:bg-zinc-800/80 transition-colors min-w-0 flex-1">
 
       {/* Mini circular timer */}
-      <div className="relative w-7 h-7 shrink-0">
-        <svg className="w-7 h-7 -rotate-90" viewBox="0 0 28 28">
-          <circle cx="14" cy="14" r={compactRadius} fill="none" strokeWidth="2.5" className="stroke-zinc-800" />
+      <div className="relative shrink-0" style={{ width: ringSize, height: ringSize }}>
+        <svg className="-rotate-90" width={ringSize} height={ringSize} viewBox={`0 0 ${ringSize} ${ringSize}`}>
+          <circle cx={ringSize/2} cy={ringSize/2} r={ringRadius} fill="none" strokeWidth="2.5" className="stroke-zinc-800" />
           <circle
-            cx="14" cy="14" r={compactRadius}
+            cx={ringSize/2} cy={ringSize/2} r={ringRadius}
             fill="none" strokeWidth="2.5"
             className={`${colors.stroke} transition-all duration-1000 ease-linear`}
-            strokeDasharray={compactCircumference}
-            strokeDashoffset={compactOffset}
+            strokeDasharray={ringCircumference}
+            strokeDashoffset={ringOffset}
             strokeLinecap="round"
           />
         </svg>

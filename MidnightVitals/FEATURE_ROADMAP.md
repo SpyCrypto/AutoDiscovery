@@ -9,33 +9,45 @@
 
 The foundation. Everything works with simulated data so we can nail the UI and UX before touching real infrastructure.
 
-### v0.1.0 — Core Panel
+### v0.1.0 — Core Panel ✅
 
 - [x] Design documentation and architecture
-- [ ] Stethoscope toggle button (🩺) in header bar
-- [ ] Slide-up panel with drag-to-resize handle
-- [ ] Panel open/closed state persists in localStorage
-- [ ] Panel height persists in localStorage
+- [x] Stethoscope toggle button (🩺) in header bar
+- [x] Slide-up panel with drag-to-resize handle
+- [x] Panel open/closed state persists in localStorage
+- [x] Panel height persists in localStorage
 
-### v0.2.0 — Monitor Bar (Top Section)
+### v0.2.0 — Monitor Bar ✅
 
-- [ ] Proof Server vital with time wheel
-- [ ] Network Indexer vital with time wheel
-- [ ] Wallet Connection vital with time wheel
-- [ ] Smart Contracts vital with time wheel
-- [ ] Each wheel shows seconds since last check (circular SVG arc)
-- [ ] Each wheel has a manual refresh [↻] button
-- [ ] Status colors: green (healthy), amber (warning), red (critical), gray (unknown)
-- [ ] Mock provider returns simulated healthy/warning/error states
+- [x] Proof Server vital with time wheel
+- [x] Network Indexer vital with time wheel
+- [x] Wallet Connection vital with time wheel
+- [x] Smart Contracts vital with time wheel
+- [x] Each wheel shows seconds since last check (circular SVG arc)
+- [x] Each wheel has a manual refresh [↻] button
+- [x] Status colors: green (healthy), amber (warning), red (critical), gray (unknown)
+- [x] Mock provider returns simulated healthy/warning/error states
 
-### v0.3.0 — Console Log (Bottom Section)
+### v0.3.0 — Console Log ✅
 
-- [ ] Scrollable log area with auto-scroll to bottom
-- [ ] Timestamped entries with natural-language messages
-- [ ] Log levels: action (blue), info (white), success (green), warning (amber), error (red)
-- [ ] Error entries include "What this means" and "What to do" sections
-- [ ] `useVitalsLogger()` hook for any component to push log entries
-- [ ] Mock provider auto-generates sample log entries on user actions
+- [x] Scrollable log area with newest entries on top
+- [x] Timestamped entries with natural-language messages
+- [x] Log levels: action (blue), info (white), success (green), warning (amber), error (red)
+- [x] Error entries include "What this means" and "What to do" sections
+- [x] `useVitalsLogger()` hook for any component to push log entries
+- [x] Granular real-time logging for every UI interaction across all pages
+- [x] `VitalsNavigationLogger` component auto-logs route changes
+
+### v0.3.5 — Card Layout Settings ✅
+
+- [x] Settings dropdown on stethoscope button (chevron menu)
+- [x] User can choose diagnostic card position: **Top**, **Left**, or **Right**
+- [x] **Top**: Slim horizontal pill strip above CLI (default, most space-efficient)
+- [x] **Left**: Vertical card column on the left, CLI fills the right
+- [x] **Right**: Vertical card column on the right, CLI fills the left
+- [x] Card position preference persists in localStorage
+- [x] Cards adapt layout (inline pills for top, compact stacked cards for sidebar)
+- [x] Smooth transitions between layouts
 
 ### v0.4.0 — Self-Diagnostic Report
 

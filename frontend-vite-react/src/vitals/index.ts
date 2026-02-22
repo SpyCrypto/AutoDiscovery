@@ -30,6 +30,7 @@ export type {
   VitalsProviderInterface,
   VitalsState,
   VitalsAction,
+  CardPosition,
 } from './types';
 
 // Messages (for custom integrations)

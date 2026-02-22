@@ -12,8 +12,14 @@ import { VitalsTimeWheel } from './VitalsTimeWheel';
 export function VitalsMonitorBar() {
   const { state, refreshVital } = useVitals();
 
+  const isVertical = state.cardPosition === 'left' || state.cardPosition === 'right';
+
   return (
-    <div className="flex items-stretch gap-1.5 px-2 py-1.5 border-b border-zinc-800/80">
+    <div className={
+      isVertical
+        ? 'flex flex-col gap-1.5 p-2'
+        : 'flex items-stretch gap-1.5 px-2 py-1.5 border-b border-zinc-800/80'
+    }>
       {state.monitors.map((monitor) => (
         <VitalsTimeWheel
           key={monitor.id}
@@ -23,6 +29,7 @@ export function VitalsMonitorBar() {
           lastCheckTimestamp={monitor.lastCheckTimestamp}
           checkIntervalSeconds={monitor.checkIntervalSeconds}
           onRefresh={() => refreshVital(monitor.id)}
+          compact={isVertical}
         />
       ))}
     </div>

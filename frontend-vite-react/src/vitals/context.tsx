@@ -72,6 +72,7 @@ const DEFAULT_MONITORS: VitalMonitor[] = [
 const INITIAL_STATE: VitalsState = {
   isOpen: false,
   panelHeight: 320,
+  cardPosition: (localStorage.getItem('midnight-vitals-card-position') as VitalsState['cardPosition']) || 'top',
   monitors: DEFAULT_MONITORS,
   logEntries: [],
   logFilter: 'all',
@@ -115,6 +116,10 @@ function vitalsReducer(state: VitalsState, action: VitalsAction): VitalsState {
 
     case 'SET_RUNNING_DIAGNOSTIC':
       return { ...state, isRunningDiagnostic: action.running };
+
+    case 'SET_CARD_POSITION':
+      localStorage.setItem('midnight-vitals-card-position', action.position);
+      return { ...state, cardPosition: action.position };
 
     default:
       return state;

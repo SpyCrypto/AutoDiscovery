@@ -151,9 +151,18 @@ export interface VitalsProviderInterface {
  * The complete global state managed by VitalsContext.
  * This is the single source of truth for the entire vitals module.
  */
+/**
+ * Where the diagnostic cards sit relative to the CLI console.
+ * - top: horizontal strip above the console (default)
+ * - left: vertical column on the left, console on the right
+ * - right: vertical column on the right, console on the left
+ */
+export type CardPosition = 'top' | 'left' | 'right';
+
 export interface VitalsState {
   isOpen: boolean;                    // Whether the panel is visible
   panelHeight: number;                // Panel height in pixels
+  cardPosition: CardPosition;         // Where diagnostic cards sit relative to CLI
   monitors: VitalMonitor[];           // Current state of all 4 monitors
   logEntries: VitalsLogEntry[];       // Console log history
   logFilter: LogLevel | 'all';        // Active filter on console
@@ -170,4 +179,5 @@ export type VitalsAction =
   | { type: 'ADD_LOG_ENTRY'; entry: VitalsLogEntry }
   | { type: 'CLEAR_LOG' }
   | { type: 'SET_LOG_FILTER'; filter: LogLevel | 'all' }
-  | { type: 'SET_RUNNING_DIAGNOSTIC'; running: boolean };
+  | { type: 'SET_RUNNING_DIAGNOSTIC'; running: boolean }
+  | { type: 'SET_CARD_POSITION'; position: CardPosition };

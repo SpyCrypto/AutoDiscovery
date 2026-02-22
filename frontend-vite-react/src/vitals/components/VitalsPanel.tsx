@@ -136,13 +136,28 @@ export function VitalsPanel() {
         </div>
       </div>
 
-      {/* Monitor bar — slim horizontal strip across the top */}
-      <VitalsMonitorBar />
-
-      {/* Console log (scrollable, newest on top) */}
-      <div className="flex-1 min-h-0 relative">
-        <VitalsConsole />
-      </div>
+      {/* Content area — layout depends on cardPosition setting */}
+      {state.cardPosition === 'top' ? (
+        // Cards as a horizontal strip above the CLI
+        <>
+          <VitalsMonitorBar />
+          <div className="flex-1 min-h-0 relative">
+            <VitalsConsole />
+          </div>
+        </>
+      ) : (
+        // Cards as a vertical column on the left or right of the CLI
+        <div className={`flex-1 min-h-0 flex ${state.cardPosition === 'right' ? 'flex-row-reverse' : 'flex-row'}`}>
+          <div className="w-[220px] shrink-0 border-zinc-800/80 overflow-y-auto ad-scrollbar"
+            style={{ borderRightWidth: state.cardPosition === 'left' ? 1 : 0, borderLeftWidth: state.cardPosition === 'right' ? 1 : 0, borderStyle: 'solid', borderColor: 'rgb(39 39 42 / 0.8)' }}
+          >
+            <VitalsMonitorBar />
+          </div>
+          <div className="flex-1 min-h-0 relative">
+            <VitalsConsole />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
