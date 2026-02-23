@@ -28,11 +28,11 @@
 >
 > Discovery compliance is broken. Everyone in legal knows it. We have built the solution."
 
-**[Let 'We built the fix' land. Advance to Slide 4.]**
+**[Let 'We built the solution' land. Advance to Slide 4.]**
 
 ## SLIDE 4: The Problem (0:45–1:05)
 
-> "One in ten federal cases needs a judge to step in on discovery disputes. The average sanction? Seven hundred thousand dollars. A billion-dollar jury verdict after a discovery default. And a sixty percent spike in case duration from discovery overload.
+> "One in ten federal cases needs a judge to step in on discovery disputes. The average sanction? Seven hundred thousand dollars. Eighty percent of total litigation costs are discovery alone. And a sixty percent spike in case duration from discovery overload.
 >
 > Every state has different rules, different timelines, different traps. Firms track all of this in spreadsheets and calendar reminders. No system. No proof. Just risk."
 
@@ -42,6 +42,8 @@
 
 > "AutoDiscovery doesn't just help you manage discovery — it *mathematically proves* you did it right.
 >
+> Every aspect of AutoDiscovery is designed to ease the burden and abstract away liability from law firms, making it a very attractive product to the industry.
+>
 > Jurisdiction-aware rule packs that know every state's requirements. An automated deadline engine that computes every date. Zero-knowledge compliance proofs on blockchain. And a verifiable audit trail that courts and insurers can check independently."
 
 **[Advance to Slide 6]**
@@ -49,6 +51,8 @@
 ## SLIDE 6: How It Works (1:25–1:40)
 
 > "Here's the workflow: an attorney files a case. Our system detects the jurisdiction, loads the correct rule pack, generates every deadline and checklist, and when each step is completed — a ZK proof is written to the Midnight blockchain.
+>
+> Intuitive, regionally, lawfully compliant workflows that take the guesswork and legal gotchas out of discovery management.
 >
 > Every step tracked. Every deadline computed. Every completion proven."
 
@@ -58,19 +62,23 @@
 
 > "Legal data is the most sensitive information in any industry. Privilege. Work product. Medical records. That's why we built on Midnight — the only blockchain designed for data protection by default.
 >
+> The unique, cutting-edge technology of Midnight streamlines and writes in stone compliance, control, and safety.
+>
 > Your documents stay encrypted. Your privilege log stays private. Your strategy stays shielded. We prove compliance without ever seeing your data. Midnight plus legal equals the first privacy-preserving compliance system courts can trust."
 
 **[Advance to Slide 8]**
 
 ## SLIDE 8: Market Opportunity (2:00–2:10)
 
-> "The U.S. legal tech market is five billion dollars. No existing tool — not Relativity, not Clio, not spreadsheets — combines jurisdiction-aware automation with cryptographic compliance proofs. We're not competing. We're creating a category."
+> "ADL is a unique SaaS product which addresses an open niche with first to market opportunity. We are — and will continue to be — the only game in town."
 
 **[Advance to Slide 9]**
 
 ## SLIDE 9: Business Model (2:10–2:20)
 
-> "SaaS subscriptions from ninety-nine to fifteen hundred a month — solo attorneys to regional firms. The ROI is obvious: average sanction is seven hundred thousand dollars. Our annual cost is a fraction of *one*."
+> "SaaS subscriptions from ninety-nine to fifteen hundred a month — solo attorneys to regional firms. The ROI is obvious: generous profits through SaaS and per-diem subscriptions, each with included proof credits per billing cycle. These proofs, though profitable, represent substantial savings to end users — making both clients and investors happy.
+>
+> Average sanction is seven hundred thousand dollars. Our annual cost is a fraction of *one*."
 
 **[Advance to Slide 10]**
 
@@ -84,13 +92,17 @@
 
 > "Spy brings fifteen-plus years of complex litigation — medical malpractice, personal injury, discovery workflows. He's lived this problem.
 >
-> I bring the blockchain engineering — Midnight smart contracts, zero-knowledge systems, full-stack development. We don't just understand the problem. We've built the solution."
+> I bring the blockchain engineering — Midnight smart contracts, zero-knowledge systems, full-stack development. We don't just understand the problem. We've built the solution.
+>
+> The secret sauce? The unique talents of over two decades of experience each — in domain expertise and diagnostic systems design and architecture — are just another winning competitive edge. Making the world's best products and packaging them in an enticing and engaging fashion. It's what we do."
 
 **[Advance to Slide 12]**
 
 ## SLIDE 12: The Close (2:45–3:00)
 
 > "Courts guard precedent fiercely. Once a court accepts a ZK proof as factual record, that precedent binds every case after it.
+>
+> So join the winning team. We are not just selling another product — we are streamlining and shaping an industry. Its adoption will pave the way for other incredible product opportunities that stand on the shoulders of the legal precedent that will be forged here.
 >
 > AutoDiscovery isn't just legal tech. It's the bridge that brings blockchain into the most conservative, highest-stakes industry in the world.
 >

@@ -11,10 +11,10 @@
   "scripts": {
     "compact": "turbo run compact",
     "build": "turbo run build",
-    "build-production": "cd autodiscovery-contract && npm run build && cd ../frontend-vite-react && npm run build",    
+    "build-production": "cd autodiscovery-contract && npm run build && cd ../frontend-vite-react && npm run build",
     "setup-standalone": "cd autodiscovery-cli && npm run setup-undeployed",
-    "dev:frontend": "cd frontend-vite-react && npm run dev",    
-    "lint": "turbo run lint"     
+    "dev:frontend": "cd frontend-vite-react && npm run dev",
+    "lint": "turbo run lint"
   },
   "engines": {
     "node": ">=18"
@@ -60,6 +60,7 @@
     "dotenv": "^17.2.3",
     "pino": "9.7.0",
     "pino-pretty": "13.0.0",
+    "puppeteer": "^24.37.5",
     "rxjs": "^7.8.1",
     "vite-plugin-node-polyfills": "^0.24.0",
     "ws": "8.18.2"

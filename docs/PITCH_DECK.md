@@ -50,7 +50,7 @@ A law firm failed to produce emails. The court sanctioned them **$8,568,633** an
 |------|--------|
 | **1 in 10** | Federal cases need judicial intervention on discovery |
 | **$704K** | Average discovery sanction award |
-| **$1.58B** | Jury verdict after discovery default (Coleman v. Morgan Stanley) |
+| **80%** | Of total litigation costs are discovery alone (RAND Institute) |
 | **60%** | Increase in case duration from discovery overload |
 
 | Sanction Type | Frequency | What It Means |
