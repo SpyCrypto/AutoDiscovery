@@ -22,7 +22,7 @@
 
 ### SLIDE 4 — The Problem
 
-"Sanctions can mean hundred-thousand-dollar fines, default judgments, even disbarment. And they're happening more than ever. One in ten federal cases needs a judge to step in on discovery disputes. The average sanction? Seven hundred thousand dollars. Eighty percent of total litigation costs are discovery alone. And a sixty percent spike in case duration from discovery overload. Every state has different rules, different timelines, different traps. Firms track all of this in spreadsheets and calendar reminders. No system. No proof. Just risk."
+"Sanctions can mean hundred-thousand-dollar fines, default judgments, even disbarment. And they're happening more than ever. One in ten federal cases needs a judge to step in on discovery disputes."
 
 ---
 
@@ -34,7 +34,7 @@
 
 ### SLIDE 6 — How It Works
 
-"Here's our workflow: We file a case. Our system detects the jurisdiction, loads the correct rule pack, generates every deadline and checklist, as each step is completed — a ZK proof is written to the Midnight blockchain. Intuitive, regionally, lawfully compliant workflows that take the guesswork and legal gotchas out of discovery management."
+"Here's our workflow: We file a case. detect the jurisdiction, load the rule pack, and generate deadlines and checklists, as each step is completed — a proof is written and immutably stored. Intuitive, regionally, lawfully compliant workflows that take the guesswork and legal gotchas out of discovery management."
 
 ---
 
@@ -52,13 +52,13 @@
 
 ### SLIDE 9 — Business Model
 
-"From our SaaS subscriptions to asserted industry datasales, though profitable, they represent substantial savings to end users — making both clients and investors happy. We are estimating 97% profit margin for a cornered market that we ourselves are creating."
+"From our SaaS subscriptions to industry datasales, though profitable, they represent substantial savings and benefit to the end users — making both clients and investors happy. We are estimating 97% profit margin for a cornered market that we ourselves are creating."
 
 ---
 
 ### SLIDE 10 — What We've Built
 
-"We've created a generational protocol model that will bring outstanding profits while revolutionizing a complex and archaic system."
+"We've created a generational protocol model that will bring outstanding profits while revolutionizing a historically complex and difficult to navigate system."
 
 ---
 
