@@ -19,7 +19,8 @@ docs/
 │   ├── PITCH_DECK_NOTION.md      ← Notion-formatted version
 │   ├── BUILD_CLUB_SLIDE_CONTENT.md
 │   ├── VC_PORTFOLIO_INSIGHTS_FOR_ADL.md
-│   └── WEEK_3_HOMEWORK.md
+│   ├── WEEK_3_HOMEWORK.md
+│   └── INVESTOR_VC_ROADMAP.md        ← Investor & VC roadmap (market, financials, exit)
 │
 ├── architecture/                 ← Technical architecture and build plans
 │   ├── BUILD_PLAN.md             ← Master build plan (phases, milestones)
