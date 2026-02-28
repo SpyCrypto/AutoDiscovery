@@ -44,55 +44,230 @@ The modular `jurisdiction-registry` smart contract is built for exactly this mod
 ## 🥔 PHASE 1 — Idaho Anchor Launch (Q2 2026)
 
 ### 🎯 **Why Idaho First**
-- Spy's primary jurisdiction — deepest domain expertise on the team
-- Idaho Rules of Civil Procedure (IRCP) are well-documented and stable
-- Smaller legal market = controlled launch environment
-- Idaho State Bar is approachable for early partnership discussions
-- Win here = credible proof of concept for every other state
+- Spy's primary jurisdiction — 20+ years complex litigation paralegal experience here
+- IRCP (adopted July 1, 2016, modeled on 2015 federal amendments) is well-documented and stable
+- ~6,000 ISB members — small enough to move fast, significant enough to prove the model
+- Idaho State Bar is approachable and has an active Technology Committee
+- Win here = credible, domain-expert-backed proof of concept for every subsequent state
 
 ---
 
-### 📋 **Launch Checklist — Idaho**
+### 🏛️ **Idaho Court System — Structure AutoDiscovery Must Support**
+
+Idaho has **7 Judicial Districts**, each with its own District Court and local rules that layer on top of IRCP:
+
+| District | Counties | Seat | Notes |
+|----------|----------|------|-------|
+| **1st** | Shoshone, Kootenai, Benewah, Boundary, Bonner | Coeur d'Alene | High case volume, Kootenai County |
+| **2nd** | Nez Perce, Lewis, Latah, Clearwater, Idaho | Lewiston / Moscow | University of Idaho — complex civil matters |
+| **3rd** | Adams, Canyon, Gem, Owyhee, Payette, Washington | Caldwell | Canyon County — 2nd largest in ID |
+| **4th** | Ada, Boise, Elmore, Valley | Boise | **Highest volume** — primary target market |
+| **5th** | Blaine, Camas, Cassia, Gooding, Jerome, Lincoln, Minidoka, Twin Falls | Twin Falls | Sun Valley — complex real estate/injury |
+| **6th** | Bear Lake, Bannock, Caribou, Franklin, Oneida, Power | Pocatello | ISU area |
+| **7th** | Bingham, Bonneville, Butte, Clark, Custer, Fremont, Jefferson, Lemhi, Madison, Teton | Idaho Falls | Eastern Idaho hub |
+
+> **AutoDiscovery v1.0 targets:** 4th District (Ada County / Boise) as primary, 3rd and 6th as secondary.
+
+---
+
+### 📜 **IRCP Discovery Rules — Detailed Mapping**
+
+The Idaho Rules of Civil Procedure were comprehensively revised effective **July 1, 2016**, closely following the 2015 Federal Rules amendments. AutoDiscovery must correctly implement every rule below.
+
+#### Core Discovery Rules to Implement
+
+| Rule | Title | Key AutoDiscovery Function |
+|------|-------|---------------------------|
+| **IRCP 16** | Pretrial Conferences; Scheduling | Scheduling order ingestion — sets all downstream deadlines |
+| **IRCP 26(a)(1)** | Initial Disclosures | Auto-trigger at case creation; 14-day deadline from scheduling conference |
+| **IRCP 26(a)(2)** | Expert Witness Disclosures | Expert designation workflow; SOC documentation; W-9/I-9 collection |
+| **IRCP 26(a)(3)** | Pretrial Disclosures | Final exhibit/witness lists; 30 days before trial |
+| **IRCP 26(b)(1)** | Scope of Discovery | Proportionality analysis for document requests |
+| **IRCP 26(b)(2)** | Limitations on Discovery | ESI not reasonably accessible — cost-shifting analysis |
+| **IRCP 26(b)(3)** | Trial Preparation — Work Product | Privilege log generation and management |
+| **IRCP 26(c)** | Protective Orders | Protective order request workflow |
+| **IRCP 26(f)** | Conference of the Parties | Meet-and-confer scheduling and documentation |
+| **IRCP 33** | Interrogatories | 25-interrogatory limit; 28-day response deadline |
+| **IRCP 34** | Requests for Production | Document/ESI production; 28-day response deadline |
+| **IRCP 35** | Physical/Mental Examinations | Independent medical examination (IME) workflows |
+| **IRCP 36** | Requests for Admission | 28-day response; deemed admitted on failure |
+| **IRCP 37** | Sanctions for Discovery Failures | Sanction risk flags and compliance alerts |
+| **IRCP 45** | Subpoenas | Third-party document subpoena tracking |
+
+#### ⏰ IRCP Deadline Table — AutoDiscovery Must Calculate All of These
+
+| Deadline | Trigger | Days | Notes |
+|----------|---------|------|-------|
+| **Initial disclosures** | Scheduling conference | +14 days | IRCP 26(a)(1) |
+| **Interrogatory responses** | Service of interrogatories | +28 days | IRCP 33; extendable by stipulation |
+| **RFP responses** | Service of RFP | +28 days | IRCP 34 |
+| **RFA responses** | Service of RFA | +28 days | IRCP 36; failure = admitted |
+| **Expert disclosures (plaintiff)** | Per scheduling order | Usually 90 days pre-trial | IRCP 26(a)(2) |
+| **Expert disclosures (defendant)** | After plaintiff's | +30 days | IRCP 26(a)(2) |
+| **Rebuttal experts** | After defendant's disclosure | +30 days | IRCP 26(a)(2) |
+| **Pretrial disclosures** | Before trial | -30 days | IRCP 26(a)(3) |
+| **Discovery cutoff** | Per scheduling order | Usually -90 days from trial | Set by district judge |
+| **Deposition notice** | Before deposition | Reasonable (~14 days) | IRCP 30 |
+| **Deposition objections** | After transcript | +30 days | IRCP 32 |
+
+> ⚠️ **Critical:** Failure to serve timely RFA responses results in automatic admission (IRCP 36(a)(3)). AutoDiscovery must flag this deadline with **CRITICAL** alert level.
+
+---
+
+### ⚖️ **Idaho UPL Analysis — Detailed Assessment**
+
+This is a legal gate. AutoDiscovery **cannot launch** until this analysis is complete and documented.
+
+#### Governing Statutes & Rules
+
+| Authority | Provision | Relevance |
+|-----------|-----------|-----------|
+| **Idaho Code § 3-104** | Only licensed attorneys may practice law in Idaho | AutoDiscovery must not constitute "practice of law" |
+| **Idaho Code § 3-420** | Unauthorized practice is a misdemeanor | Criminal exposure if UPL occurs |
+| **ISB Rule 5.5** | Multi-jurisdictional practice | Governs out-of-state attorney use |
+| **Idaho RPC 1.1** | Competence includes technology | Supports attorney use of AutoDiscovery |
+| **Idaho RPC 5.3** | Supervision of non-lawyer assistants | AutoDiscovery = non-lawyer tool under attorney supervision |
+
+#### UPL Safe Harbor Analysis
+
+AutoDiscovery avoids UPL under Idaho law because:
+
+1. **Tool, not advisor** — AutoDiscovery enforces rules set by the Idaho legislature; it does not give legal advice
+2. **Attorney supervision** — The attorney of record retains all judgment and discretion; AutoDiscovery surfaces deadlines, the attorney decides strategy
+3. **Scrivener function** — Populating forms and calculating deadlines is a scrivener function, not legal practice (analogous to court-approved legal form software)
+4. **Precedent** — The ISB has found that legal software tools (Clio, Westlaw, etc.) do not constitute UPL when used under attorney supervision
+
+#### Required UPL Documentation (Pre-Launch Gate)
+- [ ] Written UPL memo from Idaho-licensed attorney confirming safe harbor
+- [ ] ToS language affirming AutoDiscovery is a tool, not legal counsel
+- [ ] In-app disclaimer: *"AutoDiscovery is a compliance automation tool. It does not constitute legal advice. All decisions remain with the supervising attorney."*
+- [ ] ISB Ethics Opinion inquiry (informal) — confirm no objection
+
+---
+
+### 🏥 **Idaho Medical Malpractice — Primary Use Case Deep Dive**
+
+Medical malpractice is AutoDiscovery's anchor use case. Idaho has specific statutory requirements beyond IRCP:
+
+#### Governing Statutes
+
+| Statute | Provision | AutoDiscovery Implementation |
+|---------|-----------|------------------------------|
+| **Idaho Code § 6-1001** | Medical Malpractice Act scope | Case type flag — triggers malpractice workflow |
+| **Idaho Code § 6-1003** | Pre-litigation screening panel required | Panel request tracking + deadline |
+| **Idaho Code § 6-1004** | Panel composition | Expert witness management — panel member tracking |
+| **Idaho Code § 6-1007** | Expert affidavit of merit | Auto-flag at case creation — affidavit deadline |
+| **Idaho Code § 6-1603** | Non-economic damage cap: $250,000 | Case valuation flag |
+| **Idaho Code § 5-219(4)** | Statute of limitations: 2 years from discovery | SOL calculator — alert if approaching |
+
+#### Medical Malpractice Discovery Checklist (Idaho-Specific)
+
+- [ ] **Pre-litigation panel** — Track submission, composition, and 180-day review period
+- [ ] **Expert affidavit of merit** — Must be filed at complaint; track deadline
+- [ ] **Standard of Care (SOC)** expert identification and documentation
+- [ ] **Expert W-9/I-9** collection workflow (existing in `expert-witness` contract)
+- [ ] **IME scheduling** — Independent Medical Examination under IRCP 35
+- [ ] **HIPAA authorization** tracking — Idaho follows federal HIPAA; document patient authorizations
+- [ ] **Medical records request** deadlines — 30-day response under Idaho Code § 9-420A
+- [ ] **Privilege log** for any withheld provider communications
+
+---
+
+### 🗂️ **Idaho District Local Rules — Mapping Required**
+
+Each judicial district adds local rules on top of IRCP. AutoDiscovery must handle at least the **4th District** at launch:
+
+#### 4th District (Ada County / Boise) — Priority
+
+| Local Rule | Topic | Implementation |
+|------------|-------|----------------|
+| **IDLR 16** | Case Management Orders | Auto-ingest scheduling order deadlines |
+| **IDLR 26** | ESI Protocol | Default ESI production format (TIFF/native) |
+| **IDLR 37** | Discovery Disputes | Required meet-and-confer documentation before motion |
+| **CV-1 Standing Order** | Case scheduling | Some judges issue standing orders — flag for manual entry |
+
+> **Action:** Obtain current 4th District local rules from `adacounty.id.gov/district-court`. Verify annually.
+
+---
+
+### 🔒 **Idaho Data Privacy & Security Requirements**
+
+| Law / Rule | Requirement | AutoDiscovery Compliance |
+|------------|-------------|--------------------------|
+| **Idaho Code § 28-51-104** | Data breach notification within 30 days | Midnight private ledger = encrypted at rest; breach protocol documented |
+| **Idaho Code § 28-51-105** | Reasonable security measures required | ZK architecture + Lace wallet key management satisfies this |
+| **HIPAA (Federal)** | Medical records — covered entity rules | AutoDiscovery does not store PHI; document handling is client-side |
+| **Idaho RPC 1.6** | Attorney duty of confidentiality | Selective disclosure + private ledger satisfies this |
+| **Idaho RPC 1.15** | Safekeeping of client property | Documents on client's machine; AutoDiscovery holds only hashes |
+
+---
+
+### � **Full Launch Checklist — Idaho (Expanded)**
 
 #### 🔒 Legal & Compliance Checkpoints
 
-- [ ] **IRCP Full Rule Audit** — Map all 84 IRCP rules to AutoDiscovery workflow steps
-- [ ] **IRCP Rule Pack v1.0** — Complete `jurisdiction-registry` rule pack for Idaho
-- [ ] **Attorney Review** — Have 2 Idaho-licensed attorneys review rule pack for accuracy
-- [ ] **Bar Consultation** — Informal outreach to Idaho State Bar (feedback, not approval)
-- [ ] **UPL Assessment** — Confirm AutoDiscovery does not constitute unauthorized practice of law
-- [ ] **Data Privacy Review** — Confirm IRCP + Idaho state data laws are addressed
-- [ ] **Terms of Service** — Include jurisdiction-specific disclaimers for Idaho
-- [ ] **Malpractice Insurance Check** — Verify no conflicts with E&O policies for beta users
+**Rule Mapping**
+- [ ] IRCP Rules 16, 26, 33, 34, 35, 36, 37, 45 — full implementation audit
+- [ ] All IRCP deadline tables above entered into `jurisdiction-registry` Idaho rule pack
+- [ ] 4th District (Ada County) local rules mapped and implemented
+- [ ] Medical malpractice statutory requirements (§ 6-1001 through § 6-1012) mapped
+
+**Attorney Review**
+- [ ] Idaho-licensed civil litigation attorney reviews IRCP deadline table (accuracy sign-off)
+- [ ] Idaho-licensed medical malpractice attorney reviews malpractice workflow (accuracy sign-off)
+- [ ] Both reviewers sign written attestation — stored in `docs/jurisdictions/idaho/`
+
+**UPL & Ethics**
+- [ ] UPL memo from Idaho attorney — confirms AutoDiscovery is a tool, not legal practice
+- [ ] ISB informal inquiry submitted (Ethics Hotline: (208) 334-4500)
+- [ ] ToS reviewed by Idaho attorney for enforceability
+- [ ] In-app disclaimer language finalized and implemented
+
+**Data & Privacy**
+- [ ] Idaho Code § 28-51-104 breach notification procedure documented
+- [ ] HIPAA handling confirmed: AutoDiscovery stores hashes, not PHI
+- [ ] Idaho RPC 1.6 confidentiality analysis documented
+
+**Insurance**
+- [ ] Verify beta user E&O policies are not voided by use of third-party compliance tools
+- [ ] Obtain confirmation from ALPS or ISB that attorney E&O covers AutoDiscovery-assisted work
 
 #### 🛠️ Technical Checkpoints
 
-- [ ] `jurisdiction-registry` Idaho rule pack deployed to Midnight testnet
-- [ ] All 9 discovery steps mapped to IRCP deadlines and requirements
-- [ ] Expert witness workflow (`W-9/I-9`, SOC) validated for Idaho courts
-- [ ] Compliance proof generator tested against 3 Idaho case types:
-  - Medical malpractice
-  - Contract dispute
-  - Personal injury
-- [ ] `discovery-core` smart contract tested end-to-end for Idaho cases
-- [ ] Email Safety Protocol tested with Idaho court contacts
-- [ ] DemoLand environment seeded with Idaho-specific mock cases
+- [ ] `jurisdiction-registry` Idaho rule pack v1.0 deployed to Midnight testnet
+- [ ] All IRCP deadlines from the table above coded and unit-tested
+- [ ] RFA auto-admission warning implemented (CRITICAL alert level)
+- [ ] Medical malpractice workflow implemented (panel tracking, SOC, affidavit)
+- [ ] Expert witness module (`W-9/I-9`, SOC) validated for Idaho requirements
+- [ ] 4th District local rule ESI production format (TIFF/native) implemented
+- [ ] `discovery-core` smart contract tested end-to-end for:
+  - [ ] Medical malpractice (4th District)
+  - [ ] Personal injury (4th District)
+  - [ ] Contract dispute (4th District)
+- [ ] Email Safety Protocol contacts seeded with Idaho court clerk addresses
+- [ ] DemoLand seeded with 5 realistic Idaho mock cases (Boise venue)
+- [ ] Idaho SOL calculator implemented (2-year med mal; 4-year contract)
 
 #### 🧪 Beta Testing Checkpoints
 
-- [ ] **Recruit 10 Idaho beta users** — Solo practitioners and small firms
-- [ ] **Beta period: 60 days** — Minimum before public launch
-- [ ] **Weekly feedback sessions** — Spy leads with direct user interviews
-- [ ] **Bug threshold** — Zero critical bugs before public launch
-- [ ] **Compliance accuracy** — 100% accuracy on IRCP deadline calculations
+- [ ] Recruit 10 Idaho beta users — target Ada County civil litigators and med mal practitioners
+- [ ] Beta period: **60 days minimum** before public launch
+- [ ] Weekly feedback sessions led by Spy (domain expert)
+- [ ] Zero critical bugs gate — no launch with P0/P1 open
+- [ ] 100% accuracy on every IRCP deadline calculation in the table above
+- [ ] At least 1 full mock medical malpractice case run end-to-end by beta user
+- [ ] Beta user survey: NPS ≥ 50 before proceeding
 
 #### 📣 Go-to-Market Checkpoints
 
-- [ ] Landing page live at `autodiscovery.legal` with Idaho-focused messaging
-- [ ] Idaho State Bar newsletter submission (announcement)
-- [ ] Outreach to Idaho Association for Justice (IAJ)
-- [ ] 3 case studies drafted from beta users
-- [ ] Press release to Idaho legal publications
+- [ ] `autodiscovery.legal` live with Idaho-specific landing page ("Built for Idaho practitioners")
+- [ ] Idaho State Bar *The Advocate* newsletter — submit product announcement
+- [ ] Idaho Association for Justice (IAJ) outreach — request member newsletter placement
+- [ ] Idaho State Bar CLE Committee — propose 1-hour CLE: "Discovery Automation & Compliance"
+- [ ] Outreach to ISB Technology Committee for informal demo
+- [ ] 3 attorney case studies drafted from beta users (with permission)
+- [ ] Press release to Idaho legal publications: *The Advocate*, Idaho Business Review
+- [ ] LinkedIn content targeting Idaho attorney audience (Spy as author)
 
 ---
 
@@ -103,13 +278,17 @@ The modular `jurisdiction-registry` smart contract is built for exactly this mod
 | **Beta users** | 10 firms | 5 firms |
 | **Paying customers** | 25 firms | 10 firms |
 | **Monthly Recurring Revenue** | $5,000 | $2,500 |
-| **Compliance accuracy** | 100% | 99.5% |
+| **IRCP deadline accuracy** | 100% | 100% — non-negotiable |
+| **Med mal workflow accuracy** | 100% | 100% — non-negotiable |
 | **User retention (30-day)** | 90% | 80% |
 | **NPS score** | 70+ | 50+ |
-| **Support tickets (critical)** | 0 | 0 |
-| **Attorney endorsements** | 3 | 1 |
+| **Critical bugs open** | 0 | 0 |
+| **Attorney endorsements (named)** | 3 | 1 |
+| **UPL memo on file** | Required | Required |
+| **ISB inquiry response on file** | Required | Preferred |
 
 > ⚠️ **Hard Gate:** All minimum gate metrics must be met before Utah opens.
+> ⚠️ **Double Hard Gate:** Deadline accuracy is 100% non-negotiable. A single wrong IRCP deadline is a direct malpractice vector for our users.
 
 ---
 
