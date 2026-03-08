@@ -170,7 +170,7 @@ AutoDiscovery/
 
 ```bash
 # Clone the repository
-git clone git@github.com:bytewizard42i/AutoDiscovery.git
+git clone git@github.com:SpyCrypto/AutoDiscovery.git
 cd AutoDiscovery
 
 # Install all dependencies (monorepo)
