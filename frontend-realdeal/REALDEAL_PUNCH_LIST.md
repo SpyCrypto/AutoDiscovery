@@ -47,17 +47,17 @@ Each provider file in `src/providers/realdeal/` needs to be connected to the cor
 ### 2.1 Blockchain providers (require contract SDK)
 | Provider | File | Contract | Status |
 |----------|------|----------|--------|
-| `RealCaseProvider` | `real-case.ts` | `discovery-core` | � Phase 1 wired (reads) |
-| `RealDocumentProvider` | `real-document.ts` | `document-registry` | 🔴 Stub (throws) |
-| `RealComplianceProvider` | `real-compliance.ts` | `compliance-proof` | 🔴 Stub (throws) |
-| `RealAccessControlProvider` | `real-access-control.ts` | `access-control` | 🔴 Stub (throws) |
-| `RealJurisdictionProvider` | `real-jurisdiction.ts` | `jurisdiction-registry` | 🔴 Stub (throws) |
-| `RealExpertWitnessProvider` | `real-expert-witness.ts` | `expert-witness` | 🔴 Stub (throws) |
+| `RealCaseProvider` | `real-case.ts` | `discovery-core` | 🟢 Phase 1 wired (reads + local writes) |
+| `RealDocumentProvider` | `real-document.ts` | `document-registry` | � Phase 1 wired (reads + local writes) |
+| `RealComplianceProvider` | `real-compliance.ts` | `compliance-proof` | � Phase 1 wired (reads + local attestations) |
+| `RealAccessControlProvider` | `real-access-control.ts` | `access-control` | � Phase 1 wired (reads + local grants) |
+| `RealJurisdictionProvider` | `real-jurisdiction.ts` | `jurisdiction-registry` | � Phase 1 wired (reads + local verify) |
+| `RealExpertWitnessProvider` | `real-expert-witness.ts` | `expert-witness` | � Phase 1 wired (reads + local register) |
 
 ### 2.2 Off-chain providers (no contract needed)
 | Provider | File | Backend | Status |
 |----------|------|---------|--------|
-| `RealAuthProvider` | `real-auth.ts` | Midnight wallet (Lace) | 🔴 Stub |
+| `RealAuthProvider` | `real-auth.ts` | Midnight wallet (Lace) | � Lace detection + dev mode + session persistence |
 | `RealAIProvider` | `real-ai.ts` | External AI microservice | 🔴 Stub |
 | `RealContactProvider` | `real-contacts.ts` | Local storage or off-chain DB | 🔴 Stub |
 | `RealEmailSafetyProvider` | `real-email-safety.ts` | Email gateway service | 🔴 Stub |
@@ -206,11 +206,12 @@ cd frontend-realdeal && npm run dev      # → localhost:5174
 
 1. ~~Compile `access-control` and `expert-witness` contracts~~ ✅ All 6 compiled (0.29.0)
 2. ~~Deploy all 6 contracts to preprod~~ ✅ Deployed v2 (Feb 26 2026)
-3. ~~Wire `RealCaseProvider`~~ ✅ Phase 1 (local storage + indexer reads, Mar 8 2026)
-   - Phase 2: Connect wallet for on-chain writes (createNewCase, addStep, completeStep)
-4. Wire `RealDocumentProvider` (core workflow — next up)
-5. Wire `RealComplianceProvider` (ZK attestations — the money feature)
-6. Wallet integration (`RealAuthProvider`)
-7. Wire remaining providers
+3. ~~Wire `RealCaseProvider`~~ ✅ Phase 1 (Mar 8 2026)
+4. ~~Fix/create all witness implementations~~ ✅ All 6 contracts (Mar 14 2026)
+5. ~~Wire all 6 blockchain providers~~ ✅ Phase 1 hybrid (Mar 14 2026)
+6. ~~Wallet integration (`RealAuthProvider`)~~ ✅ Lace + dev mode (Mar 14 2026)
+7. **Phase 2: Activate on-chain writes** — add @midnight-ntwrk SDK deps, wire
+   findDeployedContract + callTx to each provider's write methods
 8. AI service (can be deferred to post-MVP)
 9. Email safety (can be deferred to post-MVP)
+10. Contact provider (can be deferred to post-MVP)
