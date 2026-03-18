@@ -238,7 +238,7 @@ One of AutoDiscovery's standout features — a multi-layered protection system t
 
 Features include **recipient auto-detection** against the case contacts database, **attachment metadata scanning** (EXIF, tracked changes, hidden PDF layers), **image preview before send**, and a **tandem approval workflow** where N approvers must sign off on sensitive communications.
 
-> 📧 **[Full Protocol Documentation →](./docs/EMAIL_SAFETY_PROTOCOL.md)**
+> 📧 **[Full Protocol Documentation →](https://github.com/bytewizard42i/AutoDiscovery/blob/main/docs/product/EMAIL_SAFETY_PROTOCOL.md)**
 
 ---
 
