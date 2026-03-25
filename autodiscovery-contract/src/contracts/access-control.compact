@@ -336,27 +336,37 @@ export circuit proveParticipantHasRole(
 
   // 3. Assert the Merkle path exists (caller is in the tree).
   //    If not in tree → they were never registered → not authorized.
-  assert is_some(maybeMerklePath),
-      "Caller is not registered in the role commitments tree";
-  const merklePath = from_some(maybeMerklePath);
+  //    .is_some is a property on Maybe<T>, not a function — use property access.
+  assert(disclose(maybeMerklePath.is_some),
+      "Caller is not registered in the role commitments tree");
 
   // 4. Verify the Merkle inclusion proof against the on-chain tree root.
+  //    merkleTreePathRoot<N, T>(path) computes the expected root from the path.
+  //    checkRoot() verifies it matches the actual on-chain tree root.
+  //    The path is derived from a witness, so the result must be disclosed.
   //    This proves the caller's key IS in the authorizedRoleCommitments tree
   //    without revealing WHICH entry they are (ZK privacy guarantee).
-  assert authorizedRoleCommitments.member(merklePath, callerPublicKey),
-      "Merkle inclusion proof failed — caller key not in role commitments tree";
+  //    Ref: docs.midnight.network/develop/how-midnight-works/keeping-data-private
+  assert(authorizedRoleCommitments.checkRoot(
+      disclose(merkleTreePathRoot<10, Bytes<32>>(maybeMerklePath.value))),
+      "Merkle inclusion proof failed — caller key not in role commitments tree");
 
   // 5. Look up the caller's registered role from the on-chain role map.
-  //    The caller's key is used privately — not disclosed in the ZK proof.
-  //    The ZK proof proves "stored role == claimed role" without revealing the key.
-  const storedRole = participantRoleByPublicKeyHash.lookup(callerPublicKey);
+  //    disclose() is required for Map.lookup on export ledger state.
+  //    NOTE: This discloses the caller's key, which partially defeats the
+  //    MerkleTree privacy above. For full ZK privacy, a future improvement
+  //    should encode the role directly into the tree commitment — e.g.,
+  //    insert(persistentHash(key, role)) at registration time — so the
+  //    Merkle proof alone proves both membership AND role, eliminating
+  //    the need for any Map lookup. See: commitment/nullifier pattern in
+  //    docs.midnight.network/develop/how-midnight-works/keeping-data-private
+  const storedRole = participantRoleByPublicKeyHash.lookup(disclose(callerPublicKey));
 
   // 6. Assert the stored role matches the claimed role.
-  assert storedRole == claimedRoleEnum,
-      "Claimed role does not match registered role";
+  assert(storedRole == claimedRoleEnum,
+      "Claimed role does not match registered role");
 
-  // 7. Return true — the ZK proof guarantees this result without
-  //    revealing the prover's identity or which tree entry they are.
+  // 7. Return true — caller has the claimed role.
   return disclose(true);
 }
 
