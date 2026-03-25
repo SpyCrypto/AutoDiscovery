@@ -25,6 +25,7 @@ function describeRoute(pathname: string): string {
     '/search': 'the Search page — full-text and metadata search across all documents.',
     '/compliance': 'the Compliance Reports page — compliance record history and audit trail.',
     '/settings': 'the Settings page — account preferences and configuration.',
+    '/reference': 'the Jurisdiction Reference — discovery rules by jurisdiction.',
   };
 
   if (exactRoutes[pathname]) {
