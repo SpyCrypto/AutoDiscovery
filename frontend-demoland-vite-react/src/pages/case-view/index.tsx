@@ -34,6 +34,27 @@ function StepStatusBadge({ status }: { status: DiscoveryStep['status'] }) {
   );
 }
 
+// Status priority: lower number = appears first
+const STATUS_PRIORITY: Record<string, number> = {
+  overdue: 0,
+  in_progress: 1,
+  pending: 2,
+  objected: 3,
+  protected: 4,
+  waived: 5,
+  complete: 6,
+};
+
+function sortedSteps(steps: DiscoveryStep[]): DiscoveryStep[] {
+  return [...steps].sort((a, b) => {
+    const pa = STATUS_PRIORITY[a.status] ?? 3; // unknown statuses sort between pending and objected
+    const pb = STATUS_PRIORITY[b.status] ?? 3;
+    if (pa !== pb) return pa - pb;
+    // Within the same status, sort by days remaining (most urgent first)
+    return (a.daysRemaining ?? 999) - (b.daysRemaining ?? 999);
+  });
+}
+
 function CategoryBadge({ category }: { category: Document['category'] }) {
   const colors: Record<string, string> = {
     pleading: 'bg-blue-500/10 text-blue-600',
@@ -555,7 +576,7 @@ export function CaseView() {
 
       {activeTab === 'steps' && (
         <div className="space-y-2">
-          {steps.map((step) => (
+          {sortedSteps(steps).map((step) => (
             <div
               key={step.id}
               className={`bg-card border rounded-xl p-4 flex items-start gap-4 ${
