@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth, useMode } from '@/providers/context';
 import { ModeToggle } from '@/components/mode-toggle';
 import { VitalsToggleButton, VitalsPanel, useVitalsLogger, useVitalsInteraction } from '@/vitals';
+import { useDevMode } from '@/hooks/useDevMode';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard', end: true },
@@ -37,6 +38,7 @@ export function ADLayout() {
   const location = useLocation();
   const vitals = useVitalsLogger();
   const track = useVitalsInteraction();
+  const isDevMode = useDevMode();
 
   const handleLogout = async () => {
     vitals.action('You clicked "Sign Out." Ending your session.');
@@ -259,7 +261,7 @@ export function ADLayout() {
                   </div>
                 )}
               </div>
-              <VitalsToggleButton />
+              {isDevMode && <VitalsToggleButton />}
               <ModeToggle />
             </div>
           </header>
@@ -277,7 +279,7 @@ export function ADLayout() {
       </div>
 
       {/* MidnightVitals diagnostic panel — slides up from bottom */}
-      <VitalsPanel />
+      {isDevMode && <VitalsPanel />}
     </div>
   );
 }

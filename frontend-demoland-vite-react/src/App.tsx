@@ -13,6 +13,7 @@ import { CompliancePage } from "./pages/compliance";
 import { SettingsPage } from "./pages/settings";
 import { ReferencePage } from "./pages/reference";
 import { AuthGuard } from "./components/auth-guard";
+import { useDevMode } from "./hooks/useDevMode";
 
 // Mock contract info for demoLand vitals monitoring
 const DEMO_CONTRACTS = [
@@ -24,28 +25,37 @@ const DEMO_CONTRACTS = [
   { id: 'expert-witness', name: 'Expert Witnesses', address: '0xe1a3c5d7f9b012' },
 ];
 
+function AppRoutes() {
+  const isDevMode = useDevMode();
+  return (
+    <>
+      {isDevMode && <VitalsNavigationLogger />}
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route element={<AuthGuard><ADLayout /></AuthGuard>}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/cases" element={<Dashboard />} />
+          <Route path="/cases/:caseId" element={<CaseView />} />
+          <Route path="/cases/:caseId/contacts" element={<CaseContacts />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/compliance" element={<CompliancePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/reference" element={<ReferencePage />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
+  );
+}
+
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="ad-ui-theme">
       <ProvidersProvider>
         <VitalsProvider mode="mock" contracts={DEMO_CONTRACTS}>
           <BrowserRouter basename="/">
-            <VitalsNavigationLogger />
-            <Routes>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
-              <Route element={<AuthGuard><ADLayout /></AuthGuard>}>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/cases" element={<Dashboard />} />
-                <Route path="/cases/:caseId" element={<CaseView />} />
-                <Route path="/cases/:caseId/contacts" element={<CaseContacts />} />
-                <Route path="/search" element={<SearchPage />} />
-                <Route path="/compliance" element={<CompliancePage />} />
-                <Route path="/settings" element={<SettingsPage />} />
-                <Route path="/reference" element={<ReferencePage />} />
-              </Route>
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+            <AppRoutes />
           </BrowserRouter>
         </VitalsProvider>
       </ProvidersProvider>
