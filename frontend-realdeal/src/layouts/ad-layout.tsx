@@ -1,19 +1,19 @@
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, FolderOpen, Search, FileCheck, Settings, LogOut,
-  Scale, ChevronLeft, ChevronRight, Shield, BookOpen, Sparkles,
+  Scale, ChevronLeft, ChevronRight, Shield, BookOpen,
   Bell, Users,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth, useMode } from '@/providers/context';
 import { ModeToggle } from '@/components/mode-toggle';
-import { JurisdictionPanel } from '@/components/jurisdiction-panel';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard', end: true },
   { to: '/cases', icon: FolderOpen, label: 'Cases', end: false },
   { to: '/search', icon: Search, label: 'Search', end: false },
   { to: '/compliance', icon: FileCheck, label: 'Reports', end: false },
+  { to: '/reference', icon: BookOpen, label: 'Reference', end: false },
   { to: '/settings', icon: Settings, label: 'Settings', end: false },
 ];
 
@@ -27,7 +27,6 @@ const demoNotifications = [
 
 export function ADLayout() {
   const [collapsed, setCollapsed] = useState(false);
-  const [showJurisdiction, setShowJurisdiction] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState(demoNotifications);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -148,24 +147,6 @@ export function ADLayout() {
                 )}
               </NavLink>
             )}
-
-            {/* Jurisdiction Toggle in Sidebar */}
-            <button
-              onClick={() => setShowJurisdiction(!showJurisdiction)}
-              className={`w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 mt-3 ${
-                showJurisdiction
-                  ? 'bg-ad-gold/10 text-ad-gold'
-                  : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground'
-              } ${collapsed ? 'justify-center' : ''}`}
-            >
-              <BookOpen className="w-5 h-5 shrink-0" />
-              {!collapsed && (
-                <>
-                  <span>Rules Panel</span>
-                  <Sparkles className="w-3 h-3 ml-auto text-ad-gold opacity-60" />
-                </>
-              )}
-            </button>
           </nav>
 
           {/* User Section */}
@@ -210,11 +191,6 @@ export function ADLayout() {
           {/* Header Bar */}
           <header className="h-14 border-b border-border flex items-center justify-between px-6 bg-card/50 backdrop-blur-sm shrink-0">
             <div className="flex items-center gap-3">
-              {isOnCase && (
-                <span className="text-xs font-mono text-muted-foreground bg-muted px-2.5 py-1 rounded-lg">
-                  IRCP — Idaho Rules
-                </span>
-              )}
             </div>
             <div className="flex items-center gap-2">
               {mode === 'realdeal' && session && (
@@ -277,7 +253,7 @@ export function ADLayout() {
             </div>
           </header>
 
-          {/* Page + Jurisdiction Panel */}
+          {/* Page Content */}
           <div className="flex-1 flex overflow-hidden">
             {/* Scrollable Page Content */}
             <main className="flex-1 overflow-y-auto p-6 ad-scrollbar">
@@ -285,16 +261,6 @@ export function ADLayout() {
                 <Outlet />
               </div>
             </main>
-
-            {/* Jurisdiction Panel (right side) */}
-            {showJurisdiction && (
-              <div className="ad-animate-slide-in shrink-0">
-                <JurisdictionPanel
-                  primaryJurisdiction="ID"
-                  onClose={() => setShowJurisdiction(false)}
-                />
-              </div>
-            )}
           </div>
         </div>
       </div>

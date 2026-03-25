@@ -11,6 +11,7 @@ import { CaseContacts } from "./pages/case-contacts";
 import { SearchPage } from "./pages/search";
 import { CompliancePage } from "./pages/compliance";
 import { SettingsPage } from "./pages/settings";
+import { ReferencePage } from "./pages/reference";
 import { AuthGuard } from "./components/auth-guard";
 
 // Mock contract info for demoLand vitals monitoring
@@ -41,6 +42,7 @@ function App() {
                 <Route path="/search" element={<SearchPage />} />
                 <Route path="/compliance" element={<CompliancePage />} />
                 <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/reference" element={<ReferencePage />} />
               </Route>
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
