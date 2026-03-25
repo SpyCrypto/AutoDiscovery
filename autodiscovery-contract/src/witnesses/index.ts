@@ -4,6 +4,8 @@
 // Re-exports all witness implementations and types for all ADL contracts.
 // ============================================================================
 
+export { hashToField, hashToBytes32 } from "./hash-utils.js";
+
 export {
   discoveryCoreWitnesses,
   computeUniqueCaseIdentifier,

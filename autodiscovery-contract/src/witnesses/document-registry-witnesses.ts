@@ -19,6 +19,7 @@
 
 import { type WitnessContext } from "@midnight-ntwrk/compact-runtime";
 import type { Ledger } from "../managed/document-registry/contract/index.js";
+import { hashToBytes32 } from "./hash-utils.js";
 
 // --- Private State Type ---
 
@@ -43,54 +44,6 @@ function bytesToHex(bytes: Uint8Array): string {
   return Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-/**
- * Deterministic hash: two Uint8Arrays → one 32-byte Uint8Array.
- * Used for twin bond hash and Merkle root computation.
- */
-function deterministicHashBytes(...inputs: Uint8Array[]): Uint8Array {
-  const totalLength = inputs.reduce((sum, a) => sum + a.length, 0);
-  const combined = new Uint8Array(totalLength);
-  let offset = 0;
-  for (const input of inputs) {
-    combined.set(input, offset);
-    offset += input.length;
-  }
-
-  const result = new Uint8Array(32);
-  let hashHigh = 0xcbf29ce484222325n;
-  let hashLow = 0x100000001b3n;
-  const prime = 0x01000000000000000000013bn;
-  const mask64 = (1n << 64n) - 1n;
-
-  for (let i = 0; i < combined.length; i++) {
-    hashHigh ^= BigInt(combined[i]);
-    hashHigh = (hashHigh * prime) & mask64;
-    hashLow ^= BigInt(combined[i]) ^ BigInt(i);
-    hashLow = (hashLow * prime) & mask64;
-  }
-
-  for (let i = 0; i < 8; i++) {
-    result[i] = Number((hashHigh >> BigInt(i * 8)) & 0xffn);
-    result[i + 8] = Number((hashLow >> BigInt(i * 8)) & 0xffn);
-    result[i + 16] = Number(((hashHigh ^ hashLow) >> BigInt(i * 8)) & 0xffn);
-    result[i + 24] = Number(((hashHigh + hashLow) >> BigInt(i * 8)) & 0xffn);
-  }
-
-  return result;
-}
-
-/**
- * Convert a bigint to a 32-byte Uint8Array (big-endian).
- */
-function bigintToBytes32(value: bigint): Uint8Array {
-  const hexString = value.toString(16).padStart(64, '0');
-  const bytes = new Uint8Array(32);
-  for (let i = 0; i < 32; i++) {
-    bytes[i] = parseInt(hexString.slice(i * 2, i * 2 + 2), 16);
-  }
-  return bytes;
-}
-
 // --- Witness Implementations ---
 
 /**
@@ -110,7 +63,7 @@ export const computeTwinBondHash = (
   imageTwinHash_0: Uint8Array,
   digitalTwinHash_0: Uint8Array,
 ): [DocumentRegistryPrivateState, Uint8Array] => {
-  const bondHash = deterministicHashBytes(imageTwinHash_0, digitalTwinHash_0);
+  const bondHash = hashToBytes32(imageTwinHash_0, digitalTwinHash_0);
 
   // Track the twin bond mapping in private state
   const updatedState: DocumentRegistryPrivateState = {
@@ -145,8 +98,7 @@ export const buildMerkleRootFromDocumentHashes = (
 ): [DocumentRegistryPrivateState, Uint8Array] => {
   // Convert collection ID to bytes, then hash it to produce a root
   // In production: look up actual document hashes and compute real Merkle tree
-  const collectionBytes = bigintToBytes32(documentHashCollection_0);
-  const merkleRoot = deterministicHashBytes(collectionBytes);
+  const merkleRoot = hashToBytes32(documentHashCollection_0);
 
   return [context.privateState, merkleRoot];
 };

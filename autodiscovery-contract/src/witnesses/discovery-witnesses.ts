@@ -20,6 +20,7 @@
 
 import { type WitnessContext } from "@midnight-ntwrk/compact-runtime";
 import type { Ledger } from "../managed/discovery-core/contract/index.js";
+import { hashToField } from "./hash-utils.js";
 
 // --- Private State Type ---
 // Private state tracks off-chain data that only this user sees.
@@ -38,58 +39,6 @@ export const createDiscoveryCorePrivateState = (): DiscoveryCorePrivateState => 
   ownedCaseIdentifiers: [],
   stepHashToCaseIdentifier: {},
 });
-
-// --- Deterministic Hash Utility ---
-// Produces a deterministic bigint from concatenated byte arrays.
-// Uses a simple but collision-resistant mixing function.
-// This is safe because the circuit trusts the witness output directly —
-// the witness is NOT verified against a circuit-side hash.
-// In the future, this can be upgraded to use Midnight's native hash primitive.
-
-function deterministicHashToField(...inputs: (Uint8Array | bigint)[]): bigint {
-  // Concatenate all inputs into a single byte array
-  const parts: Uint8Array[] = inputs.map((input) => {
-    if (input instanceof Uint8Array) {
-      return input;
-    }
-    // Convert bigint to 32-byte big-endian representation
-    const hexString = input.toString(16).padStart(64, '0');
-    const bytes = new Uint8Array(32);
-    for (let i = 0; i < 32; i++) {
-      bytes[i] = parseInt(hexString.slice(i * 2, i * 2 + 2), 16);
-    }
-    return bytes;
-  });
-
-  const totalLength = parts.reduce((sum, p) => sum + p.length, 0);
-  const combined = new Uint8Array(totalLength);
-  let offset = 0;
-  for (const part of parts) {
-    combined.set(part, offset);
-    offset += part.length;
-  }
-
-  // FNV-1a-inspired 256-bit hash (deterministic, no crypto dependency needed)
-  // We use two 128-bit accumulators to produce a 256-bit result
-  let hashHigh = 0xcbf29ce484222325n;
-  let hashLow = 0x100000001b3n;
-  const primeHigh = 0x01000000000000000000013bn;
-  const primeLow = 0x00000100000001b3n;
-  const mask128 = (1n << 128n) - 1n;
-
-  for (let i = 0; i < combined.length; i++) {
-    const byte = BigInt(combined[i]);
-    hashHigh ^= byte;
-    hashHigh = (hashHigh * primeHigh) & mask128;
-    hashLow ^= byte ^ BigInt(i);
-    hashLow = (hashLow * primeLow) & mask128;
-  }
-
-  // Combine into a single value, masked to fit in a Field (< 2^254)
-  const mask254 = (1n << 254n) - 1n;
-  const result = ((hashHigh << 126n) ^ hashLow) & mask254;
-  return result;
-}
 
 // --- Witness Implementations ---
 
@@ -110,7 +59,7 @@ export const computeUniqueCaseIdentifier = (
   caseNumber_0: Uint8Array,
   jurisdictionCode_0: Uint8Array,
 ): [DiscoveryCorePrivateState, bigint] => {
-  const caseIdentifier = deterministicHashToField(caseNumber_0, jurisdictionCode_0);
+  const caseIdentifier = hashToField(caseNumber_0, jurisdictionCode_0);
 
   // Track this case in our private state
   const updatedState: DiscoveryCorePrivateState = {
@@ -141,7 +90,7 @@ export const computeUniqueStepHash = (
   caseIdentifier_0: bigint,
   jurisdictionRuleReference_0: Uint8Array,
 ): [DiscoveryCorePrivateState, bigint] => {
-  const stepHash = deterministicHashToField(caseIdentifier_0, jurisdictionRuleReference_0);
+  const stepHash = hashToField(caseIdentifier_0, jurisdictionRuleReference_0);
 
   // Cache the mapping from step hash to case identifier in private state
   const stepHashHex = stepHash.toString(16);

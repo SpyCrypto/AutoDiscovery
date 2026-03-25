@@ -18,6 +18,7 @@
 
 import { type WitnessContext } from "@midnight-ntwrk/compact-runtime";
 import type { Ledger } from "../managed/compliance-proof/contract/index.js";
+import { hashToBytes32 } from "./hash-utils.js";
 
 // --- Private State Type ---
 
@@ -31,46 +32,6 @@ export type CompliancePrivateState = {
 export const createCompliancePrivateState = (): CompliancePrivateState => ({
   generatedAttestationHashes: [],
 });
-
-// --- Deterministic Hash Utility ---
-// Produces a deterministic Uint8Array (32 bytes) from bigint inputs.
-// Used for attestation hash computation.
-
-function deterministicHashToBytes32(...inputs: bigint[]): Uint8Array {
-  // Convert each bigint to 32-byte big-endian, then mix
-  const totalLength = inputs.length * 32;
-  const combined = new Uint8Array(totalLength);
-  for (let i = 0; i < inputs.length; i++) {
-    const hexString = inputs[i].toString(16).padStart(64, '0');
-    for (let j = 0; j < 32; j++) {
-      combined[i * 32 + j] = parseInt(hexString.slice(j * 2, j * 2 + 2), 16);
-    }
-  }
-
-  // FNV-1a-inspired mixing to produce 32 output bytes
-  const result = new Uint8Array(32);
-  let hashHigh = 0xcbf29ce484222325n;
-  let hashLow = 0x100000001b3n;
-  const prime = 0x01000000000000000000013bn;
-  const mask64 = (1n << 64n) - 1n;
-
-  for (let i = 0; i < combined.length; i++) {
-    hashHigh ^= BigInt(combined[i]);
-    hashHigh = (hashHigh * prime) & mask64;
-    hashLow ^= BigInt(combined[i]) ^ BigInt(i);
-    hashLow = (hashLow * prime) & mask64;
-  }
-
-  // Fill result bytes from the two accumulators
-  for (let i = 0; i < 8; i++) {
-    result[i] = Number((hashHigh >> BigInt(i * 8)) & 0xffn);
-    result[i + 8] = Number((hashLow >> BigInt(i * 8)) & 0xffn);
-    result[i + 16] = Number(((hashHigh ^ hashLow) >> BigInt(i * 8)) & 0xffn);
-    result[i + 24] = Number(((hashHigh + hashLow) >> BigInt(i * 8)) & 0xffn);
-  }
-
-  return result;
-}
 
 // --- Witness Implementations ---
 
@@ -108,7 +69,7 @@ export const computeUniqueAttestationHash = (
   stepOrPhaseHash_0: bigint,
   attestationTimestamp_0: bigint,
 ): [CompliancePrivateState, Uint8Array] => {
-  const attestationHash = deterministicHashToBytes32(
+  const attestationHash = hashToBytes32(
     caseIdentifier_0,
     stepOrPhaseHash_0,
     attestationTimestamp_0,
