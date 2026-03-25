@@ -193,6 +193,105 @@ cp frontend-demoland-vite-react/.env_template frontend-demoland-vite-react/.env
 
 ---
 
+## 🚢 Deployment
+
+### 1. Running the Proof Server (Local / Undeployed)
+
+The repo ships Docker Compose files in `autodiscovery-cli/` for running the proof server locally without a live network:
+
+```bash
+# Start proof server only (for contract compilation & testing)
+cd autodiscovery-cli
+docker compose -f ps-undeployed.yml up
+
+# Or start the full local dev stack (proof server + indexer + node)
+docker compose -f standalone.yml up
+```
+
+Default endpoints when running locally:
+
+| Service | URL |
+|---------|-----|
+| Proof server | `http://localhost:6300` |
+| Indexer | `http://localhost:8088` |
+| Node | `ws://localhost:9944` |
+
+The proof server image used is **`midnightnetwork/proof-server:7.0.0`**.  
+Before deploying to PreProd, check [docs.midnight.network/relnotes](https://docs.midnight.network/relnotes) for the latest Ledger 7.0-compatible image tag.
+
+---
+
+### 2. Funding a Wallet on PreProd
+
+To interact with Midnight PreProd you need a wallet funded with tDUST tokens:
+
+1. Install the [Lace wallet browser extension](https://chromewebstore.google.com/detail/hgeekaiplokcnmakghbdfbgnlfheichg) and create or import a wallet.
+2. Switch Lace to the **Midnight PreProd** network.
+3. Copy your **unshielded address** from Lace.
+4. Visit the faucet at [https://faucet.midnight.network/](https://faucet.midnight.network/) and request tDUST tokens.
+5. You will need two values when configuring the CLI `.env`:
+   - **Wallet mnemonic** (24-word BIP-39 phrase) → `MY_PREVIEW_MNEMONIC`
+   - **Unshielded address** → `MY_UNDEPLOYED_UNSHIELDED_ADDRESS`
+
+---
+
+### 3. Environment Variable Reference
+
+#### `autodiscovery-cli/.env`
+
+| Variable | Description | How to obtain |
+|----------|-------------|---------------|
+| `MY_PREVIEW_MNEMONIC` | 24-word BIP-39 mnemonic for the deployer wallet | Export from Lace wallet settings |
+| `MY_UNDEPLOYED_UNSHIELDED_ADDRESS` | Unshielded tDUST address used for local/undeployed testing | Copy from Lace wallet (unshielded address) |
+
+#### `frontend-demoland-vite-react/.env`
+
+| Variable | Description | How to obtain |
+|----------|-------------|---------------|
+| `VITE_AD_MODE` | `demoland` for mock data, `realdeal` for live blockchain | Set to `realdeal` when connecting to PreProd |
+| `VITE_CONTRACT_ADDRESS` | On-chain address of the deployed discovery-core contract | Output from CLI deployment (`npm run tui-preview`) |
+| `VITE_MIDNIGHT_NETWORK` | Midnight network target (`testnet` for PreProd) | Use `testnet` for PreProd |
+| `VITE_AI_SERVICE_URL` | URL for the AI metadata extraction service (optional) | Set if running the AI parsing service locally |
+
+#### `frontend-realdeal/.env`
+
+| Variable | Description | How to obtain |
+|----------|-------------|---------------|
+| `VITE_CONTRACT_ADDRESS` | On-chain address of the deployed contract | Output from CLI deployment |
+
+---
+
+### 4. Switching to realDeal / PreProd
+
+Follow these steps to connect the frontend to a live PreProd deployment:
+
+1. Deploy the contracts from the CLI:
+   ```bash
+   cd autodiscovery-cli
+   npm run tui-preview
+   ```
+2. Copy the contract address printed in the deployment output.
+3. Update the frontend `.env`:
+   ```bash
+   VITE_AD_MODE=realdeal
+   VITE_CONTRACT_ADDRESS=<address from step 2>
+   ```
+4. Restart the frontend dev server.
+
+> **Note:** The realDeal provider layer is currently a stub (see finding 5.1 from the Build Club review). Setting `VITE_AD_MODE=realdeal` will currently still fall back to demoLand providers. This section documents the intended flow for when the realDeal providers are fully implemented.
+
+---
+
+### 5. Reference Resources
+
+| Resource | Description |
+|----------|-------------|
+| [midnight-local-dev](https://github.com/midnightntwrk/midnight-local-dev) | Local development stack |
+| [midnight-doc-manager](https://github.com/Mackenzie-OO7/midnight-doc-manager) | Working PreProd integration example |
+| [Midnight Release Notes](https://docs.midnight.network/relnotes) | Docker image versions & Ledger compatibility |
+
+---
+
 ## 📚 Documentation Index
 
 | Document | Description |
