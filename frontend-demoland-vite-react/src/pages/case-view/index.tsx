@@ -4,8 +4,9 @@ import {
   ArrowLeft, FileText, Users, CheckCircle2, Clock, AlertTriangle,
   Shield, Hash, Link2, Eye, Loader2, Printer, Gavel, Search,
   Scale, Flag, Lock, UserCheck, GraduationCap, ArrowRight,
-  Share2,
+  Share2, Mail,
 } from 'lucide-react';
+import { EmailSafetyDialog } from '@/components/email-safety-dialog';
 import { useProviders } from '@/providers/context';
 import { useVitalsLogger } from '@/vitals';
 import type {
@@ -90,6 +91,7 @@ export function CaseView() {
   const [obfuscationData, setObfuscationData] = useState<ObfuscationScore | null>(null);
   const [showObfuscation, setShowObfuscation] = useState(false);
   const [exportingReport, setExportingReport] = useState(false);
+  const [showEmailSafety, setShowEmailSafety] = useState(false);
 
   useEffect(() => {
     if (!caseId) return;
@@ -312,6 +314,14 @@ export function CaseView() {
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">Compliance</p>
+            <button
+              onClick={() => setShowEmailSafety(true)}
+              aria-label="Compose Email"
+              className="mt-2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-ad-gold/10 text-ad-gold hover:bg-ad-gold/20 transition-colors text-xs font-medium"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              Compose Email
+            </button>
           </div>
         </div>
       </div>
@@ -1013,6 +1023,12 @@ export function CaseView() {
             </div>
           </div>
         </div>
+      )}
+      {showEmailSafety && caseId && (
+        <EmailSafetyDialog
+          caseId={caseId}
+          onClose={() => setShowEmailSafety(false)}
+        />
       )}
     </div>
   );
