@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { EmailSafetyDialog } from '@/components/email-safety-dialog';
 import { useProviders } from '@/providers/context';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/modules/midnight/wallet-widget/ui/common/tooltip';
 import type {
   Case, DiscoveryStep, Document, Attestation, Party,
   TimelineEntry, ObfuscationScore, AccessPermission, SharingEvent,
@@ -284,6 +285,7 @@ export function CaseView() {
   ];
 
   return (
+    <TooltipProvider>
     <div className="space-y-6">
       {/* Header */}
       <div>
@@ -751,12 +753,18 @@ export function CaseView() {
           <div className="bg-card border border-border rounded-xl p-5">
             <h3 className="font-semibold flex items-center gap-2 mb-4">
               <UserCheck className="w-4 h-4 text-ad-gold" /> Participant Access
-              <span
-                className="text-[10px] text-muted-foreground cursor-help border-b border-dotted border-muted-foreground ml-1"
-                title="Each participant's access is cryptographically registered. Their role and access level determine which documents they can view."
-              >
-                (how does this work?)
-              </span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className="text-[10px] text-muted-foreground cursor-help border-b border-dotted border-muted-foreground ml-1"
+                  >
+                    (how does this work?)
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs">
+                  Each participant's access is cryptographically registered. Their role and access level determine which documents they can view.
+                </TooltipContent>
+              </Tooltip>
             </h3>
             <div className="space-y-2">
               {permissions.map((perm) => (
@@ -809,12 +817,18 @@ export function CaseView() {
           <div className="bg-card border border-border rounded-xl p-5">
             <h3 className="font-semibold flex items-center gap-2 mb-4">
               <Share2 className="w-4 h-4 text-ad-gold" /> Document Sharing Audit Trail
-              <span
-                className="text-[10px] text-muted-foreground cursor-help border-b border-dotted border-muted-foreground ml-1"
-                title="Every document share is recorded with a tamper-proof audit trail. In production, each event is anchored on the Midnight blockchain."
-              >
-                (verified?)
-              </span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className="text-[10px] text-muted-foreground cursor-help border-b border-dotted border-muted-foreground ml-1"
+                  >
+                    (verified?)
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs">
+                  Every document share is recorded with a tamper-proof audit trail. In production, each event is anchored on the Midnight blockchain.
+                </TooltipContent>
+              </Tooltip>
             </h3>
             {sharingEvents.length === 0 ? (
               <p className="text-sm text-muted-foreground">No sharing events recorded</p>
@@ -969,12 +983,18 @@ export function CaseView() {
           <div className="bg-card border border-border rounded-xl p-5">
             <h3 className="font-semibold mb-4 flex items-center gap-2">
               Compliance Record History
-              <span
-                className="text-[10px] text-muted-foreground cursor-help border-b border-dotted border-muted-foreground"
-                title="Each compliance record is cryptographically sealed and can be independently verified without revealing sensitive case details."
-              >
-                (what are these?)
-              </span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className="text-[10px] text-muted-foreground cursor-help border-b border-dotted border-muted-foreground"
+                  >
+                    (what are these?)
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs">
+                  Each compliance record is cryptographically sealed and can be independently verified without revealing sensitive case details.
+                </TooltipContent>
+              </Tooltip>
             </h3>
             <div className="space-y-4">
               {attestations.map((att) => (
@@ -1034,5 +1054,6 @@ export function CaseView() {
         />
       )}
     </div>
+    </TooltipProvider>
   );
 }
