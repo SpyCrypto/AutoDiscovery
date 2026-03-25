@@ -197,6 +197,7 @@ export interface DocumentInput {
 
 export interface SearchFilters {
   caseId?: string;
+  allowedCaseIds?: string[];
   category?: DocumentCategory;
   originator?: string;
   dateFrom?: string;

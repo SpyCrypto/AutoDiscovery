@@ -52,6 +52,7 @@ export class MockDocumentProvider implements IDocumentProvider {
         (d.aiSynopsis?.toLowerCase().includes(q) ?? false) ||
         (d.entities?.some((e) => e.toLowerCase().includes(q)) ?? false);
       if (!matchesQuery) return false;
+      if (filters?.allowedCaseIds && !filters.allowedCaseIds.includes(d.caseId)) return false;
       if (filters?.caseId && d.caseId !== filters.caseId) return false;
       if (filters?.category && d.category !== filters.category) return false;
       if (filters?.originator && d.originator !== filters.originator) return false;

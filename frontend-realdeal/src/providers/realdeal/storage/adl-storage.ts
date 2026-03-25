@@ -139,11 +139,12 @@ export function verifyDocumentHash(docId: string): VerificationResult {
 
 export function searchDocumentsLocally(
   query: string,
-  filters?: { caseId?: string; category?: string; originator?: string },
+  filters?: { caseId?: string; allowedCaseIds?: string[]; category?: string; originator?: string },
 ): Document[] {
   let results = getAllDocuments();
   const lowerQuery = query.toLowerCase();
 
+  if (filters?.allowedCaseIds) results = results.filter((d) => filters.allowedCaseIds!.includes(d.caseId));
   if (filters?.caseId) results = results.filter((d) => d.caseId === filters.caseId);
   if (filters?.category) results = results.filter((d) => d.category === filters.category);
   if (filters?.originator) results = results.filter((d) => d.originator === filters.originator);

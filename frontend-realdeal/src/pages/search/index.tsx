@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, FileText, Filter, X, CheckCircle2, Link2, Shield,
   AlertTriangle, Sparkles, ChevronDown,
 } from 'lucide-react';
-import { useProviders } from '@/providers/context';
+import { useProviders, useAuth } from '@/providers/context';
 import type { Document, DocumentCategory, ProtectiveOrderTier, SearchFilters } from '@/providers/types';
 
 const categoryOptions: { value: DocumentCategory; label: string }[] = [
@@ -42,8 +42,9 @@ function ProtectiveOrderBadge({ tier }: { tier: ProtectiveOrderTier }) {
 }
 
 export function SearchPage() {
-  const { documents } = useProviders();
+  const { documents, cases } = useProviders();
   const navigate = useNavigate();
+  const { session } = useAuth();
 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Document[]>([]);
@@ -51,6 +52,23 @@ export function SearchPage() {
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [userCaseIds, setUserCaseIds] = useState<string[]>([]);
+  const [casesLoaded, setCasesLoaded] = useState(false);
+
+  useEffect(() => {
+    async function loadUserCases() {
+      try {
+        const myCases = await cases.listCases();
+        setUserCaseIds(myCases.map((c) => c.id));
+      } catch {
+        setUserCaseIds([]);
+      } finally {
+        setCasesLoaded(true);
+      }
+    }
+    if (session) loadUserCases();
+    else setCasesLoaded(true);
+  }, [session, cases]);
 
   // Filter state
   const [filterCategory, setFilterCategory] = useState<DocumentCategory | ''>('');
@@ -58,11 +76,12 @@ export function SearchPage() {
   const [filterOriginator, setFilterOriginator] = useState('');
 
   const handleSearch = async () => {
-    if (!query.trim()) return;
+    if (!query.trim() || !casesLoaded) return;
     setLoading(true);
     setSearched(true);
 
     const filters: SearchFilters = {};
+    if (userCaseIds.length > 0) filters.allowedCaseIds = userCaseIds;
     if (filterCategory) filters.category = filterCategory;
     if (filterProtective) filters.protectiveOrder = filterProtective;
     if (filterOriginator) filters.originator = filterOriginator;
@@ -123,7 +142,7 @@ export function SearchPage() {
           </button>
           <button
             onClick={handleSearch}
-            disabled={loading || !query.trim()}
+            disabled={loading || !query.trim() || !casesLoaded}
             className="px-6 py-3 ad-gradient-gold text-amber-950 rounded-xl font-bold text-sm hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Searching...' : 'Search'}
