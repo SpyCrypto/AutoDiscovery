@@ -5,13 +5,13 @@ import * as bip39 from '@scure/bip39';
 import { wordlist as english } from '@scure/bip39/wordlists/english.js';
 
 import {
-  type CounterContract,
-  type CounterPrivateStateId,
-  type CounterProviders,
-  type DeployedCounterContract,
+  type DiscoveryCoreContract,
+  type DiscoveryCorePrivateStateId,
+  type DiscoveryCoreProviders,
+  type DeployedDiscoveryCoreContract,
 } from './common-types';
 import { type Config, contractConfig } from './config';
-import { Counter, type CounterPrivateState, witnesses } from '@meshsdk/counter-contract';
+import { DiscoveryCore, type DiscoveryCorePrivateState, discoveryCoreWitnesses, createDiscoveryCorePrivateState } from '@autodiscovery/contract';
 
 import { type ContractAddress } from '@midnight-ntwrk/compact-runtime';
 import * as ledger from '@midnight-ntwrk/ledger-v6';
@@ -61,52 +61,50 @@ export interface WalletContext {
   unshieldedKeystore: UnshieldedKeystore;
 }
 
-export const getCounterLedgerState = async (
-  providers: CounterProviders,
+export const getDiscoveryCoreLedgerState = async (
+  providers: DiscoveryCoreProviders,
   contractAddress: ContractAddress,
 ): Promise<bigint | null> => {
   assertIsContractAddress(contractAddress);
   logger.info('Checking contract ledger state...');
   const state = await providers.publicDataProvider
     .queryContractState(contractAddress)
-    .then((contractState) => (contractState != null ? Counter.ledger(contractState.data).round : null));
-  logger.info(`Ledger state: ${state}`);
+    .then((contractState) => (contractState != null ? DiscoveryCore.ledger(contractState.data).totalCasesCreated : null));
+  logger.info(`Ledger state - totalCasesCreated: ${state}`);
   return state;
 };
 
-export const counterContractInstance: CounterContract = new Counter.Contract(witnesses);
+export const discoveryCoreContractInstance: DiscoveryCoreContract = new DiscoveryCore.Contract(discoveryCoreWitnesses);
 
 export const joinContract = async (
-  providers: CounterProviders,
+  providers: DiscoveryCoreProviders,
   contractAddress: string,
-): Promise<DeployedCounterContract> => {
-  const counterContract = await findDeployedContract(providers, {
+): Promise<DeployedDiscoveryCoreContract> => {
+  const discoveryCoreContract = await findDeployedContract(providers, {
     contractAddress,
-    contract: counterContractInstance,
-    privateStateId: 'counterPrivateState',
-    initialPrivateState: { privateCounter: 0 },
+    contract: discoveryCoreContractInstance,
+    privateStateId: 'discoveryCorePrivateState',
+    initialPrivateState: createDiscoveryCorePrivateState(),
   });
-  logger.info(`Joined contract at address: ${counterContract.deployTxData.public.contractAddress}`);
-  return counterContract;
+  logger.info(`Joined contract at address: ${discoveryCoreContract.deployTxData.public.contractAddress}`);
+  return discoveryCoreContract;
 };
 
 export const deploy = async (
-  providers: CounterProviders,
-  privateState: CounterPrivateState,
-): Promise<DeployedCounterContract> => {
-  logger.info('Deploying counter contract...');
-  const counterContract = await deployContract(providers, {
-    contract: counterContractInstance,
-    privateStateId: 'counterPrivateState',
+  providers: DiscoveryCoreProviders,
+  privateState: DiscoveryCorePrivateState,
+): Promise<DeployedDiscoveryCoreContract> => {
+  logger.info('Deploying discovery-core contract...');
+  const discoveryCoreContract = await deployContract(providers, {
+    contract: discoveryCoreContractInstance,
+    privateStateId: 'discoveryCorePrivateState',
     initialPrivateState: privateState,
   });
-  logger.info(`Deployed contract at address: ${counterContract.deployTxData.public.contractAddress}`);
-  return counterContract;
+  logger.info(`Deployed contract at address: ${discoveryCoreContract.deployTxData.public.contractAddress}`);
+  return discoveryCoreContract;
 };
 
-export const increment = async (counterContract: DeployedCounterContract): Promise<FinalizedTxData> => {
-  logger.info('Incrementing...');
-  const finalizedTxData = await counterContract.callTx.increment();
+const logFinalizedTxData = (finalizedTxData: FinalizedTxData): void => {
   logger.info({
     section: 'PUBLIC',
     tx: finalizedTxData.public.tx,
@@ -144,7 +142,7 @@ export const increment = async (counterContract: DeployedCounterContract): Promi
 
   logger.info({
     section: 'Fallible-Effects',
-   claimedContractCalls: finalizedTxData.public.partitionedTranscript[1]?.effects.claimedContractCalls,
+    claimedContractCalls: finalizedTxData.public.partitionedTranscript[1]?.effects.claimedContractCalls,
     claimedNullifiers: finalizedTxData.public.partitionedTranscript[1]?.effects.claimedNullifiers,
     claimedShieldedReceives: finalizedTxData.public.partitionedTranscript[1]?.effects.claimedShieldedReceives,
     claimedShieldedSpends: finalizedTxData.public.partitionedTranscript[1]?.effects.claimedShieldedSpends,
@@ -168,22 +166,54 @@ export const increment = async (counterContract: DeployedCounterContract): Promi
     result: finalizedTxData.private.result,
     unprovenTx: finalizedTxData.private.unprovenTx,
   });
+};
 
+export const createNewCase = async (
+  discoveryCoreContract: DeployedDiscoveryCoreContract,
+  caseNumber: Uint8Array,
+  jurisdictionCode: Uint8Array,
+): Promise<FinalizedTxData> => {
+  logger.info('Creating new case...');
+  const finalizedTxData = await discoveryCoreContract.callTx.createNewCase(caseNumber, jurisdictionCode);
+  logFinalizedTxData(finalizedTxData);
   return finalizedTxData.public;
 };
 
-export const displayCounterValue = async (
-  providers: CounterProviders,
-  counterContract: DeployedCounterContract,
-): Promise<{ counterValue: bigint | null; contractAddress: string }> => {
-  const contractAddress = counterContract.deployTxData.public.contractAddress;
-  const counterValue = await getCounterLedgerState(providers, contractAddress);
-  if (counterValue === null) {
-    logger.info(`There is no counter contract deployed at ${contractAddress}.`);
+export const addDiscoveryStepToCase = async (
+  discoveryCoreContract: DeployedDiscoveryCoreContract,
+  caseId: bigint,
+  ruleRef: Uint8Array,
+  deadline: bigint,
+): Promise<FinalizedTxData> => {
+  logger.info('Adding discovery step to case...');
+  const finalizedTxData = await discoveryCoreContract.callTx.addDiscoveryStepToCase(caseId, ruleRef, deadline);
+  logFinalizedTxData(finalizedTxData);
+  return finalizedTxData.public;
+};
+
+export const markDiscoveryStepAsCompleted = async (
+  discoveryCoreContract: DeployedDiscoveryCoreContract,
+  caseId: bigint,
+  stepHash: bigint,
+): Promise<FinalizedTxData> => {
+  logger.info('Marking discovery step as completed...');
+  const finalizedTxData = await discoveryCoreContract.callTx.markDiscoveryStepAsCompleted(caseId, stepHash);
+  logFinalizedTxData(finalizedTxData);
+  return finalizedTxData.public;
+};
+
+export const displayCaseStatus = async (
+  providers: DiscoveryCoreProviders,
+  discoveryCoreContract: DeployedDiscoveryCoreContract,
+): Promise<{ totalCasesCreated: bigint | null; contractAddress: string }> => {
+  const contractAddress = discoveryCoreContract.deployTxData.public.contractAddress;
+  const totalCasesCreated = await getDiscoveryCoreLedgerState(providers, contractAddress);
+  if (totalCasesCreated === null) {
+    logger.info(`There is no discovery-core contract deployed at ${contractAddress}.`);
   } else {
-    logger.info(`Current counter value: ${Number(counterValue)}`);
+    logger.info(`Total cases created: ${Number(totalCasesCreated)}`);
   }
-  return { contractAddress, counterValue };
+  return { contractAddress, totalCasesCreated };
 };
 
 export const createWalletAndMidnightProvider = async (
@@ -481,7 +511,7 @@ export const configureProviders = async (walletContext: WalletContext, config: C
   return {
     //AES-256-GCM + PBKDF2
     // WalletProvider for encryption uses Encryption Public Key (EPK)
-    privateStateProvider: levelPrivateStateProvider<typeof CounterPrivateStateId>({
+    privateStateProvider: levelPrivateStateProvider<typeof DiscoveryCorePrivateStateId>({
       privateStateStoreName: contractConfig.privateStateStoreName,      
       signingKeyStoreName: "signing-keys",
       midnightDbName: "midnight-level-db",
@@ -489,7 +519,7 @@ export const configureProviders = async (walletContext: WalletContext, config: C
       privateStoragePasswordProvider: () => "1234567890123456"
     }),
     publicDataProvider: indexerPublicDataProvider(config.indexer, config.indexerWS),
-    zkConfigProvider: new NodeZkConfigProvider<'increment'>(contractConfig.zkConfigPath),
+    zkConfigProvider: new NodeZkConfigProvider<'createNewCase' | 'addDiscoveryStepToCase' | 'markDiscoveryStepAsCompleted' | 'checkCaseComplianceStatus'>(contractConfig.zkConfigPath),
     proofProvider: httpClientProofProvider(config.proofServer),
     walletProvider: walletAndMidnightProvider,
     midnightProvider: walletAndMidnightProvider,

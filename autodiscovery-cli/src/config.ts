@@ -2,8 +2,8 @@ import path from 'node:path';
 export const currentDir = path.resolve(new URL(import.meta.url).pathname, '..');
 
 export const contractConfig = {
-  privateStateStoreName: 'counter-private-state',
-  zkConfigPath: path.resolve(currentDir, '..', '..', 'counter-contract', 'src', 'managed', 'counter'),
+  privateStateStoreName: 'discovery-core-private-state',
+  zkConfigPath: path.resolve(currentDir, '..', '..', 'autodiscovery-contract', 'src', 'managed', 'discovery-core'),
 };
 
 export interface Config {

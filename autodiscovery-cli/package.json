@@ -1,5 +1,5 @@
 {
-  "name": "@meshsdk/counter-cli",
+  "name": "@autodiscovery/cli",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -16,8 +16,8 @@
     }
   },
   "scripts": {      
-    "test-undeployed": "vitest run counter.test.ts",  
-    "test-preview": "RUN_ENV_TESTS=true TEST_ENV=preview vitest run counter.test.ts",
+    "test-undeployed": "vitest run discovery-core.test.ts",  
+    "test-preview": "RUN_ENV_TESTS=true TEST_ENV=preview vitest run discovery-core.test.ts",
     "tui-undeployed": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tui_standalone.ts",     
     "tui-preview": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tui_preview.ts", 
     "setup-undeployed": "node --experimental-specifier-resolution=node --loader ts-node/esm src/setup/standalone.ts", 
@@ -33,6 +33,6 @@
     "wallet-testing": "vitest run src/test/wallet.test.ts"
   },
   "dependencies": {    
-    "@meshsdk/counter-contract": "*"    
+    "@autodiscovery/contract": "*"    
   }
 }

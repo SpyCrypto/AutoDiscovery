@@ -1,25 +1,27 @@
-import { Counter, type CounterPrivateState } from '@meshsdk/counter-contract';
+import { DiscoveryCore, type DiscoveryCorePrivateState } from '@autodiscovery/contract';
 import type { ImpureCircuitId, MidnightProviders } from '@midnight-ntwrk/midnight-js-types';
 import type { DeployedContract, FoundContract } from '@midnight-ntwrk/midnight-js-contracts';
 
-export type CounterCircuits = ImpureCircuitId<Counter.Contract<CounterPrivateState>>;
+export type DiscoveryCoreCircuits = ImpureCircuitId<DiscoveryCore.Contract<DiscoveryCorePrivateState>>;
 
-export const CounterPrivateStateId = 'counterPrivateState';
+export const DiscoveryCorePrivateStateId = 'discoveryCorePrivateState';
 
-export type CounterProviders = MidnightProviders<CounterCircuits, typeof CounterPrivateStateId, CounterPrivateState>;
+export type DiscoveryCoreProviders = MidnightProviders<DiscoveryCoreCircuits, typeof DiscoveryCorePrivateStateId, DiscoveryCorePrivateState>;
 
-export type CounterContract = Counter.Contract<CounterPrivateState>;
+export type DiscoveryCoreContract = DiscoveryCore.Contract<DiscoveryCorePrivateState>;
 
-export type DeployedCounterContract = DeployedContract<CounterContract> | FoundContract<CounterContract>;
+export type DeployedDiscoveryCoreContract = DeployedContract<DiscoveryCoreContract> | FoundContract<DiscoveryCoreContract>;
 
 export type UserAction = {
-  increment: string | undefined;  
+  createNewCase: string | undefined;
+  addDiscoveryStepToCase: string | undefined;
+  markDiscoveryStepAsCompleted: string | undefined;
 };
 
 export type DerivedState = {
-  readonly round: Counter.Ledger["round"];
+  readonly totalCasesCreated: DiscoveryCore.Ledger["totalCasesCreated"];
 };
 
 export const emptyState: DerivedState = {
-  round: 0n,
+  totalCasesCreated: 0n,
 };

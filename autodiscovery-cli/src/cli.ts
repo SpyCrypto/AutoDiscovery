@@ -2,10 +2,11 @@ import { stdin as input, stdout as output } from 'node:process';
 import { createInterface, type Interface } from 'node:readline/promises';
 import { type Logger } from 'pino';
 import { type StartedDockerComposeEnvironment, type DockerComposeEnvironment } from 'testcontainers';
-import { type CounterProviders, type DeployedCounterContract } from './common-types';
+import { type DiscoveryCoreProviders, type DeployedDiscoveryCoreContract } from './common-types';
 import { type Config, UndeployedConfig } from './config';
 import * as api from './api';
 import type { WalletContext } from './api';
+import { createDiscoveryCorePrivateState } from '@autodiscovery/contract';
 import 'dotenv/config';
 
 let logger: Logger;
@@ -18,29 +19,31 @@ const GENESIS_MINT_WALLET_SEED = '0000000000000000000000000000000000000000000000
 
 const DEPLOY_OR_JOIN_QUESTION = `
 You can do one of the following:
-  1. Deploy a new counter contract
-  2. Join an existing counter contract
+  1. Deploy a new discovery-core contract
+  2. Join an existing discovery-core contract
   3. Exit
 Which would you like to do? `;
 
 const MAIN_LOOP_QUESTION = `
 You can do one of the following:
-  1. Increment
-  2. Display current counter value
-  3. Exit
+  1. Create a new case
+  2. Add a discovery step to a case
+  3. Mark a discovery step as completed
+  4. Display case status
+  5. Exit
 Which would you like to do? `;
 
-const join = async (providers: CounterProviders, rli: Interface): Promise<DeployedCounterContract> => {
+const join = async (providers: DiscoveryCoreProviders, rli: Interface): Promise<DeployedDiscoveryCoreContract> => {
   const contractAddress = await rli.question('What is the contract address (in hex)? ');
   return await api.joinContract(providers, contractAddress);
 };
 
-const deployOrJoin = async (providers: CounterProviders, rli: Interface): Promise<DeployedCounterContract | null> => {
+const deployOrJoin = async (providers: DiscoveryCoreProviders, rli: Interface): Promise<DeployedDiscoveryCoreContract | null> => {
   while (true) {
     const choice = await rli.question(DEPLOY_OR_JOIN_QUESTION);
     switch (choice) {
       case '1':
-        return await api.deploy(providers, { privateCounter: 0 });
+        return await api.deploy(providers, createDiscoveryCorePrivateState());
       case '2':
         return await join(providers, rli);
       case '3':
@@ -52,21 +55,44 @@ const deployOrJoin = async (providers: CounterProviders, rli: Interface): Promis
   }
 };
 
-const mainLoop = async (providers: CounterProviders, rli: Interface): Promise<void> => {
-  const counterContract = await deployOrJoin(providers, rli);
-  if (counterContract === null) {
+const mainLoop = async (providers: DiscoveryCoreProviders, rli: Interface): Promise<void> => {
+  const discoveryCoreContract = await deployOrJoin(providers, rli);
+  if (discoveryCoreContract === null) {
     return;
   }
   while (true) {
     const choice = await rli.question(MAIN_LOOP_QUESTION);
     switch (choice) {
-      case '1':
-        await api.increment(counterContract);
+      case '1': {
+        const caseNumberHex = await rli.question('Enter case number (hex string, 32 bytes): ');
+        const jurisdictionCodeHex = await rli.question('Enter jurisdiction code (hex string, 8 bytes): ');
+        const caseNumber = Buffer.from(caseNumberHex.replace(/^0x/, ''), 'hex');
+        const jurisdictionCode = Buffer.from(jurisdictionCodeHex.replace(/^0x/, ''), 'hex');
+        await api.createNewCase(discoveryCoreContract, caseNumber, jurisdictionCode);
         break;
-      case '2':
-        await api.displayCounterValue(providers, counterContract);
+      }
+      case '2': {
+        const caseIdStr = await rli.question('Enter case ID (bigint as decimal): ');
+        const ruleRefHex = await rli.question('Enter rule reference (hex string, 32 bytes): ');
+        const deadlineStr = await rli.question('Enter step deadline timestamp (Unix seconds): ');
+        const caseId = BigInt(caseIdStr);
+        const ruleRef = Buffer.from(ruleRefHex.replace(/^0x/, ''), 'hex');
+        const deadline = BigInt(deadlineStr);
+        await api.addDiscoveryStepToCase(discoveryCoreContract, caseId, ruleRef, deadline);
         break;
-      case '3':
+      }
+      case '3': {
+        const caseIdStr = await rli.question('Enter case ID (bigint as decimal): ');
+        const stepHashStr = await rli.question('Enter step hash (bigint as decimal): ');
+        const caseId = BigInt(caseIdStr);
+        const stepHash = BigInt(stepHashStr);
+        await api.markDiscoveryStepAsCompleted(discoveryCoreContract, caseId, stepHash);
+        break;
+      }
+      case '4':
+        await api.displayCaseStatus(providers, discoveryCoreContract);
+        break;
+      case '5':
         logger.info('Exiting...');
         return;
       default:
@@ -141,10 +167,10 @@ export const run = async (config: Config, _logger: Logger, dockerEnv?: DockerCom
     env = await dockerEnv.up();
 
     if (config instanceof UndeployedConfig) {
-      config.indexer = mapContainerPort(env, config.indexer, 'counter-indexer');
-      config.indexerWS = mapContainerPort(env, config.indexerWS, 'counter-indexer');
-      config.node = mapContainerPort(env, config.node, 'counter-node');
-      config.proofServer = mapContainerPort(env, config.proofServer, 'counter-proof-server');
+      config.indexer = mapContainerPort(env, config.indexer, 'autodiscovery-indexer');
+      config.indexerWS = mapContainerPort(env, config.indexerWS, 'autodiscovery-indexer');
+      config.node = mapContainerPort(env, config.node, 'autodiscovery-node');
+      config.proofServer = mapContainerPort(env, config.proofServer, 'autodiscovery-proof-server');
     }
   }
 
