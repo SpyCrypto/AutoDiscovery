@@ -22,6 +22,14 @@ jobs:
           node-version: 18
           cache: npm
 
+      - name: Install Compact compiler
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+          echo "$HOME/.compact/bin" >> $GITHUB_PATH
+
+      - name: Verify Compact compiler
+        run: compactc --version
+
       - name: Install dependencies
         run: npm install
 
