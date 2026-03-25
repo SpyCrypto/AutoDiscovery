@@ -24,11 +24,12 @@ jobs:
 
       - name: Install Compact compiler
         run: |
-          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+          curl --proto '=https' --tlsv1.2 -fLsSo /tmp/compact-installer.sh https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh
+          sh /tmp/compact-installer.sh
           echo "$HOME/.compact/bin" >> $GITHUB_PATH
 
       - name: List contents of Compact bin
-        run: ls -l "$HOME/.compact/bin"
+        run: ls -l "$HOME/.compact/bin" || echo "WARNING: Compact bin directory not found at $HOME/.compact/bin"
 
       - name: Verify Compact compiler
         run: compactc --version
