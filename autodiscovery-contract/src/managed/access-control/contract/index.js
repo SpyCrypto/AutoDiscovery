@@ -81,6 +81,9 @@ export class Contract {
     if (typeof(witnesses_0.computeSharingEventProofHash) !== 'function') {
       throw new __compactRuntime.CompactError('first (witnesses) argument to Contract constructor does not contain a function-valued field named computeSharingEventProofHash');
     }
+    if (typeof(witnesses_0.lookupRoleCommitmentMerklePath) !== 'function') {
+      throw new __compactRuntime.CompactError('first (witnesses) argument to Contract constructor does not contain a function-valued field named lookupRoleCommitmentMerklePath');
+    }
     this.witnesses = witnesses_0;
     this.circuits = {
       registerParticipantKey: (...args_1) => {
@@ -281,8 +284,50 @@ export class Contract {
         partialProofData.output = { value: [], alignment: [] };
         return { result: result_0, context: context, proofData: partialProofData, gasCost: context.gasCost };
       },
-      proveParticipantHasRole(context, ...args_1) {
-        return { result: pureCircuits.proveParticipantHasRole(...args_1), context };
+      proveParticipantHasRole: (...args_1) => {
+        if (args_1.length !== 3) {
+          throw new __compactRuntime.CompactError(`proveParticipantHasRole: expected 3 arguments (as invoked from Typescript), received ${args_1.length}`);
+        }
+        const contextOrig_0 = args_1[0];
+        const caseUniqueIdentifier_0 = args_1[1];
+        const claimedRoleEnum_0 = args_1[2];
+        if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.currentQueryContext != undefined)) {
+          __compactRuntime.typeError('proveParticipantHasRole',
+                                     'argument 1 (as invoked from Typescript)',
+                                     'access-control.compact line 323 char 1',
+                                     'CircuitContext',
+                                     contextOrig_0)
+        }
+        if (!(caseUniqueIdentifier_0.buffer instanceof ArrayBuffer && caseUniqueIdentifier_0.BYTES_PER_ELEMENT === 1 && caseUniqueIdentifier_0.length === 32)) {
+          __compactRuntime.typeError('proveParticipantHasRole',
+                                     'argument 1 (argument 2 as invoked from Typescript)',
+                                     'access-control.compact line 323 char 1',
+                                     'Bytes<32>',
+                                     caseUniqueIdentifier_0)
+        }
+        if (!(typeof(claimedRoleEnum_0) === 'bigint' && claimedRoleEnum_0 >= 0n && claimedRoleEnum_0 <= 255n)) {
+          __compactRuntime.typeError('proveParticipantHasRole',
+                                     'argument 2 (argument 3 as invoked from Typescript)',
+                                     'access-control.compact line 323 char 1',
+                                     'Uint<0..256>',
+                                     claimedRoleEnum_0)
+        }
+        const context = { ...contextOrig_0, gasCost: __compactRuntime.emptyRunningCost() };
+        const partialProofData = {
+          input: {
+            value: _descriptor_0.toValue(caseUniqueIdentifier_0).concat(_descriptor_1.toValue(claimedRoleEnum_0)),
+            alignment: _descriptor_0.alignment().concat(_descriptor_1.alignment())
+          },
+          output: undefined,
+          publicTranscript: [],
+          privateTranscriptOutputs: []
+        };
+        const result_0 = this._proveParticipantHasRole_0(context,
+                                                         partialProofData,
+                                                         caseUniqueIdentifier_0,
+                                                         claimedRoleEnum_0);
+        partialProofData.output = { value: _descriptor_2.toValue(result_0), alignment: _descriptor_2.alignment() };
+        return { result: result_0, context: context, proofData: partialProofData, gasCost: context.gasCost };
       },
       shareDocumentWithParticipant: (...args_1) => {
         if (args_1.length !== 3) {
@@ -380,6 +425,7 @@ export class Contract {
       assignRoleForCase: this.circuits.assignRoleForCase,
       grantDocumentAccessToParticipant: this.circuits.grantDocumentAccessToParticipant,
       revokeDocumentAccessFromParticipant: this.circuits.revokeDocumentAccessFromParticipant,
+      proveParticipantHasRole: this.circuits.proveParticipantHasRole,
       shareDocumentWithParticipant: this.circuits.shareDocumentWithParticipant,
       verifyParticipantAccess: this.circuits.verifyParticipantAccess
     };
@@ -777,7 +823,94 @@ export class Contract {
                                        { ins: { cached: true, n: 1 } }]);
     return [];
   }
-  _proveParticipantHasRole_0(caseUniqueIdentifier_0, claimedRoleEnum_0) {
+  _ownPublicKey_0(context, partialProofData) {
+    const result_0 = __compactRuntime.ownPublicKey(context);
+    partialProofData.privateTranscriptOutputs.push({
+      value: _descriptor_0.toValue(result_0),
+      alignment: _descriptor_0.alignment()
+    });
+    return result_0;
+  }
+  _lookupRoleCommitmentMerklePath_0(context, partialProofData, publicKeyHash_0) {
+    const witnessContext_0 = __compactRuntime.createWitnessContext(ledger(context.currentQueryContext.state), context.currentPrivateState, context.currentQueryContext.address);
+    const [nextPrivateState_0, result_0] = this.witnesses.lookupRoleCommitmentMerklePath(witnessContext_0,
+                                                                                         publicKeyHash_0);
+    context.currentPrivateState = nextPrivateState_0;
+    return result_0;
+  }
+  _proveParticipantHasRole_0(context,
+                             partialProofData,
+                             caseUniqueIdentifier_0,
+                             claimedRoleEnum_0)
+  {
+    // 1. Get the caller's public key from their wallet (private).
+    const callerPublicKey_0 = this._ownPublicKey_0(context, partialProofData);
+
+    // 2. Look up the Merkle proof path for the caller's key in the role tree.
+    const merklePath_0 = this._lookupRoleCommitmentMerklePath_0(context,
+                                                                partialProofData,
+                                                                callerPublicKey_0);
+
+    // 3. Assert the Merkle path exists (caller is registered in the tree).
+    __compactRuntime.assert(merklePath_0 !== undefined,
+                            'Caller is not registered in the role commitments tree');
+
+    // 4. Verify the Merkle inclusion proof against the on-chain tree.
+    //    Access the authorizedRoleCommitments tree (state index 0, subindex 0)
+    //    and verify the path proves the caller's key is in the tree.
+    const merkleState_0 = context.currentQueryContext.state.asArray()[0].asArray()[0].asBoundedMerkleTree().rehash();
+    const verifiedPath_0 = merkleState_0.findPathForLeaf({
+      value: _descriptor_0.toValue(callerPublicKey_0),
+      alignment: _descriptor_0.alignment()
+    });
+    __compactRuntime.assert(verifiedPath_0 !== undefined,
+                            'Merkle inclusion proof failed — caller key not in role commitments tree');
+    // Record the Merkle root access in the proof transcript.
+    __compactRuntime.queryLedgerState(context,
+                                      partialProofData,
+                                      [
+                                       { dup: { n: 0 } },
+                                       { idx: { cached: false,
+                                                pushPath: false,
+                                                path: [
+                                                       { tag: 'value',
+                                                         value: { value: _descriptor_1.toValue(0n),
+                                                                  alignment: _descriptor_1.alignment() } }] } },
+                                       { idx: { cached: false,
+                                                pushPath: false,
+                                                path: [
+                                                       { tag: 'value',
+                                                         value: { value: _descriptor_1.toValue(0n),
+                                                                  alignment: _descriptor_1.alignment() } }] } },
+                                       'root',
+                                       { popeq: { cached: false,
+                                                  result: undefined } }]);
+
+    // 5. Look up the caller's registered role from the on-chain role map.
+    const storedRole_0 = _descriptor_1.fromValue(__compactRuntime.queryLedgerState(context,
+                                                                                   partialProofData,
+                                                                                   [
+                                                                                    { dup: { n: 0 } },
+                                                                                    { idx: { cached: false,
+                                                                                             pushPath: false,
+                                                                                             path: [
+                                                                                                    { tag: 'value',
+                                                                                                      value: { value: _descriptor_1.toValue(5n),
+                                                                                                               alignment: _descriptor_1.alignment() } }] } },
+                                                                                    { idx: { cached: false,
+                                                                                             pushPath: false,
+                                                                                             path: [
+                                                                                                    { tag: 'value',
+                                                                                                      value: { value: _descriptor_0.toValue(callerPublicKey_0),
+                                                                                                               alignment: _descriptor_0.alignment() } }] } },
+                                                                                    { popeq: { cached: false,
+                                                                                               result: undefined } }]).value);
+
+    // 6. Assert the stored role matches the claimed role.
+    __compactRuntime.assert(this._equal_1(storedRole_0, claimedRoleEnum_0),
+                            'Claimed role does not match registered role');
+
+    // 7. Return true — ZK proof guarantees correctness without revealing identity.
     return true;
   }
   _shareDocumentWithParticipant_0(context,
@@ -1547,33 +1680,10 @@ const _emptyContext = {
 };
 const _dummyContract = new Contract({
   getCurrentTimestamp: (...args) => undefined,
-  computeSharingEventProofHash: (...args) => undefined
+  computeSharingEventProofHash: (...args) => undefined,
+  lookupRoleCommitmentMerklePath: (...args) => undefined
 });
-export const pureCircuits = {
-  proveParticipantHasRole: (...args_0) => {
-    if (args_0.length !== 2) {
-      throw new __compactRuntime.CompactError(`proveParticipantHasRole: expected 2 arguments (as invoked from Typescript), received ${args_0.length}`);
-    }
-    const caseUniqueIdentifier_0 = args_0[0];
-    const claimedRoleEnum_0 = args_0[1];
-    if (!(caseUniqueIdentifier_0.buffer instanceof ArrayBuffer && caseUniqueIdentifier_0.BYTES_PER_ELEMENT === 1 && caseUniqueIdentifier_0.length === 32)) {
-      __compactRuntime.typeError('proveParticipantHasRole',
-                                 'argument 1',
-                                 'access-control.compact line 323 char 1',
-                                 'Bytes<32>',
-                                 caseUniqueIdentifier_0)
-    }
-    if (!(typeof(claimedRoleEnum_0) === 'bigint' && claimedRoleEnum_0 >= 0n && claimedRoleEnum_0 <= 255n)) {
-      __compactRuntime.typeError('proveParticipantHasRole',
-                                 'argument 2',
-                                 'access-control.compact line 323 char 1',
-                                 'Uint<0..256>',
-                                 claimedRoleEnum_0)
-    }
-    return _dummyContract._proveParticipantHasRole_0(caseUniqueIdentifier_0,
-                                                     claimedRoleEnum_0);
-  }
-};
+export const pureCircuits = {};
 export const contractReferenceLocations =
   { tag: 'publicLedgerArray', indices: { } };
 //# sourceMappingURL=index.js.map

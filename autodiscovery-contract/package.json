@@ -23,6 +23,7 @@
     "compact:compliance-proof": "compact compile +0.29.0 src/contracts/compliance-proof.compact src/managed/compliance-proof",
     "compact:document-registry": "compact compile +0.29.0 src/contracts/document-registry.compact src/managed/document-registry",
     "compact:expert-witness": "compact compile +0.29.0 src/contracts/expert-witness.compact src/managed/expert-witness",
+    "compact:access-control": "compact compile +0.29.0 src/contracts/access-control.compact src/managed/access-control",
     "compact:ad": "npm run compact:discovery-core && npm run compact:jurisdiction-registry && npm run compact:compliance-proof && npm run compact:document-registry",
     "compact:all": "npm run compact:counter && npm run compact:ad",
     "test": "vitest run",

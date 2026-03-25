@@ -325,19 +325,39 @@ export circuit proveParticipantHasRole(
     claimedRoleEnum: Uint<8>
 ): Boolean {
 
-  // Look up the caller's identity from their wallet.
-  // The caller's identity is known to the contract but NOT
-  // revealed in the ZK proof output.
-  // TODO: Full implementation should:
-  //   1. Hash ownPublicKey() to get Bytes<32>
-  //   2. Look up Merkle path via lookupRoleCommitmentMerklePath witness
-  //   3. Verify Merkle inclusion proof
-  //   4. Check role matches claimedRoleEnum
-  // For now, returns true as a compilation skeleton.
+  // 1. Get the caller's public key from their wallet (private, not disclosed).
+  //    ownPublicKey() is a built-in Compact function that reads the local wallet key.
+  const callerPublicKey = ownPublicKey();
 
-  // Return true if the role proof is valid.
-  // The ZK proof guarantees this result without revealing the prover's identity.
-  return true;
+  // 2. Look up the Merkle proof path for this public key in the role tree.
+  //    The witness queries the off-chain copy of the authorizedRoleCommitments tree.
+  //    Returns Maybe<MerkleTreePath<10, Bytes<32>>> — None if not registered.
+  const maybeMerklePath = lookupRoleCommitmentMerklePath(callerPublicKey);
+
+  // 3. Assert the Merkle path exists (caller is in the tree).
+  //    If not in tree → they were never registered → not authorized.
+  assert is_some(maybeMerklePath),
+      "Caller is not registered in the role commitments tree";
+  const merklePath = from_some(maybeMerklePath);
+
+  // 4. Verify the Merkle inclusion proof against the on-chain tree root.
+  //    This proves the caller's key IS in the authorizedRoleCommitments tree
+  //    without revealing WHICH entry they are (ZK privacy guarantee).
+  assert authorizedRoleCommitments.member(merklePath, callerPublicKey),
+      "Merkle inclusion proof failed — caller key not in role commitments tree";
+
+  // 5. Look up the caller's registered role from the on-chain role map.
+  //    The caller's key is used privately — not disclosed in the ZK proof.
+  //    The ZK proof proves "stored role == claimed role" without revealing the key.
+  const storedRole = participantRoleByPublicKeyHash.lookup(callerPublicKey);
+
+  // 6. Assert the stored role matches the claimed role.
+  assert storedRole == claimedRoleEnum,
+      "Claimed role does not match registered role";
+
+  // 7. Return true — the ZK proof guarantees this result without
+  //    revealing the prover's identity or which tree entry they are.
+  return disclose(true);
 }
 
 

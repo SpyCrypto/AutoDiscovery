@@ -12,10 +12,12 @@
 //     getCurrentTimestamp(ctx): [PS, bigint]
 //     computeSharingEventProofHash(ctx, documentHash: Uint8Array,
 //       recipientPublicKeyHash: Uint8Array, sharingTimestamp: bigint): [PS, Uint8Array]
+//     lookupRoleCommitmentMerklePath(ctx, publicKeyHash: Uint8Array):
+//       [PS, MerkleTreePath<Uint8Array> | undefined]
 //   }
 // ============================================================================
 
-import { type WitnessContext } from "@midnight-ntwrk/compact-runtime";
+import { type WitnessContext, type MerkleTreePath } from "@midnight-ntwrk/compact-runtime";
 import type { Ledger } from "../managed/access-control/contract/index.js";
 
 // --- Private State Type ---
@@ -105,6 +107,28 @@ export const getCurrentTimestamp = (
 };
 
 /**
+ * lookupRoleCommitmentMerklePath
+ *
+ * Looks up the Merkle proof path for a given public key hash in the
+ * authorizedRoleCommitments tree. Returns the path if found, undefined if not.
+ *
+ * This witness is called by the proveParticipantHasRole circuit to get
+ * the Merkle inclusion proof that the caller is registered in the role tree.
+ *
+ * @param context - WitnessContext with ledger and private state
+ * @param publicKeyHash_0 - The caller's Bytes<32> public key value (as returned by ownPublicKey()).
+ *                         This matches the value stored in the tree via registerParticipantKey.
+ * @returns [unchangedPrivateState, MerkleTreePath if found, undefined if not]
+ */
+export const lookupRoleCommitmentMerklePath = (
+  context: WitnessContext<Ledger, AccessControlPrivateState>,
+  publicKeyHash_0: Uint8Array,
+): [AccessControlPrivateState, MerkleTreePath<Uint8Array> | undefined] => {
+  const path = context.ledger.authorizedRoleCommitments.findPathForLeaf(publicKeyHash_0);
+  return [context.privateState, path];
+};
+
+/**
  * computeSharingEventProofHash
  *
  * Computes a proof hash for a document sharing event. This hash anchors
@@ -147,4 +171,5 @@ export const computeSharingEventProofHash = (
 export const accessControlWitnesses = {
   getCurrentTimestamp,
   computeSharingEventProofHash,
+  lookupRoleCommitmentMerklePath,
 };

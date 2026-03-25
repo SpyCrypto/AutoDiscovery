@@ -6,6 +6,8 @@ export type Witnesses<PS> = {
                                documentHash_0: Uint8Array,
                                recipientPublicKeyHash_0: Uint8Array,
                                sharingTimestamp_0: bigint): [PS, Uint8Array];
+  lookupRoleCommitmentMerklePath(context: __compactRuntime.WitnessContext<Ledger, PS>,
+                                 publicKeyHash_0: Uint8Array): [PS, __compactRuntime.MerkleTreePath<Uint8Array> | undefined];
 }
 
 export type ImpureCircuits<PS> = {
@@ -23,6 +25,9 @@ export type ImpureCircuits<PS> = {
   revokeDocumentAccessFromParticipant(context: __compactRuntime.CircuitContext<PS>,
                                       documentContentHash_0: Uint8Array,
                                       revokedPublicKeyHash_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
+  proveParticipantHasRole(context: __compactRuntime.CircuitContext<PS>,
+                          caseUniqueIdentifier_0: Uint8Array,
+                          claimedRoleEnum_0: bigint): __compactRuntime.CircuitResults<PS, boolean>;
   shareDocumentWithParticipant(context: __compactRuntime.CircuitContext<PS>,
                                documentContentHash_0: Uint8Array,
                                recipientPublicKeyHash_0: Uint8Array): __compactRuntime.CircuitResults<PS, Uint8Array>;
@@ -32,8 +37,6 @@ export type ImpureCircuits<PS> = {
 }
 
 export type PureCircuits = {
-  proveParticipantHasRole(caseUniqueIdentifier_0: Uint8Array,
-                          claimedRoleEnum_0: bigint): boolean;
 }
 
 export type Circuits<PS> = {
