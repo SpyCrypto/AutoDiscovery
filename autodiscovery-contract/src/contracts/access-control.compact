@@ -101,23 +101,23 @@ ledger immutablePermissionGrantCommitments: Set<Bytes<32>>;
 // Maps each participant's public key hash to their role enum.
 // Role determines baseline access level across the case.
 //   0x01 = DEF, 0x02 = PRO, 0x03 = COURT, 0x04 = THIRDPARTY
-export ledger participantRoleByPublicKeyHash: Map<Bytes<32>, Uint<8>>;
+ledger participantRoleByPublicKeyHash: Map<Bytes<32>, Uint<8>>;
 
 // Maps each case identifier to a reference for its party list.
 // The party list (all participants and their roles) lives off-chain.
 // This reference links the on-chain case to its off-chain party roster.
-export ledger partyListReferenceByCaseIdentifier: Map<Bytes<32>, Field>;
+ledger partyListReferenceByCaseIdentifier: Map<Bytes<32>, Field>;
 
 // Maps each document hash to a reference for its permitted-access list.
 // The permitted-access list (which public keys can see this document) lives off-chain.
 // This reference enables the on-chain contract to gate access checks.
-export ledger permittedAccessReferenceByDocumentHash: Map<Bytes<32>, Field>;
+ledger permittedAccessReferenceByDocumentHash: Map<Bytes<32>, Field>;
 
 // Maps each document hash to its protective order tier.
 // Determines the maximum access level for this document:
 //   0x00 = UNRESTRICTED, 0x01 = CONFIDENTIAL,
 //   0x02 = ATTORNEYS_EYES_ONLY, 0x03 = SEALED
-export ledger protectiveOrderTierByDocumentHash: Map<Bytes<32>, Uint<8>>;
+ledger protectiveOrderTierByDocumentHash: Map<Bytes<32>, Uint<8>>;
 
 
 // =============================================================================

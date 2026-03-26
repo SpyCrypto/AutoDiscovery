@@ -9,9 +9,36 @@ import {
   type DiscoveryCorePrivateStateId,
   type DiscoveryCoreProviders,
   type DeployedDiscoveryCoreContract,
+  type JurisdictionRegistryContract,
+  type JurisdictionRegistryPrivateStateId,
+  type JurisdictionRegistryProviders,
+  type DeployedJurisdictionRegistryContract,
+  type ComplianceProofContract,
+  type ComplianceProofPrivateStateId,
+  type ComplianceProofProviders,
+  type DeployedComplianceProofContract,
+  type DocumentRegistryContract,
+  type DocumentRegistryPrivateStateId,
+  type DocumentRegistryProviders,
+  type DeployedDocumentRegistryContract,
+  type AccessControlContract,
+  type AccessControlPrivateStateId,
+  type AccessControlProviders,
+  type DeployedAccessControlContract,
+  type ExpertWitnessContract,
+  type ExpertWitnessPrivateStateId,
+  type ExpertWitnessProviders,
+  type DeployedExpertWitnessContract,
 } from './common-types';
 import { type Config, contractConfig } from './config';
-import { DiscoveryCore, type DiscoveryCorePrivateState, discoveryCoreWitnesses, createDiscoveryCorePrivateState } from '@autodiscovery/contract';
+import {
+  DiscoveryCore, type DiscoveryCorePrivateState, discoveryCoreWitnesses, createDiscoveryCorePrivateState,
+  JurisdictionRegistry, type RegistryPrivateState, registryWitnesses, createRegistryPrivateState,
+  ComplianceProof, type CompliancePrivateState, complianceWitnesses, createCompliancePrivateState,
+  DocumentRegistry, type DocumentRegistryPrivateState, documentRegistryWitnesses, createDocumentRegistryPrivateState,
+  AccessControl, type AccessControlPrivateState, accessControlWitnesses, createAccessControlPrivateState,
+  ExpertWitness, type ExpertWitnessPrivateState, expertWitnessWitnesses, createExpertWitnessPrivateState,
+} from '@autodiscovery/contract';
 
 import { type ContractAddress } from '@midnight-ntwrk/compact-runtime';
 import * as ledger from '@midnight-ntwrk/ledger-v6';
@@ -214,6 +241,313 @@ export const displayCaseStatus = async (
     logger.info(`Total cases created: ${Number(totalCasesCreated)}`);
   }
   return { contractAddress, totalCasesCreated };
+};
+
+// =============================================================================
+// JURISDICTION REGISTRY
+// =============================================================================
+
+export const jurisdictionRegistryContractInstance: JurisdictionRegistryContract =
+  new JurisdictionRegistry.Contract(registryWitnesses);
+
+export const deployJurisdictionRegistry = async (
+  providers: JurisdictionRegistryProviders,
+  privateState: RegistryPrivateState,
+): Promise<DeployedJurisdictionRegistryContract> => {
+  logger.info('Deploying jurisdiction-registry contract...');
+  const contract = await deployContract(providers, {
+    contract: jurisdictionRegistryContractInstance,
+    privateStateId: 'jurisdictionRegistryPrivateState',
+    initialPrivateState: privateState,
+  });
+  logger.info(`Deployed jurisdiction-registry at: ${contract.deployTxData.public.contractAddress}`);
+  return contract;
+};
+
+export const joinJurisdictionRegistry = async (
+  providers: JurisdictionRegistryProviders,
+  contractAddress: string,
+): Promise<DeployedJurisdictionRegistryContract> => {
+  const contract = await findDeployedContract(providers, {
+    contractAddress,
+    contract: jurisdictionRegistryContractInstance,
+    privateStateId: 'jurisdictionRegistryPrivateState',
+    initialPrivateState: createRegistryPrivateState(),
+  });
+  logger.info(`Joined jurisdiction-registry at: ${contract.deployTxData.public.contractAddress}`);
+  return contract;
+};
+
+export const registerNewJurisdiction = async (
+  jurisdictionRegistryContract: DeployedJurisdictionRegistryContract,
+  jurisdictionCode: Uint8Array,
+  rulePackContentHash: Uint8Array,
+): Promise<FinalizedTxData> => {
+  logger.info('Registering new jurisdiction...');
+  const finalizedTxData = await jurisdictionRegistryContract.callTx.registerNewJurisdiction(
+    jurisdictionCode,
+    rulePackContentHash,
+  );
+  logFinalizedTxData(finalizedTxData);
+  return finalizedTxData.public;
+};
+
+export const updateJurisdictionRulePack = async (
+  jurisdictionRegistryContract: DeployedJurisdictionRegistryContract,
+  jurisdictionCode: Uint8Array,
+  updatedRulePackContentHash: Uint8Array,
+  updatedVersionNumber: bigint,
+): Promise<FinalizedTxData> => {
+  logger.info('Updating jurisdiction rule pack...');
+  const finalizedTxData = await jurisdictionRegistryContract.callTx.updateJurisdictionRulePack(
+    jurisdictionCode,
+    updatedRulePackContentHash,
+    updatedVersionNumber,
+  );
+  logFinalizedTxData(finalizedTxData);
+  return finalizedTxData.public;
+};
+
+// =============================================================================
+// COMPLIANCE PROOF
+// =============================================================================
+
+export const complianceProofContractInstance: ComplianceProofContract =
+  new ComplianceProof.Contract(complianceWitnesses);
+
+export const deployComplianceProof = async (
+  providers: ComplianceProofProviders,
+  privateState: CompliancePrivateState,
+): Promise<DeployedComplianceProofContract> => {
+  logger.info('Deploying compliance-proof contract...');
+  const contract = await deployContract(providers, {
+    contract: complianceProofContractInstance,
+    privateStateId: 'complianceProofPrivateState',
+    initialPrivateState: privateState,
+  });
+  logger.info(`Deployed compliance-proof at: ${contract.deployTxData.public.contractAddress}`);
+  return contract;
+};
+
+export const joinComplianceProof = async (
+  providers: ComplianceProofProviders,
+  contractAddress: string,
+): Promise<DeployedComplianceProofContract> => {
+  const contract = await findDeployedContract(providers, {
+    contractAddress,
+    contract: complianceProofContractInstance,
+    privateStateId: 'complianceProofPrivateState',
+    initialPrivateState: createCompliancePrivateState(),
+  });
+  logger.info(`Joined compliance-proof at: ${contract.deployTxData.public.contractAddress}`);
+  return contract;
+};
+
+export const attestStepLevelCompliance = async (
+  complianceProofContract: DeployedComplianceProofContract,
+  caseIdentifier: bigint,
+  stepHash: bigint,
+  deadline: bigint,
+): Promise<FinalizedTxData> => {
+  logger.info('Attesting step-level compliance...');
+  const finalizedTxData = await complianceProofContract.callTx.attestStepLevelCompliance(
+    caseIdentifier,
+    stepHash,
+    deadline,
+  );
+  logFinalizedTxData(finalizedTxData);
+  return finalizedTxData.public;
+};
+
+export const attestCaseLevelCompliance = async (
+  complianceProofContract: DeployedComplianceProofContract,
+  caseIdentifier: bigint,
+): Promise<FinalizedTxData> => {
+  logger.info('Attesting case-level compliance...');
+  const finalizedTxData = await complianceProofContract.callTx.attestCaseLevelCompliance(
+    caseIdentifier,
+  );
+  logFinalizedTxData(finalizedTxData);
+  return finalizedTxData.public;
+};
+
+// =============================================================================
+// DOCUMENT REGISTRY
+// =============================================================================
+
+export const documentRegistryContractInstance: DocumentRegistryContract =
+  new DocumentRegistry.Contract(documentRegistryWitnesses);
+
+export const deployDocumentRegistry = async (
+  providers: DocumentRegistryProviders,
+  privateState: DocumentRegistryPrivateState,
+): Promise<DeployedDocumentRegistryContract> => {
+  logger.info('Deploying document-registry contract...');
+  const contract = await deployContract(providers, {
+    contract: documentRegistryContractInstance,
+    privateStateId: 'documentRegistryPrivateState',
+    initialPrivateState: privateState,
+  });
+  logger.info(`Deployed document-registry at: ${contract.deployTxData.public.contractAddress}`);
+  return contract;
+};
+
+export const joinDocumentRegistry = async (
+  providers: DocumentRegistryProviders,
+  contractAddress: string,
+): Promise<DeployedDocumentRegistryContract> => {
+  const contract = await findDeployedContract(providers, {
+    contractAddress,
+    contract: documentRegistryContractInstance,
+    privateStateId: 'documentRegistryPrivateState',
+    initialPrivateState: createDocumentRegistryPrivateState(),
+  });
+  logger.info(`Joined document-registry at: ${contract.deployTxData.public.contractAddress}`);
+  return contract;
+};
+
+export const registerDocument = async (
+  documentRegistryContract: DeployedDocumentRegistryContract,
+  documentContentHash: Uint8Array,
+  documentCategoryNumber: bigint,
+  originatorPublicKey: Uint8Array,
+): Promise<FinalizedTxData> => {
+  logger.info('Registering document...');
+  const finalizedTxData = await documentRegistryContract.callTx.registerDocument(
+    documentContentHash,
+    documentCategoryNumber,
+    originatorPublicKey,
+  );
+  logFinalizedTxData(finalizedTxData);
+  return finalizedTxData.public;
+};
+
+export const registerTwinBond = async (
+  documentRegistryContract: DeployedDocumentRegistryContract,
+  imageTwinContentHash: Uint8Array,
+  digitalTwinContentHash: Uint8Array,
+  ocrFidelityScorePercent: bigint,
+): Promise<FinalizedTxData> => {
+  logger.info('Registering twin bond...');
+  const finalizedTxData = await documentRegistryContract.callTx.registerTwinBond(
+    imageTwinContentHash,
+    digitalTwinContentHash,
+    ocrFidelityScorePercent,
+  );
+  logFinalizedTxData(finalizedTxData);
+  return finalizedTxData.public;
+};
+
+// =============================================================================
+// ACCESS CONTROL
+// =============================================================================
+
+export const accessControlContractInstance: AccessControlContract =
+  new AccessControl.Contract(accessControlWitnesses);
+
+export const deployAccessControl = async (
+  providers: AccessControlProviders,
+  privateState: AccessControlPrivateState,
+): Promise<DeployedAccessControlContract> => {
+  logger.info('Deploying access-control contract...');
+  const contract = await deployContract(providers, {
+    contract: accessControlContractInstance,
+    privateStateId: 'accessControlPrivateState',
+    initialPrivateState: privateState,
+  });
+  logger.info(`Deployed access-control at: ${contract.deployTxData.public.contractAddress}`);
+  return contract;
+};
+
+export const joinAccessControl = async (
+  providers: AccessControlProviders,
+  contractAddress: string,
+): Promise<DeployedAccessControlContract> => {
+  const contract = await findDeployedContract(providers, {
+    contractAddress,
+    contract: accessControlContractInstance,
+    privateStateId: 'accessControlPrivateState',
+    initialPrivateState: createAccessControlPrivateState(),
+  });
+  logger.info(`Joined access-control at: ${contract.deployTxData.public.contractAddress}`);
+  return contract;
+};
+
+export const registerParticipantKey = async (
+  accessControlContract: DeployedAccessControlContract,
+  participantPublicKeyHash: Uint8Array,
+  roleEnum: bigint,
+): Promise<FinalizedTxData> => {
+  logger.info('Registering participant key...');
+  const finalizedTxData = await accessControlContract.callTx.registerParticipantKey(
+    participantPublicKeyHash,
+    roleEnum,
+  );
+  logFinalizedTxData(finalizedTxData);
+  return finalizedTxData.public;
+};
+
+export const grantDocumentAccessToParticipant = async (
+  accessControlContract: DeployedAccessControlContract,
+  documentHash: Uint8Array,
+  participantPublicKeyHash: Uint8Array,
+  protectiveOrderTierEnum: bigint,
+): Promise<FinalizedTxData> => {
+  logger.info('Granting document access to participant...');
+  const finalizedTxData = await accessControlContract.callTx.grantDocumentAccessToParticipant(
+    documentHash,
+    participantPublicKeyHash,
+    protectiveOrderTierEnum,
+  );
+  logFinalizedTxData(finalizedTxData);
+  return finalizedTxData.public;
+};
+
+// =============================================================================
+// EXPERT WITNESS
+// =============================================================================
+
+export const expertWitnessContractInstance: ExpertWitnessContract =
+  new ExpertWitness.Contract(expertWitnessWitnesses);
+
+export const deployExpertWitness = async (
+  providers: ExpertWitnessProviders,
+  privateState: ExpertWitnessPrivateState,
+): Promise<DeployedExpertWitnessContract> => {
+  logger.info('Deploying expert-witness contract...');
+  const contract = await deployContract(providers, {
+    contract: expertWitnessContractInstance,
+    privateStateId: 'expertWitnessPrivateState',
+    initialPrivateState: privateState,
+  });
+  logger.info(`Deployed expert-witness at: ${contract.deployTxData.public.contractAddress}`);
+  return contract;
+};
+
+export const joinExpertWitness = async (
+  providers: ExpertWitnessProviders,
+  contractAddress: string,
+): Promise<DeployedExpertWitnessContract> => {
+  const contract = await findDeployedContract(providers, {
+    contractAddress,
+    contract: expertWitnessContractInstance,
+    privateStateId: 'expertWitnessPrivateState',
+    initialPrivateState: createExpertWitnessPrivateState(),
+  });
+  logger.info(`Joined expert-witness at: ${contract.deployTxData.public.contractAddress}`);
+  return contract;
+};
+
+export const registerExpertWitness = async (
+  expertWitnessContract: DeployedExpertWitnessContract,
+  expertQualificationProofHash: Uint8Array,
+): Promise<FinalizedTxData> => {
+  logger.info('Registering expert witness...');
+  const finalizedTxData = await expertWitnessContract.callTx.registerExpertWitness(
+    expertQualificationProofHash,
+  );
+  logFinalizedTxData(finalizedTxData);
+  return finalizedTxData.public;
 };
 
 export const createWalletAndMidnightProvider = async (
