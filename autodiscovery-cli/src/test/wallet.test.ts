@@ -10,9 +10,8 @@ import * as Rx from 'rxjs';
 import { TestEnvironment } from './simulators/simulator';
 import { Counter } from '@meshsdk/counter-contract';
 import * as ledger from '@midnight-ntwrk/ledger-v6';
-import { ShieldedAddress, UnshieldedAddress } from '@midnight-ntwrk/wallet-sdk-address-format';
-import { tokenValue } from './utils/utils';
 import { CombinedTokenTransfer } from '@midnight-ntwrk/wallet-sdk-facade';
+import { tokenValue } from './utils/utils';
 
 const logDir = path.resolve(currentDir, '..', 'logs', 'public-provider', `${new Date().toISOString()}.log`);
 const logger = await createLogger(logDir);
@@ -49,42 +48,36 @@ describe('API', () => {
 
   it('allows to transfer shielded tokens only', async () => {
     const state = await Rx.firstValueFrom(wallet.wallet.state().pipe(Rx.filter((s) => s.isSynced)));
-    const stateReceiverAddress = state.shielded.address;
-    const ledgerReceiverAddress = ShieldedAddress.codec
-      .encode(configuration.networkId, stateReceiverAddress)
-      .asString();
-    // stateAddress: "coinPublicKey" & "encryptionPublicKey" - Bytes
+    const receiverAddress = state.shielded.address;
     logger.info({
       section: 'Shielded Address',
-      stateReceiverAddress,
-    });
-    // "mn_shield-addr_undeployed14gxh9wmhafr0np4gqrrx6awyus52jk7huyjy78kstym5ucnxawvtvtnrpgpszud4uyd0yjrlqyp7v5xvwqljsng2g79j5w4al9c4kuqm9zs2g"
-    logger.info({
-      section: 'ledgerReceiverAddress',
-      ledgerReceiverAddress,
+      receiverAddress,
     });
 
     const ttl = new Date(Date.now() + 60 * 60 * 1000);
-    const transfer = await wallet.wallet.transferTransaction(
-      wallet.shieldedSecretKeys,
-      wallet.dustSecretKey,
+    const recipe = await wallet.wallet.transferTransaction(
       [
         {
           type: 'shielded',
           outputs: [
             {
               type: ledger.shieldedToken().raw,
-              receiverAddress: ledgerReceiverAddress,
+              receiverAddress,
               amount: tokenValue(1n),
             },
           ],
         },
       ],
-      ttl,
+      {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        shieldedSecretKeys: wallet.shieldedSecretKeys as unknown as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dustSecretKey: wallet.dustSecretKey as unknown as any,
+      },
+      { ttl },
     );
 
-    //proof transaction
-    const finalizedTx = await wallet.wallet.finalizeTransaction(transfer);
+    const finalizedTx = await wallet.wallet.finalizeRecipe(recipe);
     const submittedTxHash = await wallet.wallet.submitTransaction(finalizedTx);
     logger.info({
       section: 'Submitted Transaction Hash',
@@ -100,19 +93,10 @@ describe('API', () => {
 
   it('allows to transfer unshielded tokens', async () => {
     const state = await Rx.firstValueFrom(wallet.wallet.state().pipe(Rx.filter((s) => s.isSynced)));
-    const stateReceiverAddress = state.unshielded.address;
-    const ledgerReceiverAddress = UnshieldedAddress.codec
-      .encode(configuration.networkId, stateReceiverAddress)
-      .asString();
-    // stateAddress: "coinPublicKey" & "encryptionPublicKey" - Bytes
+    const receiverAddress = state.unshielded.address;
     logger.info({
-      section: 'Shielded Address',
-      stateReceiverAddress,
-    });
-    // "mn_addr_undeployed1h3ssm5ru2t6eqy4g3she78zlxn96e36ms6pq996aduvmateh9p9sk96u7s"
-    logger.info({
-      section: 'ledgerReceiverAddress',
-      ledgerReceiverAddress,
+      section: 'Unshielded Address',
+      receiverAddress,
     });
 
     const tokenTransfer: CombinedTokenTransfer[] = [
@@ -121,7 +105,7 @@ describe('API', () => {
         outputs: [
           {
             amount: tokenValue(1n),
-            receiverAddress: ledgerReceiverAddress,
+            receiverAddress,
             type: ledger.unshieldedToken().raw,
           },
         ],
@@ -130,20 +114,22 @@ describe('API', () => {
 
     const ttl = new Date(Date.now() + 30 * 60 * 1000);
     const recipe = await wallet.wallet.transferTransaction(
-      wallet.shieldedSecretKeys,
-      wallet.dustSecretKey,
       tokenTransfer,
-      ttl,
+      {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        shieldedSecretKeys: wallet.shieldedSecretKeys as unknown as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dustSecretKey: wallet.dustSecretKey as unknown as any,
+      },
+      { ttl },
     );
 
-    const signedTx = await wallet.wallet.signTransaction(recipe.transaction, (payload) =>
-      wallet.unshieldedKeystore.signData(payload),
+    const signedRecipe = await wallet.wallet.signRecipe(
+      recipe,
+      (payload) => wallet.unshieldedKeystore.signData(payload),
     );
 
-    const finalizedTx = await wallet.wallet.finalizeTransaction({
-      ...recipe,
-      transaction: signedTx,
-    });
+    const finalizedTx = await wallet.wallet.finalizeRecipe(signedRecipe);
 
     const submittedTxHash = await wallet.wallet.submitTransaction(finalizedTx);
     logger.info({
@@ -176,19 +162,19 @@ describe('API', () => {
 
     const arbitraryTx = ledger.Transaction.fromParts(configuration.networkId, outputOffer);
 
-    const provenArbitraryTx = await wallet.wallet.finalizeTransaction({
-      type: 'TransactionToProve',
-      transaction: arbitraryTx,
-    });
-
-    const balancedTx = await wallet.wallet.balanceTransaction(
-      wallet.shieldedSecretKeys,
-      wallet.dustSecretKey,
-      provenArbitraryTx,
-      new Date(Date.now() + 30 * 60 * 1000),
+    const recipe = await wallet.wallet.balanceUnprovenTransaction(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      arbitraryTx as unknown as any,
+      {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        shieldedSecretKeys: wallet.shieldedSecretKeys as unknown as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dustSecretKey: wallet.dustSecretKey as unknown as any,
+      },
+      { ttl: new Date(Date.now() + 30 * 60 * 1000) },
     );
 
-    const finalizedTx = await wallet.wallet.finalizeTransaction(balancedTx);
+    const finalizedTx = await wallet.wallet.finalizeRecipe(recipe);
     const submittedTxHash = await wallet.wallet.submitTransaction(finalizedTx);
     logger.info({
       section: 'Submitted Transaction Hash',
@@ -216,25 +202,24 @@ describe('API', () => {
 
     const arbitraryTx = ledger.Transaction.fromParts(configuration.networkId, undefined, undefined, intent);
 
-    const recipe = await wallet.wallet.balanceTransaction(
-      wallet.shieldedSecretKeys,
-      wallet.dustSecretKey,
-      arbitraryTx,
-      new Date(Date.now() + 30 * 60 * 1000),
+    const recipe = await wallet.wallet.balanceUnprovenTransaction(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      arbitraryTx as unknown as any,
+      {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        shieldedSecretKeys: wallet.shieldedSecretKeys as unknown as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dustSecretKey: wallet.dustSecretKey as unknown as any,
+      },
+      { ttl: new Date(Date.now() + 30 * 60 * 1000) },
     );
 
-    if (recipe.type !== 'TransactionToProve') {
-      throw new Error('Expected a transaction to prove');
-    }
-
-    const signedTx = await wallet.wallet.signTransaction(recipe.transaction, (payload) =>
-      wallet.unshieldedKeystore.signData(payload),
+    const signedRecipe = await wallet.wallet.signRecipe(
+      recipe,
+      (payload) => wallet.unshieldedKeystore.signData(payload),
     );
 
-    const finalizedTx = await wallet.wallet.finalizeTransaction({
-      ...recipe,
-      transaction: signedTx,
-    });
+    const finalizedTx = await wallet.wallet.finalizeRecipe(signedRecipe);
 
     const submittedTxHash = await wallet.wallet.submitTransaction(finalizedTx);
     logger.info({

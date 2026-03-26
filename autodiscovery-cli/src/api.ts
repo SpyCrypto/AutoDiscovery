@@ -580,17 +580,22 @@ export const createWalletAndMidnightProvider = async (
     ): Promise<BalancedProvingRecipe> {
       // Use the wallet facade to balance the transaction
       const txTtl = ttl ?? new Date(Date.now() + 30 * 60 * 1000); // 30 min default TTL
-      // balanceTransaction returns a ProvingRecipe directly
-      const provingRecipe = await walletContext.wallet.balanceTransaction(
-        walletContext.shieldedSecretKeys,
-        walletContext.dustSecretKey,
-        tx as unknown as ledger.Transaction<ledger.SignatureEnabled, ledger.Proofish, ledger.Bindingish>,
-        txTtl,
+      const provingRecipe = await walletContext.wallet.balanceUnprovenTransaction(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        tx as unknown as any,
+        {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          shieldedSecretKeys: walletContext.shieldedSecretKeys as unknown as any,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          dustSecretKey: walletContext.dustSecretKey as unknown as any,
+        },
+        { ttl: txTtl },
       );
       return provingRecipe as unknown as BalancedProvingRecipe;
     },
     async submitTx(tx: ledger.FinalizedTransaction): Promise<ledger.TransactionId> {
-      return await walletContext.wallet.submitTransaction(tx);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return await walletContext.wallet.submitTransaction(tx as unknown as any);
     },
   };
 };
@@ -658,7 +663,7 @@ export const registerNightForDust = async (walletContext: WalletContext): Promis
     logger.info('No unshielded Night UTXOs available for dust registration, or all are already registered');
 
     // Check current dust balance
-    const dustBalance = state.dust?.walletBalance(new Date()) ?? 0n;
+    const dustBalance = state.dust?.balance(new Date()) ?? 0n;
     logger.info(`Current dust balance: ${dustBalance}`);
 
     return dustBalance > 0n;
@@ -675,7 +680,7 @@ export const registerNightForDust = async (walletContext: WalletContext): Promis
     );
 
     logger.info('Finalizing dust registration transaction...');
-    const finalizedTx = await walletContext.wallet.finalizeTransaction(recipe);
+    const finalizedTx = await walletContext.wallet.finalizeRecipe(recipe);
 
     logger.info('Submitting dust registration transaction...');
     const txId = await walletContext.wallet.submitTransaction(finalizedTx);
@@ -687,10 +692,10 @@ export const registerNightForDust = async (walletContext: WalletContext): Promis
       walletContext.wallet.state().pipe(
         Rx.throttleTime(5_000),
         Rx.tap((s) => {
-          const dustBalance = s.dust?.walletBalance(new Date()) ?? 0n;
+          const dustBalance = s.dust?.balance(new Date()) ?? 0n;
           logger.info(`Dust balance: ${dustBalance}`);
         }),
-        Rx.filter((s) => (s.dust?.walletBalance(new Date()) ?? 0n) > 0n),
+        Rx.filter((s) => (s.dust?.balance(new Date()) ?? 0n) > 0n),
       ),
     );
 
@@ -747,18 +752,29 @@ export const initWalletWithSeed = async (
     indexerUrl: config.indexerWS,
   };
 
-  const shieldedWallet = ShieldedWallet(walletConfiguration).startWithSecretKeys(shieldedSecretKeys);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const shieldedWallet = ShieldedWallet(walletConfiguration).startWithSecretKeys(shieldedSecretKeys as unknown as any);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const dustWallet = DustWallet(walletConfiguration).startWithSecretKey(
-    dustSecretKey,
-    ledger.LedgerParameters.initialParameters().dust,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dustSecretKey as unknown as any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ledger.LedgerParameters.initialParameters().dust as unknown as any,
   );
   const unshieldedWallet = UnshieldedWallet({
     ...walletConfiguration,
     txHistoryStorage: new InMemoryTransactionHistoryStorage(),
   }).startWithPublicKey(UnshieldedPublicKey.fromKeyStore(unshieldedKeystore));
 
-  const facade: WalletFacade = new WalletFacade(shieldedWallet, unshieldedWallet, dustWallet);
-  await facade.start(shieldedSecretKeys, dustSecretKey);
+  const facade = await WalletFacade.init({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    configuration: walletConfiguration as any,
+    shielded: () => shieldedWallet,
+    unshielded: () => unshieldedWallet,
+    dust: () => dustWallet,
+  });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await facade.start(shieldedSecretKeys as unknown as any, dustSecretKey as unknown as any);
 
   return { wallet: facade, shieldedSecretKeys, dustSecretKey, unshieldedKeystore };
 };
