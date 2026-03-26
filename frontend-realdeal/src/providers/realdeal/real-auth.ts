@@ -89,9 +89,24 @@ async function connectLaceWallet(): Promise<{ publicKey: string; walletName: str
     // which includes serviceUriConfig (indexer, proof server, node URLs)
     // and state() for coin public key access
     const walletState = await wallet.state();
-    const publicKey = walletState?.coinPublicKey ?? 'lace-connected';
 
-    return { publicKey: String(publicKey), walletName: 'Lace' };
+    if (!walletState?.coinPublicKey) {
+      // coinPublicKey is required for identity and signing; falling back to a
+      // placeholder would silently accept an invalid session that breaks all
+      // subsequent contract calls.  Log the diagnostic and surface the failure
+      // so the caller can fall back to dev/offline mode intentionally.
+      console.warn(
+        '[RealAuthProvider] Lace wallet did not return coinPublicKey. ' +
+        'Wallet SDK version may be incompatible. ' +
+        'Expected @midnight-ntwrk/wallet-sdk >= 3.0.0. ' +
+        'Falling back to offline mode.',
+      );
+      return null;
+    }
+
+    const publicKey = String(walletState.coinPublicKey);
+
+    return { publicKey, walletName: 'Lace' };
   } catch (error) {
     console.warn('[RealAuthProvider] Lace wallet connection failed:', error);
     return null;
