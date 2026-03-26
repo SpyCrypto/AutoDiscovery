@@ -47,8 +47,16 @@ export class RealJurisdictionProvider implements IJurisdictionProvider {
     // const tx = await deployed.callTx.verifyRulePackHashMatchesExpected(codeBytes, expectedHash);
     // return { valid: tx.public.result, message: tx.public.result ? 'Verified on-chain' : 'Mismatch' };
 
+    // NOTE: `verifiedOnChain` is a locally-stored flag set when the jurisdiction was
+    // originally registered. It does NOT represent a live on-chain verification —
+    // the Phase 2 circuit call above is still commented out. The message below
+    // intentionally disambiguates local cache from a true on-chain proof so that
+    // compliance auditors are never misled.
     if (jurisdiction.verifiedOnChain) {
-      return { valid: true, message: 'Rule pack hash verified on-chain' };
+      return {
+        valid: true,
+        message: 'Rule pack hash previously recorded as on-chain verified (cached). Connect wallet to re-verify live.',
+      };
     }
 
     return {
