@@ -173,9 +173,9 @@ Jurisdiction-aware discovery automation with cryptographic compliance proofs.
 | Tier | Price | Target |
 |------|-------|--------|
 | **Solo** | $99/mo | Solo attorneys, 1 jurisdiction, basic automation |
-| **Practice** | $399/mo | Small firms, multi-jurisdiction, team workflows |
-| **Enterprise** | $1,499/mo | Regional firms, unlimited jurisdictions, API + compliance proofs |
-| **ZK Proof** | $25/each | Per compliance attestation, court-ready export |
+| **Small Firm** | $299/mo | Small firms, multi-jurisdiction, team workflows |
+| **Mid Firm** | $499/mo | Mid-size firms, multi-jurisdiction, advanced compliance |
+| **Large Firm** | $699/mo | Large firms, unlimited jurisdictions, enterprise compliance |
 
 ### Year 2 Unit Economics (Beachhead: 50 Idaho Firms)
 

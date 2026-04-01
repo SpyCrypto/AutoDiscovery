@@ -40,7 +40,7 @@ AutoDiscovery's pricing model delivers **10-100x ROI** compared to current legal
 | Tool Category | Current Spending | AutoDiscovery Cost | Savings |
 |---------------|------------------|-------------------|---------|
 | **Practice Management** | $3K-$50K | Included | 100% |
-| **E-Discovery** | $10K-$200K | $299-$2,999 | 70-95% |
+| **E-Discovery** | $10K-$200K | $99-$699/mo | 70-95% |
 | **Compliance Tools** | $5K-$30K | Included | 100% |
 | **Document Management** | $5K-$50K | Included | 100% |
 | **Risk Management** | $10K-$100K | Included | 100% |
@@ -57,11 +57,11 @@ Traditional Stack (Mid-Size Firm):
 └── Total: $165,000/year
 
 AutoDiscovery Solution:
-├── AutoDiscovery Platform: $12,000/year
-├── Compliance Insurance: $1,200/year
-└── Total: $13,200/year
+├── AutoDiscovery Platform: $5,988/year
+├── Compliance Insurance: $599/year
+└── Total: $6,587/year
 
-Annual Savings: $151,800 (92% reduction)
+Annual Savings: $158,413 (96% reduction)
 ```
 
 ---
@@ -130,9 +130,9 @@ Annual Savings: $151,800 (92% reduction)
 | Tier | Current Price | Firm Revenue | % of Revenue | Per-Case Value | ROI |
 |------|---------------|---------------|--------------|----------------|-----|
 | **Solo** | $99/mo ($1,188/yr) | $300K | 0.4% | $23,800 | 20x |
-| **Small** | $299/mo ($3,588/yr) | $1M | 0.36% | $79,500 | 22x |
-| **Mid** | $999/mo ($11,988/yr) | $5M | 0.24% | $397,500 | 33x |
-| **Enterprise** | $2,999/mo ($35,988/yr) | $20M | 0.18% | $1,590,000 | 44x |
+| **Small Firm** | $299/mo ($3,588/yr) | $1M | 0.36% | $79,500 | 22x |
+| **Mid Firm** | $499/mo ($5,988/yr) | $5M | 0.12% | $397,500 | 66x |
+| **Large Firm** | $699/mo ($8,388/yr) | $20M | 0.04% | $1,590,000 | 190x |
 
 ### 📈 **Strategic Pricing Adjustments**
 
@@ -140,9 +140,9 @@ Annual Savings: $151,800 (92% reduction)
 
 **Option 1: Per-Case Pricing**
 - **Solo:** $500/case (vs $1,188 current)
-- **Small:** $1,000/case (vs $3,588 current)
-- **Mid:** $2,000/case (vs $11,988 current)
-- **Enterprise:** $5,000/case (vs $35,988 current)
+- **Small Firm:** $1,000/case (vs $3,588 current)
+- **Mid Firm:** $2,000/case (vs $5,988 current)
+- **Large Firm:** $5,000/case (vs $8,388 current)
 
 **Option 2: Revenue Share**
 - **5% of discovery-related revenue**
@@ -230,7 +230,7 @@ ROI Calculation:
 - **20 attorneys, $5M revenue**
 - **Current tech spend: $300K**
 - **50 cases/year, $100K average**
-- **Direct savings: $288K**
+- **Direct savings: $294K**
 - **Risk reduction: $26.5K**
 - **Efficiency gains: $178.5K**
 - **Revenue enhancement: $1.4M**
