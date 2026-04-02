@@ -8,7 +8,7 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import 'dotenv/config';
 import * as Rx from 'rxjs';
 import { TestEnvironment } from './simulators/simulator';
-import { Counter } from '@meshsdk/counter-contract';
+import { Counter } from '@autodiscovery/contract';
 import * as ledger from '@midnight-ntwrk/ledger-v6';
 import { ShieldedAddress, UnshieldedAddress } from '@midnight-ntwrk/wallet-sdk-address-format';
 import { tokenValue } from './utils/utils';

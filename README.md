@@ -159,8 +159,8 @@ AutoDiscovery/
 
 | Tool | Version | Link |
 |------|---------|------|
-| Node.js | v23+ | [nodejs.org](https://nodejs.org/) |
-| npm | v11+ | Bundled with Node.js |
+| Node.js | v18+ | [nodejs.org](https://nodejs.org/) |
+| npm | v10+ | Bundled with Node.js |
 | Docker | Latest | [docker.com](https://docs.docker.com/get-docker/) |
 | Git LFS | Latest | [git-lfs.com](https://git-lfs.com/) |
 | Compact Compiler | Latest | [docs.midnight.network](https://docs.midnight.network/relnotes/compact-tools) |
