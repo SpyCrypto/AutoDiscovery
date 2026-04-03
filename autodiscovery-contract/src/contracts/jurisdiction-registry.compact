@@ -107,7 +107,9 @@ ledger offChainRulePackDataReferenceByJurisdictionCode: Map<Bytes<8>, Field>;
 // The public key of the registry administrator.
 // Set during contract deployment (constructor). Only this key can call
 // registerNewJurisdiction and updateJurisdictionRulePack.
-export ledger registryAdministratorPublicKey: ZswapCoinPublicKey;
+// Uses sealed ledger (write-once in constructor) so the admin key is
+// immutably committed on-chain and cannot be modified after deployment.
+sealed ledger registryAdministratorPublicKey: ZswapCoinPublicKey;
 
 
 // =============================================================================
