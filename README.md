@@ -366,21 +366,11 @@ Domain Expert · Legal Discovery Specialist
 
 Developer · Midnight Builder · Architect
 
-Full-stack development, smart contract architecture, ZK protocol design, and the vision behind privacy-first legal technology.
+Full-stack development, smart contract architecture, and ZK protocol design.
 
 </td>
 </tr>
 </table>
-
----
-
-<div align="center">
-
-### Midnight Vegas Hackathon — April 2026
-
-*Privacy meets compliance. Built on [Midnight Network](https://midnight.network).*
-
-**Where every document has a chain of custody, every deadline is tracked,<br>and no one accidentally emails the judge.**
 
 ---
 
