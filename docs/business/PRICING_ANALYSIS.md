@@ -286,7 +286,7 @@ ROI Calculation:
 
 ### 💡 **Key Insights**
 
-1. **Massive ROI Opportunity** - 10-100x return for customers
+1. **Massive ROI Opportunity** - 20-190x return for customers
 2. **Underpriced Current Model** - Room for 2-3x price increases
 3. **Value-Based Pricing** - Per-case or revenue-share models viable
 4. **Market Leadership Position** - First-mover advantage in privacy-preserving legal tech
