@@ -168,7 +168,7 @@ Jurisdiction-aware discovery automation with cryptographic compliance proofs.
 
 ## Slide 10: Business Model
 
-### SaaS + Per-Proof Revenue
+### SaaS Subscriptions
 
 | Tier | Price | Target |
 |------|-------|--------|
@@ -184,8 +184,7 @@ Jurisdiction-aware discovery automation with cryptographic compliance proofs.
 | Average Revenue per Firm | $350/mo |
 | Monthly Recurring Revenue | $17,500 |
 | Annual Recurring Revenue | $210,000 |
-| Compliance Proof Revenue | $75,000/yr |
-| **Total Year 2 Revenue** | **~$285,000** |
+| **Total Year 2 Revenue** | **~$210,000** |
 
 ### The ROI Pitch
 

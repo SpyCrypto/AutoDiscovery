@@ -6,7 +6,7 @@
 
 ## 📊 **Executive Summary**
 
-AutoDiscovery's pricing model delivers **10-100x ROI** compared to current legal tech spending by eliminating discovery sanctions, reducing billable hours, and preventing case dismissals. Our solution transforms from a **cost center** to a **profit center** for law firms.
+AutoDiscovery's pricing model delivers **20-190x ROI** compared to current legal tech spending by eliminating discovery sanctions, reducing billable hours, and preventing case dismissals. Our solution transforms from a **cost center** to a **profit center** for law firms.
 
 ---
 
@@ -37,13 +37,13 @@ AutoDiscovery's pricing model delivers **10-100x ROI** compared to current legal
 
 ### 💸 **Direct Cost Comparison**
 
-| Tool Category | Current Spending | AutoDiscovery Cost | Savings |
-|---------------|------------------|-------------------|---------|
-| **Practice Management** | $3K-$50K | Included | 100% |
-| **E-Discovery** | $10K-$200K | $99-$699/mo | 70-95% |
-| **Compliance Tools** | $5K-$30K | Included | 100% |
-| **Document Management** | $5K-$50K | Included | 100% |
-| **Risk Management** | $10K-$100K | Included | 100% |
+| Tool Category | Current Spending/mo | AutoDiscovery Cost/mo | Savings |
+|---------------|---------------------|----------------------|---------|
+| **Practice Management** | $250-$4,167 | Included | 100% |
+| **E-Discovery** | $833-$16,667 | $99-$699 | 70-95% |
+| **Compliance Tools** | $417-$2,500 | Included | 100% |
+| **Document Management** | $417-$4,167 | Included | 100% |
+| **Risk Management** | $833-$8,333 | Included | 100% |
 
 ### 📊 **Total Cost of Ownership (TCO) Analysis**
 
