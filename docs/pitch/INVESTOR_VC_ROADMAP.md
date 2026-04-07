@@ -44,7 +44,7 @@
 | **Small Firms (2-10)** | 500K | Resource constraints | $299/mo |
 | **Mid Firms (11-50)** | 300K | Multi-jurisdiction complexity | $499/mo |
 | **Large Firms (50+)** | 100K | Enterprise compliance | $699/mo |
-| **Corporate Legal** | 50K | Risk management | $699/mo |
+| **Corporate Legal (priced as Large Firm tier)** | 50K | Risk management | $699/mo |
 
 ### 🌍 **Market Expansion Strategy**
 
