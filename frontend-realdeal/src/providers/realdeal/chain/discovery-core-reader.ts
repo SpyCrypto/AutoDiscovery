@@ -138,6 +138,10 @@ export async function isContractReachable(): Promise<boolean> {
 /**
  * Parse raw contract state into a typed case status using the
  * generated ledger parser from @autodiscovery/contract.
+ *
+ * The indexer returns raw state as a hex/binary string. The ledger()
+ * function expects StateValue | ChargedState, so we cast via `as any`
+ * since the compact runtime handles the internal parsing.
  */
 export async function getOnChainCaseStatus(
   onChainCaseIdentifier: string,
@@ -149,7 +153,8 @@ export async function getOnChainCaseStatus(
       return { exists: false, statusCode: -1, jurisdictionCode: null };
     }
 
-    const parsed = DiscoveryCore.ledger(rawState);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const parsed = DiscoveryCore.ledger(rawState as any);
     const caseId = BigInt('0x' + onChainCaseIdentifier.toLowerCase().replace(/^0x/, ''));
     const exists = parsed.caseStatusByCaseIdentifier.member(caseId);
 
@@ -186,7 +191,8 @@ export async function getOnChainStepStatus(
       return { exists: false, completed: false };
     }
 
-    const parsed = DiscoveryCore.ledger(rawState);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const parsed = DiscoveryCore.ledger(rawState as any);
     const stepHash = BigInt('0x' + onChainStepHash.toLowerCase().replace(/^0x/, ''));
     const exists = parsed.isStepCompletedByStepHash.member(stepHash);
 
@@ -214,7 +220,8 @@ export async function isAttestationOnChain(attestationHash: string): Promise<boo
     const rawState = await fetchRawContractState();
     if (!rawState) return false;
 
-    const parsed = DiscoveryCore.ledger(rawState);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const parsed = DiscoveryCore.ledger(rawState as any);
     const hash = BigInt('0x' + attestationHash.toLowerCase().replace(/^0x/, ''));
     return parsed.completionAttestationHashes.member(hash);
   } catch (error) {
