@@ -105,10 +105,6 @@ const CONTRACT_STATE_QUERY = `
 /**
  * Fetches the raw contract state from the indexer.
  * Returns null if the contract is not found or has no state.
- *
- * NOTE: The exact GraphQL schema depends on the indexer version.
- * If this query fails, the indexer API may have changed.
- * Check https://indexer.preprod.midnight.network for the current schema.
  */
 export async function fetchRawContractState(): Promise<string | null> {
   try {
@@ -138,51 +134,83 @@ export async function isContractReachable(): Promise<boolean> {
 }
 
 /**
- * Placeholder for parsing raw state into typed ledger objects.
+ * Parse raw contract state into a typed case status.
  *
- * Once the contract package is linked as a dependency, this will use:
+ * When @autodiscovery/contract is linked as a workspace dependency,
+ * this will use the generated ledger parser:
  *   import { ledger } from '@autodiscovery/contract';
- *   const parsedLedger = ledger(rawStateBytes);
- *   parsedLedger.caseStatusByCaseIdentifier.lookup(caseId);
+ *   const parsed = ledger(rawState);
+ *   parsed.caseStatusByCaseIdentifier.lookup(caseId);
  *
- * For now, this returns the raw data and individual lookup functions
- * will be implemented when the dependency is wired.
+ * Until the contract package is built and linked, this queries the
+ * indexer for raw state and attempts to determine case existence.
  */
 export async function getOnChainCaseStatus(
   onChainCaseIdentifier: string,
 ): Promise<OnChainCaseStatus> {
-  // TODO: When contract package is linked as a dependency:
-  //   1. Fetch raw state via fetchRawContractState()
-  //   2. Parse with: const parsed = ledger(rawState)
-  //   3. Check: parsed.caseStatusByCaseIdentifier.member(BigInt('0x' + onChainCaseIdentifier))
-  //   4. Lookup: parsed.caseStatusByCaseIdentifier.lookup(BigInt('0x' + onChainCaseIdentifier))
-  //
-  // For MVP, return a "not yet connected" status so the UI can still render.
-  console.info(
-    `[DiscoveryCoreReader] On-chain lookup for case ${onChainCaseIdentifier.slice(0, 16)}... — ledger parser not yet linked`,
-  );
+  try {
+    const rawState = await fetchRawContractState();
 
-  return {
-    exists: false,
-    statusCode: -1,
-    jurisdictionCode: null,
-  };
+    if (!rawState) {
+      return { exists: false, statusCode: -1, jurisdictionCode: null };
+    }
+
+    // The raw state is a hex-encoded byte string from the indexer.
+    // When the contract ledger parser is linked, this becomes:
+    //   const parsed = ledger(rawState);
+    //   const exists = parsed.caseStatusByCaseIdentifier.member(BigInt('0x' + id));
+    //   const status = parsed.caseStatusByCaseIdentifier.lookup(BigInt('0x' + id));
+    //
+    // For now, check if the case identifier appears in the raw state bytes.
+    // This is a best-effort heuristic until the full parser is available.
+    const normalizedId = onChainCaseIdentifier.toLowerCase().replace(/^0x/, '');
+    const exists = rawState.toLowerCase().includes(normalizedId);
+
+    if (exists) {
+      console.info(
+        `[DiscoveryCoreReader] Case ${normalizedId.slice(0, 16)}... found in raw state. ` +
+        'Full status parsing requires @autodiscovery/contract dependency.',
+      );
+      return {
+        exists: true,
+        statusCode: 1, // IN_PROGRESS — conservative default until parser is linked
+        jurisdictionCode: null,
+      };
+    }
+
+    return { exists: false, statusCode: -1, jurisdictionCode: null };
+  } catch (error) {
+    console.warn(
+      `[DiscoveryCoreReader] On-chain lookup failed for case ${onChainCaseIdentifier.slice(0, 16)}...:`,
+      error,
+    );
+    return { exists: false, statusCode: -1, jurisdictionCode: null };
+  }
 }
 
 export async function getOnChainStepStatus(
   onChainStepHash: string,
 ): Promise<OnChainStepStatus> {
-  // TODO: Same pattern as getOnChainCaseStatus — parse ledger, then:
-  //   parsed.isStepCompletedByStepHash.member(BigInt('0x' + stepHash))
-  //   parsed.isStepCompletedByStepHash.lookup(BigInt('0x' + stepHash))
-  console.info(
-    `[DiscoveryCoreReader] On-chain lookup for step ${onChainStepHash.slice(0, 16)}... — ledger parser not yet linked`,
-  );
+  try {
+    const rawState = await fetchRawContractState();
 
-  return {
-    exists: false,
-    completed: false,
-  };
+    if (!rawState) {
+      return { exists: false, completed: false };
+    }
+
+    // Same approach as getOnChainCaseStatus — check raw state for hash presence.
+    // Full parsing requires the contract ledger parser.
+    const normalizedHash = onChainStepHash.toLowerCase().replace(/^0x/, '');
+    const exists = rawState.toLowerCase().includes(normalizedHash);
+
+    return { exists, completed: false }; // Completion flag requires parsed state
+  } catch (error) {
+    console.warn(
+      `[DiscoveryCoreReader] On-chain step lookup failed for ${onChainStepHash.slice(0, 16)}...:`,
+      error,
+    );
+    return { exists: false, completed: false };
+  }
 }
 
 /**
@@ -190,9 +218,17 @@ export async function getOnChainStepStatus(
  * Used to verify that a step completion was properly anchored.
  */
 export async function isAttestationOnChain(attestationHash: string): Promise<boolean> {
-  // TODO: parsed.completionAttestationHashes.member(BigInt('0x' + attestationHash))
-  console.info(
-    `[DiscoveryCoreReader] Attestation check for ${attestationHash.slice(0, 16)}... — ledger parser not yet linked`,
-  );
-  return false;
+  try {
+    const rawState = await fetchRawContractState();
+    if (!rawState) return false;
+
+    const normalizedHash = attestationHash.toLowerCase().replace(/^0x/, '');
+    return rawState.toLowerCase().includes(normalizedHash);
+  } catch (error) {
+    console.warn(
+      `[DiscoveryCoreReader] Attestation check failed for ${attestationHash.slice(0, 16)}...:`,
+      error,
+    );
+    return false;
+  }
 }
