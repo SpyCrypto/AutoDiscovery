@@ -1,5 +1,6 @@
 import path from 'node:path';
-export const currentDir = path.resolve(new URL(import.meta.url).pathname, '..');
+import { fileURLToPath } from 'node:url';
+export const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
 export const contractConfig = {
   privateStateStoreName: 'discovery-core-private-state',
@@ -31,4 +32,13 @@ export class PreviewConfig implements Config {
   node = 'wss://rpc.preview.midnight.network';
   proofServer = 'http://127.0.0.1:6300';
   networkId = 'preview';
+}
+
+export class PreprodConfig implements Config {
+  logDir = path.resolve(currentDir, '..', 'logs', 'deploy-preprod', `${new Date().toISOString()}.log`);
+  indexer = 'https://indexer.preprod.midnight.network/api/v3/graphql';
+  indexerWS = 'wss://indexer.preprod.midnight.network/api/v3/graphql/ws';
+  node = 'wss://rpc.preprod.midnight.network';
+  proofServer = 'http://127.0.0.1:6300';
+  networkId = 'preprod';
 }
