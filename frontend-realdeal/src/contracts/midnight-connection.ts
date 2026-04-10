@@ -40,7 +40,7 @@ import { setNetworkId } from '@midnight-ntwrk/midnight-js-network-id';
 
 import { getContractConfig, type ContractConfig } from './index';
 import { BrowserZkConfigProvider } from './browser-zk-config-provider';
-import { WalletNotConnectedError, ChainConnectionError, ContractCallError } from '../lib/errors';
+import { WalletNotConnectedError } from '../lib/errors';
 
 // ============================================================================
 // Types

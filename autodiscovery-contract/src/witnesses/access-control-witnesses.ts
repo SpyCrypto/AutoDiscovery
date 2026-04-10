@@ -17,7 +17,10 @@
 //   }
 // ============================================================================
 
-import { type WitnessContext, type MerkleTreePath } from "@midnight-ntwrk/compact-runtime";
+import {
+  type WitnessContext,
+  type MerkleTreePath
+} from "@midnight-ntwrk/compact-runtime";
 import type { Ledger } from "../managed/access-control/contract/index.js";
 import { hashToBytes32 } from "./hash-utils.js";
 
@@ -30,15 +33,18 @@ export type AccessControlPrivateState = {
 
 // --- Private State Factory ---
 
-export const createAccessControlPrivateState = (): AccessControlPrivateState => ({
-  sharingEventLog: {},
-});
+export const createAccessControlPrivateState =
+  (): AccessControlPrivateState => ({
+    sharingEventLog: {}
+  });
 
 // --- Hash Utility ---
 
 /** Convert a Uint8Array to a hex string */
 function bytesToHex(bytes: Uint8Array): string {
-  return Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
+  return Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 // --- Witness Implementations ---
@@ -52,7 +58,7 @@ function bytesToHex(bytes: Uint8Array): string {
  * @returns [unchangedPrivateState, currentTimestamp]
  */
 export const getCurrentTimestamp = (
-  context: WitnessContext<Ledger, AccessControlPrivateState>,
+  context: WitnessContext<Ledger, AccessControlPrivateState>
 ): [AccessControlPrivateState, bigint] => {
   const timestamp = BigInt(Math.floor(Date.now() / 1000));
   return [context.privateState, timestamp];
@@ -74,9 +80,10 @@ export const getCurrentTimestamp = (
  */
 export const lookupRoleCommitmentMerklePath = (
   context: WitnessContext<Ledger, AccessControlPrivateState>,
-  publicKeyHash_0: Uint8Array,
+  publicKeyHash_0: Uint8Array
 ): [AccessControlPrivateState, MerkleTreePath<Uint8Array> | undefined] => {
-  const path = context.ledger.authorizedRoleCommitments.findPathForLeaf(publicKeyHash_0);
+  const path =
+    context.ledger.authorizedRoleCommitments.findPathForLeaf(publicKeyHash_0);
   return [context.privateState, path];
 };
 
@@ -97,12 +104,12 @@ export const computeSharingEventProofHash = (
   context: WitnessContext<Ledger, AccessControlPrivateState>,
   documentHash_0: Uint8Array,
   recipientPublicKeyHash_0: Uint8Array,
-  sharingTimestamp_0: bigint,
+  sharingTimestamp_0: bigint
 ): [AccessControlPrivateState, Uint8Array] => {
   const proofHash = hashToBytes32(
     documentHash_0,
     recipientPublicKeyHash_0,
-    sharingTimestamp_0,
+    sharingTimestamp_0
   );
 
   // Log the sharing event in private state
@@ -110,8 +117,8 @@ export const computeSharingEventProofHash = (
     ...context.privateState,
     sharingEventLog: {
       ...context.privateState.sharingEventLog,
-      [bytesToHex(proofHash)]: bytesToHex(recipientPublicKeyHash_0),
-    },
+      [bytesToHex(proofHash)]: bytesToHex(recipientPublicKeyHash_0)
+    }
   };
 
   return [updatedState, proofHash];
@@ -123,5 +130,5 @@ export const computeSharingEventProofHash = (
 export const accessControlWitnesses = {
   getCurrentTimestamp,
   computeSharingEventProofHash,
-  lookupRoleCommitmentMerklePath,
+  lookupRoleCommitmentMerklePath
 };

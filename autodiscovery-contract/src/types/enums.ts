@@ -20,7 +20,7 @@ export enum CaseStatus {
   /** Case closed (settlement, verdict, dismissal) */
   Closed = "closed",
   /** Case on appeal — discovery record may be reviewed */
-  OnAppeal = "onAppeal",
+  OnAppeal = "onAppeal"
 }
 
 /**
@@ -39,7 +39,7 @@ export enum CaseDisposition {
   /** Summary judgment granted */
   SummaryJudgment = "summaryJudgment",
   /** Default judgment (failure to respond) */
-  DefaultJudgment = "defaultJudgment",
+  DefaultJudgment = "defaultJudgment"
 }
 
 // --- Discovery Steps ---
@@ -62,7 +62,7 @@ export enum StepStatus {
   /** Objection filed — step disputed */
   Objected = "objected",
   /** Protected by privilege (logged on privilege log) */
-  Protected = "protected",
+  Protected = "protected"
 }
 
 /**
@@ -94,7 +94,7 @@ export enum StepCategory {
   /** Med-mal specific: standard of care documentation */
   StandardOfCare = "standard-of-care",
   /** Supplementation of prior responses (IRCP Rule 26(e)) */
-  Supplementation = "supplementation",
+  Supplementation = "supplementation"
 }
 
 /**
@@ -106,7 +106,7 @@ export enum RuleType {
   /** Available but not required unless requested */
   Optional = "optional",
   /** Triggered by specific conditions (e.g., case type) */
-  Conditional = "conditional",
+  Conditional = "conditional"
 }
 
 // --- Time Units ---
@@ -119,7 +119,7 @@ export enum DeadlineUnit {
   /** Count every day including weekends/holidays */
   CalendarDays = "calendarDays",
   /** Exclude weekends and recognized holidays */
-  BusinessDays = "businessDays",
+  BusinessDays = "businessDays"
 }
 
 // --- Parties ---
@@ -135,7 +135,7 @@ export enum PartyRole {
   /** Expert witness (Phase 2 — med-mal specific) */
   ExpertWitness = "expertWitness",
   /** Third-party subpoena recipient */
-  ThirdParty = "thirdParty",
+  ThirdParty = "thirdParty"
 }
 
 // --- Case Types ---
@@ -156,7 +156,7 @@ export enum CaseType {
   /** Product liability */
   ProductLiability = "product-liability",
   /** General civil litigation */
-  GeneralCivil = "general-civil",
+  GeneralCivil = "general-civil"
 }
 
 // --- Compliance / Attestation ---
@@ -171,7 +171,7 @@ export enum AttestationScope {
   /** All steps in a discovery phase completed */
   Phase = "phase",
   /** Entire case discovery completed */
-  Case = "case",
+  Case = "case"
 }
 
 // --- Jurisdiction Hierarchy ---
@@ -189,7 +189,7 @@ export enum JurisdictionLevel {
   /** County-specific local rules — overrides state (none in Idaho per Spy) */
   County = "county",
   /** Individual judge scheduling order — overrides everything */
-  Judge = "judge",
+  Judge = "judge"
 }
 
 // --- Alert / Warning Levels ---
@@ -205,5 +205,5 @@ export enum AlertLevel {
   /** Deadline day — action required today */
   Deadline = "deadline",
   /** Deadline passed — escalation needed (motion to compel risk) */
-  Escalation = "escalation",
+  Escalation = "escalation"
 }

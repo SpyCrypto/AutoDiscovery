@@ -4,7 +4,7 @@ import { walletsListFormat } from "./common/common-values";
 import { TooltipProvider } from "./common/tooltip";
 import WalletIcon from "./wallet-icon";
 
-export default function ScreenMain({ selectedNetwork, setOpen }: { selectedNetwork: string; setOpen: Function }) {
+export default function ScreenMain({ selectedNetwork, setOpen }: { selectedNetwork: string; setOpen: (open: boolean) => void }) {
   const wallets = useWalletList();
   const { connectWallet } = useWallet();
 

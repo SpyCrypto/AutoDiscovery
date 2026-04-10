@@ -9,4 +9,8 @@ export * as ExpertWitness from "./managed/expert-witness/contract/index.js";
 
 // --- Witness Implementations & Types ---
 export * from "./witnesses/index.js";
-export { type CounterPrivateState, createPrivateState, witnesses } from "./witnesses.js";
+export {
+  type CounterPrivateState,
+  createPrivateState,
+  witnesses
+} from "./witnesses.js";

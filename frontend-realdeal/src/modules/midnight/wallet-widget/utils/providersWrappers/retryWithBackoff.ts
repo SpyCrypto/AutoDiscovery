@@ -23,7 +23,7 @@ export function retryWithBackoff<T>(
           resolve(result);
         })
         .catch((error) => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+           
           logger?.error(`[${operationName}] Operation failed: ${error.message}`);
 
           if (retryCount <= 0) {

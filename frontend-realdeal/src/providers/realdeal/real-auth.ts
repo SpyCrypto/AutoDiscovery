@@ -129,7 +129,7 @@ export class RealAuthProvider implements IAuthProvider {
   async login(method: AuthMethod, credentials?: Credentials): Promise<AuthSession> {
     let publicKey = '';
     let displayName = '';
-    let email = credentials?.email ?? '';
+    const email = credentials?.email ?? '';
 
     if (method === 'email') {
       // Dev mode: Create a local session without real wallet

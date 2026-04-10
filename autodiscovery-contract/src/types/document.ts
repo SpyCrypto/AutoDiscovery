@@ -24,7 +24,7 @@ export enum DocumentStatus {
   /** Document requested but not yet located */
   Searching = "searching",
   /** Document destroyed or unavailable — must document reason */
-  Unavailable = "unavailable",
+  Unavailable = "unavailable"
 }
 
 /**
@@ -46,7 +46,7 @@ export enum DocumentFormat {
   /** Video or audio recording */
   MediaRecording = "mediaRecording",
   /** Database extract or structured data */
-  DataExport = "dataExport",
+  DataExport = "dataExport"
 }
 
 /**

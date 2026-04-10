@@ -1,4 +1,4 @@
-name: Test Compile
+name: CI
 
 on:
   push:
@@ -9,44 +9,34 @@ on:
       - main
 
 jobs:
-  test-compile:
+  contract:
+    name: Contract — lint, test, build
     runs-on: ubuntu-latest
     permissions:
       contents: read
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
-      - name: Install Compact compiler
-        run: |
-          curl --proto '=https' --tlsv1.2 -fLsSo /tmp/compact-installer.sh https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh
-          sh /tmp/compact-installer.sh
-          echo "$HOME/.compact/bin" >> $GITHUB_PATH
-
-      - name: List contents of Compact bin
-        run: ls -l "$HOME/.compact/bin" || echo "WARNING: Compact bin directory not found at $HOME/.compact/bin"
-
-      - name: Verify Compact compiler
-        run: compactc --version
-
       - name: Install dependencies
         run: npm install
-
-      - name: Install Compact compiler
-        run: npm install -g @midnight-ntwrk/compact@1
 
       - name: Lint contract package
         working-directory: autodiscovery-contract
         run: npm run lint
 
-      - name: Run test:compile
+      - name: Run contract tests
         working-directory: autodiscovery-contract
-        run: npm run test:compile
+        run: npm run test
+
+      - name: Build contract package
+        working-directory: autodiscovery-contract
+        run: npm run build
 
       - name: Upload compiled contracts
         uses: actions/upload-artifact@v4
@@ -55,10 +45,6 @@ jobs:
           path: autodiscovery-contract/src/managed/
           retention-days: 30
           if-no-files-found: error
-
-      - name: Build contract package
-        working-directory: autodiscovery-contract
-        run: npm run build
 
       - name: Upload build output
         uses: actions/upload-artifact@v4
@@ -69,15 +55,16 @@ jobs:
           if-no-files-found: error
 
   frontend-realdeal:
+    name: Frontend realDeal — lint & test
     runs-on: ubuntu-latest
-    needs: test-compile
+    needs: contract
     permissions:
       contents: read
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
@@ -103,9 +90,40 @@ jobs:
         working-directory: frontend-realdeal
         run: npm run test
 
-  verify-artifacts:
+  frontend-demoland:
+    name: Frontend demoLand — lint & build
     runs-on: ubuntu-latest
-    needs: test-compile
+    needs: contract
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build contract package
+        working-directory: autodiscovery-contract
+        run: npm run build
+
+      - name: Lint frontend-demoland
+        working-directory: frontend-demoland-vite-react
+        run: npm run lint
+
+      - name: Build frontend (demoland mode)
+        working-directory: frontend-demoland-vite-react
+        run: npm run build:demo
+
+  verify-artifacts:
+    name: Verify artifacts
+    runs-on: ubuntu-latest
+    needs: contract
     permissions:
       contents: read
 

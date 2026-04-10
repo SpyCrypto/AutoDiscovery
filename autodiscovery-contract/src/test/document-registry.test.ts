@@ -1,4 +1,7 @@
-import { DocumentRegistrySimulator, logger } from "./simulators/document-registry-simulator.js";
+import {
+  DocumentRegistrySimulator,
+  logger
+} from "./simulators/document-registry-simulator.js";
 import { describe, it, expect } from "vitest";
 
 const DOCUMENT_HASH = new Uint8Array(32).fill(5);
@@ -11,11 +14,9 @@ const OCR_FIDELITY = 95n;
 describe("Document Registry smart contract", () => {
   it("should register a document and verify public ledger state", () => {
     const simulator = DocumentRegistrySimulator.deployContract();
-    const { ledgerState, documentHash } = simulator.as("p1").registerDocument(
-      DOCUMENT_HASH,
-      DOCUMENT_CATEGORY,
-      ORIGINATOR_KEY
-    );
+    const { ledgerState, documentHash } = simulator
+      .as("p1")
+      .registerDocument(DOCUMENT_HASH, DOCUMENT_CATEGORY, ORIGINATOR_KEY);
 
     logger.info({
       section: "registerDocument",
@@ -29,11 +30,9 @@ describe("Document Registry smart contract", () => {
 
   it("should register a twin bond linking image and digital twins", () => {
     const simulator = DocumentRegistrySimulator.deployContract();
-    const { ledgerState, bondHash } = simulator.as("p1").registerTwinBond(
-      IMAGE_TWIN_HASH,
-      DIGITAL_TWIN_HASH,
-      OCR_FIDELITY
-    );
+    const { ledgerState: _ledgerState, bondHash } = simulator
+      .as("p1")
+      .registerTwinBond(IMAGE_TWIN_HASH, DIGITAL_TWIN_HASH, OCR_FIDELITY);
 
     logger.info({ section: "registerTwinBond" });
 
@@ -43,11 +42,12 @@ describe("Document Registry smart contract", () => {
 
   it("should verify twin bond integrity with the correct digital twin", () => {
     const simulator = DocumentRegistrySimulator.deployContract();
-    simulator.as("p1").registerTwinBond(IMAGE_TWIN_HASH, DIGITAL_TWIN_HASH, OCR_FIDELITY);
-    const { ledgerState, isIntact } = simulator.as("p1").verifyTwinBondIntegrity(
-      IMAGE_TWIN_HASH,
-      DIGITAL_TWIN_HASH
-    );
+    simulator
+      .as("p1")
+      .registerTwinBond(IMAGE_TWIN_HASH, DIGITAL_TWIN_HASH, OCR_FIDELITY);
+    const { ledgerState: _ledgerState, isIntact } = simulator
+      .as("p1")
+      .verifyTwinBondIntegrity(IMAGE_TWIN_HASH, DIGITAL_TWIN_HASH);
 
     logger.info({ section: "verifyTwinBondIntegrity", isIntact });
 
@@ -57,11 +57,12 @@ describe("Document Registry smart contract", () => {
   it("should detect a broken twin bond when digital twin hash changes", () => {
     const simulator = DocumentRegistrySimulator.deployContract();
     const TAMPERED_HASH = new Uint8Array(32).fill(99);
-    simulator.as("p1").registerTwinBond(IMAGE_TWIN_HASH, DIGITAL_TWIN_HASH, OCR_FIDELITY);
-    const { isIntact } = simulator.as("p1").verifyTwinBondIntegrity(
-      IMAGE_TWIN_HASH,
-      TAMPERED_HASH
-    );
+    simulator
+      .as("p1")
+      .registerTwinBond(IMAGE_TWIN_HASH, DIGITAL_TWIN_HASH, OCR_FIDELITY);
+    const { isIntact } = simulator
+      .as("p1")
+      .verifyTwinBondIntegrity(IMAGE_TWIN_HASH, TAMPERED_HASH);
 
     logger.info({ section: "verifyTwinBondIntegrity (tampered)", isIntact });
 

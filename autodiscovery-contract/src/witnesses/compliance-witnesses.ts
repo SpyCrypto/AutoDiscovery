@@ -30,7 +30,7 @@ export type CompliancePrivateState = {
 // --- Private State Factory ---
 
 export const createCompliancePrivateState = (): CompliancePrivateState => ({
-  generatedAttestationHashes: [],
+  generatedAttestationHashes: []
 });
 
 // --- Witness Implementations ---
@@ -44,7 +44,7 @@ export const createCompliancePrivateState = (): CompliancePrivateState => ({
  * @returns [unchangedPrivateState, currentTimestamp]
  */
 export const getCurrentTimestamp = (
-  context: WitnessContext<Ledger, CompliancePrivateState>,
+  context: WitnessContext<Ledger, CompliancePrivateState>
 ): [CompliancePrivateState, bigint] => {
   const timestamp = BigInt(Math.floor(Date.now() / 1000));
   return [context.privateState, timestamp];
@@ -67,25 +67,25 @@ export const computeUniqueAttestationHash = (
   context: WitnessContext<Ledger, CompliancePrivateState>,
   caseIdentifier_0: bigint,
   stepOrPhaseHash_0: bigint,
-  attestationTimestamp_0: bigint,
+  attestationTimestamp_0: bigint
 ): [CompliancePrivateState, Uint8Array] => {
   const attestationHash = hashToBytes32(
     caseIdentifier_0,
     stepOrPhaseHash_0,
-    attestationTimestamp_0,
+    attestationTimestamp_0
   );
 
   // Track this attestation in private state
   const hashHex = Array.from(attestationHash)
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 
   const updatedState: CompliancePrivateState = {
     ...context.privateState,
     generatedAttestationHashes: [
       ...context.privateState.generatedAttestationHashes,
-      hashHex,
-    ],
+      hashHex
+    ]
   };
 
   return [updatedState, attestationHash];
@@ -96,5 +96,5 @@ export const computeUniqueAttestationHash = (
 
 export const complianceWitnesses = {
   getCurrentTimestamp,
-  computeUniqueAttestationHash,
+  computeUniqueAttestationHash
 };

@@ -5,7 +5,7 @@ export type CounterPrivateState = {
 
 export const createPrivateState = (value: number): CounterPrivateState => {
   return {
-    privateCounter: value,
+    privateCounter: value
   };
 };
 

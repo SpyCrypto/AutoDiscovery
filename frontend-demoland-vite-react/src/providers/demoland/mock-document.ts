@@ -46,7 +46,7 @@ export class MockDocumentProvider implements IDocumentProvider {
   async searchDocuments(query: string, filters?: SearchFilters): Promise<SearchResults> {
     await delay(600);
     const q = query.toLowerCase();
-    let results = this.documents.filter((d) => {
+    const results = this.documents.filter((d) => {
       const matchesQuery =
         d.title.toLowerCase().includes(q) ||
         (d.aiSynopsis?.toLowerCase().includes(q) ?? false) ||

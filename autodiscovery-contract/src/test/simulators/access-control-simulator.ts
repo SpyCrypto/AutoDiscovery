@@ -39,7 +39,9 @@ export class AccessControlSimulator {
   contractAddress: ContractAddress;
 
   constructor() {
-    this.contract = new Contract<AccessControlPrivateState>(accessControlWitnesses);
+    this.contract = new Contract<AccessControlPrivateState>(
+      accessControlWitnesses
+    );
     this.contractAddress = sampleContractAddress();
     const initialPrivateState = createAccessControlPrivateState();
     const {
@@ -59,7 +61,9 @@ export class AccessControlSimulator {
       costModel: CostModel.initialCostModel()
     };
     this.userPrivateStates = { ["p1"]: currentPrivateState };
-    this.updateUserPrivateState = (newPrivateState: AccessControlPrivateState) => {};
+    this.updateUserPrivateState = (
+      _newPrivateState: AccessControlPrivateState
+    ) => {};
   }
 
   static deployContract(): AccessControlSimulator {
@@ -137,17 +141,18 @@ export class AccessControlSimulator {
     protectiveOrderTierEnum: bigint,
     sender?: CoinPublicKey
   ): Ledger {
-    const circuitResults = this.contract.impureCircuits.grantDocumentAccessToParticipant(
-      {
-        ...this.circuitContext,
-        currentZswapLocalState: sender
-          ? emptyZswapLocalState(sender)
-          : this.circuitContext.currentZswapLocalState
-      },
-      documentContentHash,
-      recipientPublicKeyHash,
-      protectiveOrderTierEnum
-    );
+    const circuitResults =
+      this.contract.impureCircuits.grantDocumentAccessToParticipant(
+        {
+          ...this.circuitContext,
+          currentZswapLocalState: sender
+            ? emptyZswapLocalState(sender)
+            : this.circuitContext.currentZswapLocalState
+        },
+        documentContentHash,
+        recipientPublicKeyHash,
+        protectiveOrderTierEnum
+      );
     return this.updateStateAndGetLedger(circuitResults);
   }
 

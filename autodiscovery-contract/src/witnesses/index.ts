@@ -12,7 +12,7 @@ export {
   computeUniqueStepHash,
   getCurrentTimestamp as discoveryGetCurrentTimestamp,
   createDiscoveryCorePrivateState,
-  type DiscoveryCorePrivateState,
+  type DiscoveryCorePrivateState
 } from "./discovery-witnesses.js";
 
 export {
@@ -20,13 +20,13 @@ export {
   computeUniqueAttestationHash,
   getCurrentTimestamp as complianceGetCurrentTimestamp,
   createCompliancePrivateState,
-  type CompliancePrivateState,
+  type CompliancePrivateState
 } from "./compliance-witnesses.js";
 
 export {
   registryWitnesses,
   createRegistryPrivateState,
-  type RegistryPrivateState,
+  type RegistryPrivateState
 } from "./registry-witnesses.js";
 
 export {
@@ -35,7 +35,7 @@ export {
   buildMerkleRootFromDocumentHashes,
   getCurrentTimestamp as documentGetCurrentTimestamp,
   createDocumentRegistryPrivateState,
-  type DocumentRegistryPrivateState,
+  type DocumentRegistryPrivateState
 } from "./document-registry-witnesses.js";
 
 export {
@@ -43,12 +43,12 @@ export {
   computeSharingEventProofHash,
   getCurrentTimestamp as accessControlGetCurrentTimestamp,
   createAccessControlPrivateState,
-  type AccessControlPrivateState,
+  type AccessControlPrivateState
 } from "./access-control-witnesses.js";
 
 export {
   expertWitnessWitnesses,
   computeExpertIdentifierHash,
   createExpertWitnessPrivateState,
-  type ExpertWitnessPrivateState,
+  type ExpertWitnessPrivateState
 } from "./expert-witness-witnesses.js";
