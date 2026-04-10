@@ -90,6 +90,9 @@ const PREPROD_CONFIG = {
 // Wallet Provider State
 // ============================================================================
 
+/** Lace DApp connector API version */
+const LACE_CONNECTOR_API_VERSION = '1.x';
+
 /** Internal state of the wallet connection */
 interface WalletProviderState {
   coinPublicKey: string;
@@ -267,8 +270,7 @@ class MidnightConnectionManager {
       }
 
       // Request wallet connection — prompts user to approve in the Lace popup
-      const compatibleConnectorAPIVersion = '1.x';
-      const wallet = await mnLace.enable(compatibleConnectorAPIVersion);
+      const wallet = await mnLace.enable(LACE_CONNECTOR_API_VERSION);
       if (!wallet) {
         throw new WalletNotConnectedError('Lace wallet connection was rejected by user.');
       }
@@ -314,6 +316,15 @@ class MidnightConnectionManager {
    * Uses the HD wallet SDK to derive keys from the seed.
    */
   private createSeedWallet(walletSeed: string): WalletProviderState {
+    // Guard: seed-based wallets are for development only
+    if (typeof import.meta !== 'undefined' && import.meta.env?.MODE === 'production') {
+      console.error(
+        '[MidnightConnection] Seed-based wallets are not allowed in production. ' +
+        'Use the Lace browser extension instead.',
+      );
+      return { coinPublicKey: '', walletState: null, midnightProvider: null, connected: false };
+    }
+
     // In dev mode, derive a deterministic public key from the seed
     // The actual HD wallet creation requires async operations and the full
     // wallet-sdk chain, which needs a running node. For local dev, we use

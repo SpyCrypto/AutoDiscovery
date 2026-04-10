@@ -64,19 +64,24 @@ function extractEntitiesLocally(content: string): Entity[] {
   return entities;
 }
 
+function formatServiceError(url: string, response: Response): string {
+  return `AI service error: ${response.status} ${response.statusText} (url: ${url})`;
+}
+
 export class RealAIProvider implements IAIProvider {
   private readonly serviceUrl: string | null = getAIServiceUrl();
 
   async generateSynopsis(content: string): Promise<Synopsis> {
     if (this.serviceUrl) {
       // Delegate to external AI service when configured
-      const response = await fetch(`${this.serviceUrl}/synopsis`, {
+      const url = `${this.serviceUrl}/synopsis`;
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content }),
       });
       if (!response.ok) {
-        throw new Error(`AI service error: ${response.status} ${response.statusText}`);
+        throw new Error(formatServiceError(url, response));
       }
       return response.json();
     }
@@ -97,13 +102,14 @@ export class RealAIProvider implements IAIProvider {
 
   async extractEntities(content: string): Promise<Entity[]> {
     if (this.serviceUrl) {
-      const response = await fetch(`${this.serviceUrl}/entities`, {
+      const url = `${this.serviceUrl}/entities`;
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content }),
       });
       if (!response.ok) {
-        throw new Error(`AI service error: ${response.status} ${response.statusText}`);
+        throw new Error(formatServiceError(url, response));
       }
       return response.json();
     }
@@ -115,13 +121,14 @@ export class RealAIProvider implements IAIProvider {
 
   async detectObfuscation(_productionId: string): Promise<ObfuscationScore> {
     if (this.serviceUrl) {
-      const response = await fetch(`${this.serviceUrl}/obfuscation`, {
+      const url = `${this.serviceUrl}/obfuscation`;
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productionId: _productionId }),
       });
       if (!response.ok) {
-        throw new Error(`AI service error: ${response.status} ${response.statusText}`);
+        throw new Error(formatServiceError(url, response));
       }
       return response.json();
     }
@@ -138,13 +145,14 @@ export class RealAIProvider implements IAIProvider {
 
   async scoreFidelity(_imageHash: string, _digitalHash: string): Promise<number> {
     if (this.serviceUrl) {
-      const response = await fetch(`${this.serviceUrl}/fidelity`, {
+      const url = `${this.serviceUrl}/fidelity`;
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imageHash: _imageHash, digitalHash: _digitalHash }),
       });
       if (!response.ok) {
-        throw new Error(`AI service error: ${response.status} ${response.statusText}`);
+        throw new Error(formatServiceError(url, response));
       }
       const data = await response.json();
       return data.score ?? 0;
