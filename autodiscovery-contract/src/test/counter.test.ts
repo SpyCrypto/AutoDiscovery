@@ -17,7 +17,7 @@ function createSimulator() {
   return simulator;
 }
 
-let caller: CoinPublicKey;
+let _caller: CoinPublicKey;
 
 describe("Counter smart contract", () => {
   it("Display intial values", () => {
@@ -45,8 +45,8 @@ describe("Counter smart contract", () => {
       block: circuitContext.currentQueryContext.block,
       comIndices: circuitContext.currentQueryContext.comIndices,
       effects: circuitContext.currentQueryContext.effects
-    });      
-  }); 
+    });
+  });
 
   it("increments the counter correctly", () => {
     const simulator = createSimulator();
@@ -73,6 +73,6 @@ describe("Counter smart contract", () => {
       block: circuitContext.currentQueryContext.block,
       comIndices: circuitContext.currentQueryContext.comIndices,
       effects: circuitContext.currentQueryContext.effects
-    });     
+    });
   });
 });

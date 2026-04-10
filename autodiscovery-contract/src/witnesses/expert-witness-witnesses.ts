@@ -26,9 +26,10 @@ export type ExpertWitnessPrivateState = {
 
 // --- Private State Factory ---
 
-export const createExpertWitnessPrivateState = (): ExpertWitnessPrivateState => ({
-  registeredExpertHashes: [],
-});
+export const createExpertWitnessPrivateState =
+  (): ExpertWitnessPrivateState => ({
+    registeredExpertHashes: []
+  });
 
 // --- Witness Implementations ---
 
@@ -46,21 +47,21 @@ export const createExpertWitnessPrivateState = (): ExpertWitnessPrivateState => 
  */
 export const computeExpertIdentifierHash = (
   context: WitnessContext<Ledger, ExpertWitnessPrivateState>,
-  expertCredentialData_0: bigint,
+  expertCredentialData_0: bigint
 ): [ExpertWitnessPrivateState, Uint8Array] => {
   const result = hashToBytes32(expertCredentialData_0);
 
   // Track in private state
   const hashHex = Array.from(result)
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 
   const updatedState: ExpertWitnessPrivateState = {
     ...context.privateState,
     registeredExpertHashes: [
       ...context.privateState.registeredExpertHashes,
-      hashHex,
-    ],
+      hashHex
+    ]
   };
 
   return [updatedState, result];
@@ -70,5 +71,5 @@ export const computeExpertIdentifierHash = (
 // Names MUST match generated Witnesses<PS> type exactly.
 
 export const expertWitnessWitnesses = {
-  computeExpertIdentifierHash,
+  computeExpertIdentifierHash
 };

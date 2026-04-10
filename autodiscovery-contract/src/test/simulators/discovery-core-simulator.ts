@@ -39,7 +39,9 @@ export class DiscoveryCoreSimulator {
   contractAddress: ContractAddress;
 
   constructor() {
-    this.contract = new Contract<DiscoveryCorePrivateState>(discoveryCoreWitnesses);
+    this.contract = new Contract<DiscoveryCorePrivateState>(
+      discoveryCoreWitnesses
+    );
     this.contractAddress = sampleContractAddress();
     const initialPrivateState = createDiscoveryCorePrivateState();
     const {
@@ -59,7 +61,9 @@ export class DiscoveryCoreSimulator {
       costModel: CostModel.initialCostModel()
     };
     this.userPrivateStates = { ["p1"]: currentPrivateState };
-    this.updateUserPrivateState = (newPrivateState: DiscoveryCorePrivateState) => {};
+    this.updateUserPrivateState = (
+      _newPrivateState: DiscoveryCorePrivateState
+    ) => {};
   }
 
   static deployContract(): DiscoveryCoreSimulator {
@@ -160,16 +164,17 @@ export class DiscoveryCoreSimulator {
     stepHash: bigint,
     sender?: CoinPublicKey
   ): { ledgerState: Ledger; attestationHash: bigint } {
-    const circuitResults = this.contract.impureCircuits.markDiscoveryStepAsCompleted(
-      {
-        ...this.circuitContext,
-        currentZswapLocalState: sender
-          ? emptyZswapLocalState(sender)
-          : this.circuitContext.currentZswapLocalState
-      },
-      caseId,
-      stepHash
-    );
+    const circuitResults =
+      this.contract.impureCircuits.markDiscoveryStepAsCompleted(
+        {
+          ...this.circuitContext,
+          currentZswapLocalState: sender
+            ? emptyZswapLocalState(sender)
+            : this.circuitContext.currentZswapLocalState
+        },
+        caseId,
+        stepHash
+      );
     const attestationHash = circuitResults.result;
     const ledgerState = this.updateStateAndGetLedger(circuitResults);
     return { ledgerState, attestationHash };
@@ -179,15 +184,16 @@ export class DiscoveryCoreSimulator {
     caseId: bigint,
     sender?: CoinPublicKey
   ): { ledgerState: Ledger; isCompliant: boolean } {
-    const circuitResults = this.contract.impureCircuits.checkCaseComplianceStatus(
-      {
-        ...this.circuitContext,
-        currentZswapLocalState: sender
-          ? emptyZswapLocalState(sender)
-          : this.circuitContext.currentZswapLocalState
-      },
-      caseId
-    );
+    const circuitResults =
+      this.contract.impureCircuits.checkCaseComplianceStatus(
+        {
+          ...this.circuitContext,
+          currentZswapLocalState: sender
+            ? emptyZswapLocalState(sender)
+            : this.circuitContext.currentZswapLocalState
+        },
+        caseId
+      );
     const isCompliant = circuitResults.result;
     const ledgerState = this.updateStateAndGetLedger(circuitResults);
     return { ledgerState, isCompliant };

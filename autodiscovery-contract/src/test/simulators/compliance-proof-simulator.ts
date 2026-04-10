@@ -59,7 +59,9 @@ export class ComplianceProofSimulator {
       costModel: CostModel.initialCostModel()
     };
     this.userPrivateStates = { ["p1"]: currentPrivateState };
-    this.updateUserPrivateState = (newPrivateState: CompliancePrivateState) => {};
+    this.updateUserPrivateState = (
+      _newPrivateState: CompliancePrivateState
+    ) => {};
   }
 
   static deployContract(): ComplianceProofSimulator {
@@ -119,17 +121,18 @@ export class ComplianceProofSimulator {
     stepDeadlineTimestamp: bigint,
     sender?: CoinPublicKey
   ): { ledgerState: Ledger; attestationHash: Uint8Array } {
-    const circuitResults = this.contract.impureCircuits.attestStepLevelCompliance(
-      {
-        ...this.circuitContext,
-        currentZswapLocalState: sender
-          ? emptyZswapLocalState(sender)
-          : this.circuitContext.currentZswapLocalState
-      },
-      caseIdentifier,
-      stepHash,
-      stepDeadlineTimestamp
-    );
+    const circuitResults =
+      this.contract.impureCircuits.attestStepLevelCompliance(
+        {
+          ...this.circuitContext,
+          currentZswapLocalState: sender
+            ? emptyZswapLocalState(sender)
+            : this.circuitContext.currentZswapLocalState
+        },
+        caseIdentifier,
+        stepHash,
+        stepDeadlineTimestamp
+      );
     const attestationHash = circuitResults.result;
     const ledgerState = this.updateStateAndGetLedger(circuitResults);
     return { ledgerState, attestationHash };

@@ -25,7 +25,7 @@ export type RegistryPrivateState = {
 // --- Private State Factory ---
 
 export const createRegistryPrivateState = (): RegistryPrivateState => ({
-  registeredJurisdictionCodes: [],
+  registeredJurisdictionCodes: []
 });
 
 // --- Witness Map (empty — contract has no witnesses) ---

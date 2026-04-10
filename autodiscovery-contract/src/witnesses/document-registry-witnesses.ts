@@ -32,16 +32,19 @@ export type DocumentRegistryPrivateState = {
 
 // --- Private State Factory ---
 
-export const createDocumentRegistryPrivateState = (): DocumentRegistryPrivateState => ({
-  registeredDocumentHashes: [],
-  twinBondMappings: {},
-});
+export const createDocumentRegistryPrivateState =
+  (): DocumentRegistryPrivateState => ({
+    registeredDocumentHashes: [],
+    twinBondMappings: {}
+  });
 
 // --- Hash Utilities ---
 
 /** Convert a Uint8Array to a hex string */
 function bytesToHex(bytes: Uint8Array): string {
-  return Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
+  return Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 // --- Witness Implementations ---
@@ -61,7 +64,7 @@ function bytesToHex(bytes: Uint8Array): string {
 export const computeTwinBondHash = (
   context: WitnessContext<Ledger, DocumentRegistryPrivateState>,
   imageTwinHash_0: Uint8Array,
-  digitalTwinHash_0: Uint8Array,
+  digitalTwinHash_0: Uint8Array
 ): [DocumentRegistryPrivateState, Uint8Array] => {
   const bondHash = hashToBytes32(imageTwinHash_0, digitalTwinHash_0);
 
@@ -70,8 +73,8 @@ export const computeTwinBondHash = (
     ...context.privateState,
     twinBondMappings: {
       ...context.privateState.twinBondMappings,
-      [bytesToHex(imageTwinHash_0)]: bytesToHex(digitalTwinHash_0),
-    },
+      [bytesToHex(imageTwinHash_0)]: bytesToHex(digitalTwinHash_0)
+    }
   };
 
   return [updatedState, bondHash];
@@ -94,7 +97,7 @@ export const computeTwinBondHash = (
  */
 export const buildMerkleRootFromDocumentHashes = (
   context: WitnessContext<Ledger, DocumentRegistryPrivateState>,
-  documentHashCollection_0: bigint,
+  documentHashCollection_0: bigint
 ): [DocumentRegistryPrivateState, Uint8Array] => {
   // Convert collection ID to bytes, then hash it to produce a root
   // In production: look up actual document hashes and compute real Merkle tree
@@ -112,7 +115,7 @@ export const buildMerkleRootFromDocumentHashes = (
  * @returns [unchangedPrivateState, currentTimestamp]
  */
 export const getCurrentTimestamp = (
-  context: WitnessContext<Ledger, DocumentRegistryPrivateState>,
+  context: WitnessContext<Ledger, DocumentRegistryPrivateState>
 ): [DocumentRegistryPrivateState, bigint] => {
   const timestamp = BigInt(Math.floor(Date.now() / 1000));
   return [context.privateState, timestamp];
@@ -124,5 +127,5 @@ export const getCurrentTimestamp = (
 export const documentRegistryWitnesses = {
   computeTwinBondHash,
   buildMerkleRootFromDocumentHashes,
-  getCurrentTimestamp,
+  getCurrentTimestamp
 };

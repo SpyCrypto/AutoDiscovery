@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import js from "@eslint/js";
+import globals from "globals";
 import plugin from "@typescript-eslint/eslint-plugin";
 import parser from "@typescript-eslint/parser";
 import pluginPrettier from "eslint-plugin-prettier";
@@ -24,6 +25,9 @@ export default [
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
       parser,
+      globals: {
+        ...globals.node,
+      },
       parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
@@ -36,6 +40,12 @@ export default [
     },
     rules: {
       "prettier/prettier": "error",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": ["error", {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_"
+      }],
       "@typescript-eslint/no-misused-promises": "off",
       "@typescript-eslint/no-floating-promises": "warn",
       "@typescript-eslint/promise-function-async": "off",

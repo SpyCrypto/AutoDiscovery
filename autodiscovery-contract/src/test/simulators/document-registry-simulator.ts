@@ -27,7 +27,10 @@ import {
 const config = new LogicTestingConfig();
 export const logger = await createLogger(config.logDir);
 
-export const documentRegistryPlayer1 = Buffer.from("docregistry-player1", "ascii")
+export const documentRegistryPlayer1 = Buffer.from(
+  "docregistry-player1",
+  "ascii"
+)
   .toString("hex")
   .padStart(64, "0");
 
@@ -35,11 +38,15 @@ export class DocumentRegistrySimulator {
   readonly contract: Contract<DocumentRegistryPrivateState>;
   circuitContext: CircuitContext<DocumentRegistryPrivateState>;
   userPrivateStates: Record<string, DocumentRegistryPrivateState>;
-  updateUserPrivateState: (newPrivateState: DocumentRegistryPrivateState) => void;
+  updateUserPrivateState: (
+    newPrivateState: DocumentRegistryPrivateState
+  ) => void;
   contractAddress: ContractAddress;
 
   constructor() {
-    this.contract = new Contract<DocumentRegistryPrivateState>(documentRegistryWitnesses);
+    this.contract = new Contract<DocumentRegistryPrivateState>(
+      documentRegistryWitnesses
+    );
     this.contractAddress = sampleContractAddress();
     const initialPrivateState = createDocumentRegistryPrivateState();
     const {
@@ -59,7 +66,9 @@ export class DocumentRegistrySimulator {
       costModel: CostModel.initialCostModel()
     };
     this.userPrivateStates = { ["p1"]: currentPrivateState };
-    this.updateUserPrivateState = (newPrivateState: DocumentRegistryPrivateState) => {};
+    this.updateUserPrivateState = (
+      _newPrivateState: DocumentRegistryPrivateState
+    ) => {};
   }
 
   static deployContract(): DocumentRegistrySimulator {

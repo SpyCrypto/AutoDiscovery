@@ -35,10 +35,11 @@ export type DiscoveryCorePrivateState = {
 
 // --- Private State Factory ---
 
-export const createDiscoveryCorePrivateState = (): DiscoveryCorePrivateState => ({
-  ownedCaseIdentifiers: [],
-  stepHashToCaseIdentifier: {},
-});
+export const createDiscoveryCorePrivateState =
+  (): DiscoveryCorePrivateState => ({
+    ownedCaseIdentifiers: [],
+    stepHashToCaseIdentifier: {}
+  });
 
 // --- Witness Implementations ---
 
@@ -57,7 +58,7 @@ export const createDiscoveryCorePrivateState = (): DiscoveryCorePrivateState => 
 export const computeUniqueCaseIdentifier = (
   context: WitnessContext<Ledger, DiscoveryCorePrivateState>,
   caseNumber_0: Uint8Array,
-  jurisdictionCode_0: Uint8Array,
+  jurisdictionCode_0: Uint8Array
 ): [DiscoveryCorePrivateState, bigint] => {
   const caseIdentifier = hashToField(caseNumber_0, jurisdictionCode_0);
 
@@ -66,8 +67,8 @@ export const computeUniqueCaseIdentifier = (
     ...context.privateState,
     ownedCaseIdentifiers: [
       ...context.privateState.ownedCaseIdentifiers,
-      caseIdentifier,
-    ],
+      caseIdentifier
+    ]
   };
 
   return [updatedState, caseIdentifier];
@@ -88,7 +89,7 @@ export const computeUniqueCaseIdentifier = (
 export const computeUniqueStepHash = (
   context: WitnessContext<Ledger, DiscoveryCorePrivateState>,
   caseIdentifier_0: bigint,
-  jurisdictionRuleReference_0: Uint8Array,
+  jurisdictionRuleReference_0: Uint8Array
 ): [DiscoveryCorePrivateState, bigint] => {
   const stepHash = hashToField(caseIdentifier_0, jurisdictionRuleReference_0);
 
@@ -99,8 +100,8 @@ export const computeUniqueStepHash = (
     ...context.privateState,
     stepHashToCaseIdentifier: {
       ...context.privateState.stepHashToCaseIdentifier,
-      [stepHashHex]: caseIdHex,
-    },
+      [stepHashHex]: caseIdHex
+    }
   };
 
   return [updatedState, stepHash];
@@ -117,7 +118,7 @@ export const computeUniqueStepHash = (
  * @returns [unchangedPrivateState, currentTimestamp]
  */
 export const getCurrentTimestamp = (
-  context: WitnessContext<Ledger, DiscoveryCorePrivateState>,
+  context: WitnessContext<Ledger, DiscoveryCorePrivateState>
 ): [DiscoveryCorePrivateState, bigint] => {
   const timestamp = BigInt(Math.floor(Date.now() / 1000));
   return [context.privateState, timestamp];
@@ -129,5 +130,5 @@ export const getCurrentTimestamp = (
 export const discoveryCoreWitnesses = {
   computeUniqueCaseIdentifier,
   computeUniqueStepHash,
-  getCurrentTimestamp,
+  getCurrentTimestamp
 };

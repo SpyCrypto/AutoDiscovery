@@ -27,7 +27,10 @@ import {
 const config = new LogicTestingConfig();
 export const logger = await createLogger(config.logDir);
 
-export const jurisdictionRegistryPlayer1 = Buffer.from("registry-player1", "ascii")
+export const jurisdictionRegistryPlayer1 = Buffer.from(
+  "registry-player1",
+  "ascii"
+)
   .toString("hex")
   .padStart(64, "0");
 
@@ -59,7 +62,9 @@ export class JurisdictionRegistrySimulator {
       costModel: CostModel.initialCostModel()
     };
     this.userPrivateStates = { ["p1"]: currentPrivateState };
-    this.updateUserPrivateState = (newPrivateState: RegistryPrivateState) => {};
+    this.updateUserPrivateState = (
+      _newPrivateState: RegistryPrivateState
+    ) => {};
   }
 
   static deployContract(): JurisdictionRegistrySimulator {
@@ -137,17 +142,18 @@ export class JurisdictionRegistrySimulator {
     updatedVersionNumber: bigint,
     sender?: CoinPublicKey
   ): Ledger {
-    const circuitResults = this.contract.impureCircuits.updateJurisdictionRulePack(
-      {
-        ...this.circuitContext,
-        currentZswapLocalState: sender
-          ? emptyZswapLocalState(sender)
-          : this.circuitContext.currentZswapLocalState
-      },
-      jurisdictionCode,
-      updatedRulePackContentHash,
-      updatedVersionNumber
-    );
+    const circuitResults =
+      this.contract.impureCircuits.updateJurisdictionRulePack(
+        {
+          ...this.circuitContext,
+          currentZswapLocalState: sender
+            ? emptyZswapLocalState(sender)
+            : this.circuitContext.currentZswapLocalState
+        },
+        jurisdictionCode,
+        updatedRulePackContentHash,
+        updatedVersionNumber
+      );
     return this.updateStateAndGetLedger(circuitResults);
   }
 
@@ -156,16 +162,17 @@ export class JurisdictionRegistrySimulator {
     expectedRulePackHash: Uint8Array,
     sender?: CoinPublicKey
   ): { ledgerState: Ledger; matches: boolean } {
-    const circuitResults = this.contract.impureCircuits.verifyRulePackHashMatchesExpected(
-      {
-        ...this.circuitContext,
-        currentZswapLocalState: sender
-          ? emptyZswapLocalState(sender)
-          : this.circuitContext.currentZswapLocalState
-      },
-      jurisdictionCode,
-      expectedRulePackHash
-    );
+    const circuitResults =
+      this.contract.impureCircuits.verifyRulePackHashMatchesExpected(
+        {
+          ...this.circuitContext,
+          currentZswapLocalState: sender
+            ? emptyZswapLocalState(sender)
+            : this.circuitContext.currentZswapLocalState
+        },
+        jurisdictionCode,
+        expectedRulePackHash
+      );
     const matches = circuitResults.result;
     const ledgerState = this.updateStateAndGetLedger(circuitResults);
     return { ledgerState, matches };

@@ -15,7 +15,10 @@
 // Reference: midnight-doc-manager src/api/witnesses.ts uses the same pattern.
 // ============================================================================
 
-import { persistentHash, CompactTypeBytes } from "@midnight-ntwrk/compact-runtime";
+import {
+  persistentHash,
+  CompactTypeBytes
+} from "@midnight-ntwrk/compact-runtime";
 
 // --- Internal Helpers ---
 
@@ -23,7 +26,7 @@ import { persistentHash, CompactTypeBytes } from "@midnight-ntwrk/compact-runtim
  * Converts a bigint to a 32-byte big-endian Uint8Array.
  */
 function bigintToBytes32(value: bigint): Uint8Array {
-  const hexString = value.toString(16).padStart(64, '0');
+  const hexString = value.toString(16).padStart(64, "0");
   const bytes = new Uint8Array(32);
   for (let i = 0; i < 32; i++) {
     bytes[i] = parseInt(hexString.slice(i * 2, i * 2 + 2), 16);

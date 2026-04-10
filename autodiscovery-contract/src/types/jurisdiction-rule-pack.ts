@@ -5,13 +5,7 @@
 // anchored on-chain via the jurisdiction-registry contract.
 // ============================================================================
 
-import {
-  StepCategory,
-  RuleType,
-  DeadlineUnit,
-  JurisdictionLevel,
-  CaseType,
-} from "./enums";
+import { StepCategory, RuleType, CaseType } from "./enums";
 import { DeadlineSpec } from "./deadline";
 
 /**
@@ -260,7 +254,9 @@ export interface JurisdictionRulePack {
    * Statute of limitations by case type (in months or years).
    * Per Spy: Idaho med-mal = 2 years from injury date.
    */
-  readonly statuteOfLimitations: Partial<Record<CaseType, StatuteOfLimitations>>;
+  readonly statuteOfLimitations: Partial<
+    Record<CaseType, StatuteOfLimitations>
+  >;
 
   /** Non-economic damages cap, if applicable */
   readonly damagesCap: DamagesCap | null;
