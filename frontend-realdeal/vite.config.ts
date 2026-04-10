@@ -16,9 +16,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     nodePolyfills({
-      // To add only specific polyfills, add them here.
-      // If no specific polyfills are needed, you can leave this empty.
-      include: ['buffer', 'process'],
+      include: ['buffer', 'process', 'crypto'],
       globals: {
         Buffer: true,
         process: true,

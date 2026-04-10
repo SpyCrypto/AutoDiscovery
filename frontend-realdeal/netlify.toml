@@ -1,0 +1,9 @@
+[build]
+  base = "frontend-realdeal"
+  command = "npx vite build"
+  publish = "frontend-realdeal/dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
