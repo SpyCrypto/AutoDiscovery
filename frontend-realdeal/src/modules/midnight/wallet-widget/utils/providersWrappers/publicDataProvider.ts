@@ -6,7 +6,7 @@ import type {
   PublicDataProvider,
   UnshieldedBalances,
 } from "@midnight-ntwrk/midnight-js-types";
-type Logger = { info?: (msg: string) => void; error?: (msg: string) => void; trace?: (msg: string) => void };
+type Logger = { info: (msg: string) => void; error: (msg: string) => void; trace?: (msg: string) => void };
 import type {
   ContractAddress,
   ContractState,

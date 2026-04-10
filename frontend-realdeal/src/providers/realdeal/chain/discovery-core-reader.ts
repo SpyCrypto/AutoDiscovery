@@ -69,7 +69,7 @@ export const CASE_STATUS_LABELS: Record<number, string> = {
 // --- Indexer Configuration ---
 
 function getIndexerUrl(): string {
-  return import.meta.env.VITE_INDEXER_URL || 'https://indexer.preprod.midnight.network/api/v1/graphql';
+  return import.meta.env.VITE_INDEXER_URL || 'https://indexer.preprod.midnight.network/api/v3/graphql';
 }
 
 function getContractAddress(): string {
