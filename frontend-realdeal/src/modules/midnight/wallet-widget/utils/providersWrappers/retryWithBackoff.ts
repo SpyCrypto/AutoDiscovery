@@ -1,4 +1,4 @@
-import { type Logger } from 'pino';
+type Logger = { info: (msg: string) => void; error: (msg: string) => void };
 
 export function retryWithBackoff<T>(
   operation: () => Promise<T>, // The promise-returning operation

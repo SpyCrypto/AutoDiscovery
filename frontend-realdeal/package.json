@@ -12,8 +12,10 @@
     "copy-contracts": "bash scripts/copy-contracts.sh"
   },
   "dependencies": {
+    "@autodiscovery/contract": "*",
     "@midnight-ntwrk/compact-runtime": "0.14.0",
     "@midnight-ntwrk/compact-js": "2.4.3",
+    "@midnight-ntwrk/midnight-js-fetch-zk-config-provider": "3.2.0",
     "@midnight-ntwrk/ledger-v7": "7.0.3",
     "@midnight-ntwrk/midnight-js-contracts": "3.2.0",
     "@midnight-ntwrk/midnight-js-http-client-proof-provider": "3.2.0",
@@ -45,6 +47,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "pino": "^9.0.0",
     "@originjs/vite-plugin-commonjs": "1.0.3",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@types/node": "^24.0.3",

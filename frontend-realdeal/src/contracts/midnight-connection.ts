@@ -81,8 +81,8 @@ export type ConnectionListener = (status: ConnectionStatus, detail?: string) => 
 // ============================================================================
 
 const PREPROD_CONFIG = {
-  indexer: 'https://indexer.preprod.midnight.network/api/v3/graphql',
-  indexerWS: 'wss://indexer.preprod.midnight.network/api/v3/graphql/ws',
+  indexer: import.meta.env.VITE_INDEXER_URL || 'https://indexer.preprod.midnight.network/api/v3/graphql',
+  indexerWS: import.meta.env.VITE_INDEXER_WS || 'wss://indexer.preprod.midnight.network/api/v3/graphql/ws',
   node: 'https://rpc.preprod.midnight.network',
 };
 

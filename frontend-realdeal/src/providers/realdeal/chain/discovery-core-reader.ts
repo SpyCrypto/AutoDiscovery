@@ -39,6 +39,21 @@ export interface DiscoveryCoreOnChainState {
   totalCasesCreated: bigint;
 }
 
+// --- Contract Ledger Parser ---
+// Imported from the compiled contract package. When @autodiscovery/contract
+// is installed and built, this provides typed ledger state parsing.
+let _ledgerParser: ((state: unknown) => unknown) | null = null;
+try {
+  // Dynamic import so missing package doesn't break the module at load time
+  import('@autodiscovery/contract').then((m) => {
+    _ledgerParser = (m.DiscoveryCore as unknown as { ledger: (s: unknown) => unknown }).ledger ?? null;
+  }).catch(() => {
+    _ledgerParser = null;
+  });
+} catch {
+  _ledgerParser = null;
+}
+
 // --- Status code to human-readable mapping ---
 
 export const CASE_STATUS_LABELS: Record<number, string> = {
@@ -155,29 +170,43 @@ export async function getOnChainCaseStatus(
       return { exists: false, statusCode: -1, jurisdictionCode: null };
     }
 
-    // The raw state is a hex-encoded byte string from the indexer.
-    // When the contract ledger parser is linked, this becomes:
-    //   const parsed = ledger(rawState);
-    //   const exists = parsed.caseStatusByCaseIdentifier.member(BigInt('0x' + id));
-    //   const status = parsed.caseStatusByCaseIdentifier.lookup(BigInt('0x' + id));
-    //
-    // For now, check if the case identifier appears in the raw state bytes.
-    // This is a best-effort heuristic until the full parser is available.
     const normalizedId = onChainCaseIdentifier.toLowerCase().replace(/^0x/, '');
-    const exists = rawState.toLowerCase().includes(normalizedId);
 
-    if (exists) {
-      console.info(
-        `[DiscoveryCoreReader] Case ${normalizedId.slice(0, 16)}... found in raw state. ` +
-        'Full status parsing requires @autodiscovery/contract dependency.',
-      );
-      return {
-        exists: true,
-        statusCode: 1, // IN_PROGRESS — conservative default until parser is linked
-        jurisdictionCode: null,
-      };
+    // Prefer the compiled ledger parser when available
+    if (_ledgerParser) {
+      try {
+        const parsed = _ledgerParser(rawState) as {
+          caseStatusByCaseIdentifier: {
+            member(key: bigint): boolean;
+            lookup(key: bigint): bigint;
+          };
+          jurisdictionCodeByCaseIdentifier: {
+            member(key: bigint): boolean;
+            lookup(key: bigint): Uint8Array;
+          };
+        };
+        const caseIdBigInt = BigInt('0x' + normalizedId);
+        const exists = parsed.caseStatusByCaseIdentifier.member(caseIdBigInt);
+        if (exists) {
+          const statusCode = Number(parsed.caseStatusByCaseIdentifier.lookup(caseIdBigInt));
+          let jurisdictionCode: string | null = null;
+          if (parsed.jurisdictionCodeByCaseIdentifier.member(caseIdBigInt)) {
+            const jBytes = parsed.jurisdictionCodeByCaseIdentifier.lookup(caseIdBigInt);
+            jurisdictionCode = new TextDecoder().decode(jBytes).replace(/\0+$/, '');
+          }
+          return { exists: true, statusCode, jurisdictionCode };
+        }
+        return { exists: false, statusCode: -1, jurisdictionCode: null };
+      } catch (parseError) {
+        console.warn('[DiscoveryCoreReader] Ledger parser failed, falling back to heuristic:', parseError);
+      }
     }
 
+    // Fallback: raw hex substring heuristic
+    const exists = rawState.toLowerCase().includes(normalizedId);
+    if (exists) {
+      return { exists: true, statusCode: 1, jurisdictionCode: null };
+    }
     return { exists: false, statusCode: -1, jurisdictionCode: null };
   } catch (error) {
     console.warn(
