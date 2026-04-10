@@ -64,7 +64,7 @@ import {
   getDeployedContract,
 } from '../../contracts/midnight-connection';
 
-import { ContractCallError, WalletNotConnectedError } from '../../lib/errors';
+import { ContractCallError } from '../../lib/errors';
 
 // --- Wallet Connection State ---
 // Write operations check the MidnightConnectionManager for wallet availability.

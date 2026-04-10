@@ -113,14 +113,14 @@ function vitalsReducer(state: VitalsState, action: VitalsAction): VitalsState {
         ),
       };
 
-    case 'ADD_LOG_ENTRY':
+    case 'ADD_LOG_ENTRY': {
       // Keep max 500 entries, prune oldest when exceeded
       const newEntries = [...state.logEntries, action.entry];
       if (newEntries.length > 500) {
         newEntries.splice(0, newEntries.length - 500);
       }
       return { ...state, logEntries: newEntries };
-
+    }
     case 'CLEAR_LOG':
       return { ...state, logEntries: [] };
 
