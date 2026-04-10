@@ -21,6 +21,15 @@ import {
   getJurisdictionByCode,
 } from './storage/adl-storage';
 
+import {
+  isWalletConnected,
+  getDeployedContract,
+} from '../../contracts/midnight-connection';
+
+import { ContractCallError } from '../../lib/errors';
+import { hexToBytes32 } from './chain/bytes-utils';
+import { jurisdictionToBytes8 } from './storage/case-storage';
+
 export class RealJurisdictionProvider implements IJurisdictionProvider {
 
   async getRegisteredJurisdictions(): Promise<JurisdictionRegistration[]> {
@@ -41,17 +50,26 @@ export class RealJurisdictionProvider implements IJurisdictionProvider {
       return { valid: false, message: `Jurisdiction ${code} not registered` };
     }
 
-    // Phase 2: Call jurisdiction-registry.verifyRulePackHashMatchesExpected circuit
-    // const codeBytes = jurisdictionToBytes8(code);
-    // const expectedHash = hexToBytes32(jurisdiction.registryHash);
-    // const tx = await deployed.callTx.verifyRulePackHashMatchesExpected(codeBytes, expectedHash);
-    // return { valid: tx.public.result, message: tx.public.result ? 'Verified on-chain' : 'Mismatch' };
+    // Attempt live on-chain verification if wallet is connected
+    if (isWalletConnected()) {
+      const deployed = getDeployedContract('jurisdiction-registry');
+      if (deployed && jurisdiction.registryHash) {
+        try {
+          const codeBytes = jurisdictionToBytes8(code);
+          const expectedHash = hexToBytes32(jurisdiction.registryHash);
+          const tx = await deployed.callTx.verifyRulePackHashMatchesExpected(codeBytes, expectedHash);
+          const isValid = tx.public.result;
+          return {
+            valid: isValid,
+            message: isValid ? 'Rule pack hash verified on-chain ✅' : 'On-chain hash mismatch — rule pack may have been updated',
+          };
+        } catch (error) {
+          throw new ContractCallError('verifyRulePackHashMatchesExpected', error);
+        }
+      }
+    }
 
-    // NOTE: `verifiedOnChain` is a locally-stored flag set when the jurisdiction was
-    // originally registered. It does NOT represent a live on-chain verification —
-    // the Phase 2 circuit call above is still commented out. The message below
-    // intentionally disambiguates local cache from a true on-chain proof so that
-    // compliance auditors are never misled.
+    // Fallback: report cached status
     if (jurisdiction.verifiedOnChain) {
       return {
         valid: true,

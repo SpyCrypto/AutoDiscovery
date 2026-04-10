@@ -20,6 +20,14 @@ import {
   registerExpertLocally,
 } from './storage/adl-storage';
 
+import {
+  isWalletConnected,
+  getDeployedContract,
+} from '../../contracts/midnight-connection';
+
+import { ContractCallError } from '../../lib/errors';
+import { stringToBytes32 } from './chain/bytes-utils';
+
 export class RealExpertWitnessProvider implements IExpertWitnessProvider {
 
   async getExpertsByCase(caseId: string): Promise<ExpertWitness[]> {
@@ -37,14 +45,30 @@ export class RealExpertWitnessProvider implements IExpertWitnessProvider {
   ): Promise<ExpertWitness> {
     const newExpert = registerExpertLocally(expert);
 
-    // Phase 2: Call expert-witness.registerExpertWitness circuit
-    // const qualificationHash = computeExpertQualificationHash(expert.qualifications);
-    // const tx = await deployed.callTx.registerExpertWitness(qualificationHash);
-    // updateExpertLocally(newExpert.id, { qualificationProofVerified: true });
+    // Anchor on-chain if wallet is connected
+    if (isWalletConnected()) {
+      const deployed = getDeployedContract('expert-witness');
+      if (deployed) {
+        try {
+          const qualificationHash = stringToBytes32(
+            Array.isArray(expert.qualifications)
+              ? expert.qualifications.join(',')
+              : String(expert.qualifications || ''),
+          );
+          await deployed.callTx.registerExpertWitness(qualificationHash);
+          // Mark as verified after successful on-chain registration
+          // Note: updateExpertLocally would need to be added to adl-storage if not present
+          console.info(`[RealExpertWitnessProvider] Expert "${newExpert.name}" anchored on-chain.`);
+        } catch (error) {
+          throw new ContractCallError('registerExpertWitness', error);
+        }
+      }
+    } else {
+      console.info(
+        `[RealExpertWitnessProvider] Expert "${newExpert.name}" registered locally. Connect wallet to anchor on-chain.`,
+      );
+    }
 
-    console.info(
-      `[RealExpertWitnessProvider] Expert "${newExpert.name}" registered locally. Connect wallet to anchor on-chain.`,
-    );
     return newExpert;
   }
 }

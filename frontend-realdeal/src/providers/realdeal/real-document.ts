@@ -29,10 +29,20 @@ import {
   getDocumentsByCase,
   getDocumentById,
   registerDocumentLocally,
+  updateDocumentLocally,
   getTwinBondForDocument,
   verifyDocumentHash,
   searchDocumentsLocally,
 } from './storage/adl-storage';
+
+import {
+  isWalletConnected,
+  getDeployedContract,
+  getCoinPublicKey,
+} from '../../contracts/midnight-connection';
+
+import { ContractCallError } from '../../lib/errors';
+import { hexToBytes32, categoryToNumber } from './chain/bytes-utils';
 
 export class RealDocumentProvider implements IDocumentProvider {
 
@@ -49,16 +59,27 @@ export class RealDocumentProvider implements IDocumentProvider {
   async registerDocument(input: DocumentInput): Promise<Document> {
     const doc = registerDocumentLocally(input);
 
-    // Phase 2: Call document-registry.registerDocument circuit
-    // const contentHashBytes = hexToBytes32(doc.contentHash);
-    // const categoryNumber = BigInt(categoryToNumber(doc.category));
-    // const originatorKey = hexToBytes32(session.publicKey);
-    // const tx = await deployed.callTx.registerDocument(contentHashBytes, categoryNumber, originatorKey);
-    // updateDocumentLocally(doc.id, { verified: true });
+    // Anchor on-chain if wallet is connected
+    if (isWalletConnected()) {
+      const deployed = getDeployedContract('document-registry');
+      if (deployed) {
+        try {
+          const contentHashBytes = hexToBytes32(doc.contentHash);
+          const categoryNumber = BigInt(categoryToNumber(doc.category));
+          const originatorKey = hexToBytes32(getCoinPublicKey() || '');
+          await deployed.callTx.registerDocument(contentHashBytes, categoryNumber, originatorKey);
+          updateDocumentLocally(doc.id, { verified: true });
+          console.info(`[RealDocumentProvider] Document "${doc.title}" anchored on-chain.`);
+        } catch (error) {
+          throw new ContractCallError('registerDocument', error);
+        }
+      }
+    } else {
+      console.info(
+        `[RealDocumentProvider] Document "${doc.title}" saved locally. Connect wallet to anchor on-chain.`,
+      );
+    }
 
-    console.info(
-      `[RealDocumentProvider] Document "${doc.title}" saved locally. Connect wallet to anchor on-chain.`,
-    );
     return doc;
   }
 

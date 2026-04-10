@@ -12,6 +12,7 @@
     "copy-contracts": "bash scripts/copy-contracts.sh"
   },
   "dependencies": {
+    "@autodiscovery/contract": "*",
     "@midnight-ntwrk/compact-js": "2.4.3",
     "@midnight-ntwrk/compact-runtime": "0.14.0",
     "@midnight-ntwrk/ledger-v7": "7.0.3",

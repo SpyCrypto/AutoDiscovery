@@ -52,6 +52,9 @@ import {
   getStepsForCase,
   getPartiesForCase,
   getChainMappingForCase,
+  setChainMapping,
+  caseNumberToBytes32,
+  jurisdictionToBytes8,
 } from './storage/case-storage';
 
 import {
@@ -110,8 +113,8 @@ export class RealCaseProvider implements ICaseProvider {
   /**
    * Create a new legal case.
    *
-   * Phase 1 (current): Saves metadata locally only.
-   * Phase 2 (wallet): Also calls discovery-core.createNewCase circuit
+   * Phase 1: Saves metadata locally only.
+   * Phase 2: Also calls discovery-core.createNewCase circuit
    *   to anchor the case hash on-chain, then stores the chain mapping.
    */
   async createCase(params: CreateCaseParams): Promise<Case> {
@@ -124,14 +127,17 @@ export class RealCaseProvider implements ICaseProvider {
       if (deployed) {
         try {
           // Call the contract circuit to anchor the case on-chain
-          // const caseNumberBytes = caseNumberToBytes32(params.caseNumber);
-          // const jurisdictionBytes = jurisdictionToBytes8(params.jurisdiction);
-          // const tx = await deployed.callTx.createNewCase(caseNumberBytes, jurisdictionBytes);
-          // const onChainCaseId = tx.public.result;
-          // setChainMapping({ localCaseId: newCase.id, onChainCaseIdentifier: onChainCaseId.toString(16), onChainStepHashes: {} });
+          const caseNumberBytes = caseNumberToBytes32(params.caseNumber);
+          const jurisdictionBytes = jurisdictionToBytes8(params.jurisdiction);
+          const tx = await deployed.callTx.createNewCase(caseNumberBytes, jurisdictionBytes);
+          const onChainCaseId = tx.public.result;
+          setChainMapping({
+            localCaseId: newCase.id,
+            onChainCaseIdentifier: onChainCaseId.toString(16),
+            onChainStepHashes: {},
+          });
           console.info(
-            `[RealCaseProvider] Wallet connected. On-chain anchoring ready for case "${newCase.title}".` +
-            ' Circuit calls will activate when contract deployment addresses are configured.',
+            `[RealCaseProvider] Case "${newCase.title}" anchored on-chain. Identifier: ${onChainCaseId.toString(16).slice(0, 16)}...`,
           );
         } catch (error) {
           // On-chain anchoring failed — case is still saved locally
