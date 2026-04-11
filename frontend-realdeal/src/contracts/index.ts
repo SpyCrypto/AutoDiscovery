@@ -59,7 +59,7 @@ export function getContractConfig(): ContractConfig {
   return {
     networkId: import.meta.env.VITE_MIDNIGHT_NETWORK || 'preprod',
     proofServerUrl: import.meta.env.VITE_PROOF_SERVER_URL || 'http://localhost:6300',
-    indexerUrl: import.meta.env.VITE_INDEXER_URL || 'https://indexer.preprod.midnight.network/api/v1/graphql',
+    indexerUrl: import.meta.env.VITE_INDEXER_URL || 'https://indexer.preprod.midnight.network/api/v3/graphql',
     contractAddresses: {
       discoveryCore: import.meta.env.VITE_CONTRACT_DISCOVERY_CORE || undefined,
       documentRegistry: import.meta.env.VITE_CONTRACT_DOCUMENT_REGISTRY || undefined,

@@ -2,11 +2,11 @@ import { type Logger } from 'pino';
 import { type ContractAddress } from '@midnight-ntwrk/compact-runtime';
 import * as Rx from 'rxjs';
 import { CounterContract, CounterPrivateStateId, CounterProviders, DeployedCounterContract, emptyState, UserAction, type DerivedState } from './common-types';
-import { Counter, CounterPrivateState, createPrivateState, witnesses } from '@meshsdk/counter-contract';
+import { Counter, CounterPrivateState, createPrivateState, witnesses } from '@autodiscovery/contract';
 import { deployContract, findDeployedContract } from '@midnight-ntwrk/midnight-js-contracts';
 import { PrivateStateProvider } from '@midnight-ntwrk/midnight-js-types';
 
-export const counterContractInstance: CounterContract = new Counter.Contract(witnesses);
+export const counterContractInstance: CounterContract = new Counter.Contract(witnesses) as unknown as CounterContract;
 
 export interface ContractControllerInterface {
   readonly deployedContractAddress: ContractAddress;   
@@ -102,11 +102,11 @@ export class ContractController implements ContractControllerInterface {
         providers       
       },
     });    
-    const deployedContract = await deployContract(providers, {
+    const deployedContract = await (deployContract as any)(providers, {
       privateStateId: contractPrivateStateId,
       contract: counterContractInstance,
-      initialPrivateState: await ContractController.getPrivateState(contractPrivateStateId, providers.privateStateProvider),      
-    });
+      initialPrivateState: await ContractController.getPrivateState(contractPrivateStateId, providers.privateStateProvider),
+    }) as DeployedCounterContract;
 
     logger.trace({
       contractDeployed: {
@@ -133,12 +133,12 @@ export class ContractController implements ContractControllerInterface {
       },
     });
 
-    const deployedContract = await findDeployedContract(providers, {
+    const deployedContract = await (findDeployedContract as any)(providers, {
       contractAddress,
       contract: counterContractInstance,
       privateStateId: contractPrivateStateId,
       initialPrivateState: await ContractController.getPrivateState(contractPrivateStateId, providers.privateStateProvider),
-    });
+    }) as DeployedCounterContract;
 
     logger.trace({
       contractJoined: {

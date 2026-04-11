@@ -42,6 +42,7 @@ import {
 
 import { type ContractAddress } from '@midnight-ntwrk/compact-runtime';
 import * as ledger from '@midnight-ntwrk/ledger-v6';
+import { LedgerParameters as LedgerParametersV8, ZswapSecretKeys as ZswapSecretKeysV8, DustSecretKey as DustSecretKeyV8 } from '@midnight-ntwrk/ledger-v8';
 
 
 import { httpClientProofProvider } from '@midnight-ntwrk/midnight-js-http-client-proof-provider';
@@ -595,35 +596,55 @@ export const createWalletAndMidnightProvider = async (
   };
 };
 
-export const waitForSync = (wallet: WalletFacade) =>
-  Rx.firstValueFrom(
-    wallet.state().pipe(
-      Rx.throttleTime(5_000),
-      Rx.tap((state) => {
-        logger.info(`Waiting for wallet sync. Synced: ${state.isSynced}`);
-      }),
-      Rx.filter((state) => state.isSynced),
-    ),
-  );
+export const waitForSync = async (wallet: WalletFacade) => {
+  logger.info('Waiting for wallet sync...');
+  const keepAlive = setInterval(() => logger.info('Still syncing...'), 5_000);
+  try {
+    await Promise.race([
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (wallet as any).waitForSyncedState(),
+      // 120s timeout — treat as synced if indexer doesn't respond in time
+      new Promise<void>((resolve) => setTimeout(() => {
+        logger.info('Sync timeout reached — proceeding anyway.');
+        resolve();
+      }, 120_000)),
+    ]);
+  } finally {
+    clearInterval(keepAlive);
+  }
+  logger.info('Wallet ready.');
+};
 
-export const waitForFunds = (wallet: WalletFacade) =>
-  Rx.firstValueFrom(
-    wallet.state().pipe(
-      Rx.throttleTime(10_000),
-      Rx.tap((state) => {
-        const unshielded = state.unshielded?.balances[ledger.nativeToken().raw] ?? 0n;
-        const shielded = state.shielded?.balances[ledger.nativeToken().raw] ?? 0n;
-        logger.info(`Waiting for funds. Synced: ${state.isSynced}, Unshielded: ${unshielded}, Shielded: ${shielded}`);
-      }),
-      Rx.filter((state) => state.isSynced),
-      Rx.map(
-        (s) =>
-          (s.unshielded?.balances[ledger.nativeToken().raw] ?? 0n) +
-          (s.shielded?.balances[ledger.nativeToken().raw] ?? 0n),
+export const waitForFunds = (wallet: WalletFacade): Promise<bigint> => {
+  const keepAlive = setInterval(() => {}, 10_000);
+  return Rx.firstValueFrom(
+    Rx.race(
+      wallet.state().pipe(
+        Rx.throttleTime(10_000),
+        Rx.tap((state) => {
+          const unshielded = state.unshielded?.balances[ledger.nativeToken().raw] ?? 0n;
+          const shielded = state.shielded?.balances[ledger.nativeToken().raw] ?? 0n;
+          logger.info(`Waiting for funds. Synced: ${state.isSynced}, Unshielded: ${unshielded}, Shielded: ${shielded}`);
+        }),
+        Rx.map(
+          (s) =>
+            (s.unshielded?.balances[ledger.nativeToken().raw] ?? 0n) +
+            (s.shielded?.balances[ledger.nativeToken().raw] ?? 0n),
+        ),
+        Rx.filter((balance) => balance > 0n),
       ),
-      Rx.filter((balance) => balance > 0n),
+      Rx.timer(180_000).pipe(
+        Rx.map(() => {
+          throw new Error(
+            'Wallet has 0 balance after 180s.\n' +
+            'Fund the wallet at: https://midnight.network/testnet-wallet\n' +
+            'Wallet address: use the address printed above (mn_addr_preprod...)',
+          );
+        }),
+      ),
     ),
-  );
+  ).finally(() => clearInterval(keepAlive));
+};
 
 /**
  * Display wallet balances (unshielded, shielded, total)
@@ -726,8 +747,8 @@ export const initWalletWithSeed = async (
 
   hdWallet.hdWallet.clear();
 
-  const shieldedSecretKeys = ledger.ZswapSecretKeys.fromSeed(derivationResult.keys[Roles.Zswap]);
-  const dustSecretKey = ledger.DustSecretKey.fromSeed(derivationResult.keys[Roles.Dust]);
+  const shieldedSecretKeys = ZswapSecretKeysV8.fromSeed(derivationResult.keys[Roles.Zswap]);
+  const dustSecretKey = DustSecretKeyV8.fromSeed(derivationResult.keys[Roles.Dust]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const unshieldedKeystore = createKeystore(derivationResult.keys[Roles.NightExternal], config.networkId as any);
 
@@ -747,18 +768,22 @@ export const initWalletWithSeed = async (
     indexerUrl: config.indexerWS,
   };
 
-  const shieldedWallet = ShieldedWallet(walletConfiguration).startWithSecretKeys(shieldedSecretKeys);
-  const dustWallet = DustWallet(walletConfiguration).startWithSecretKey(
-    dustSecretKey,
-    ledger.LedgerParameters.initialParameters().dust,
-  );
-  const unshieldedWallet = UnshieldedWallet({
-    ...walletConfiguration,
-    txHistoryStorage: new InMemoryTransactionHistoryStorage(),
-  }).startWithPublicKey(UnshieldedPublicKey.fromKeyStore(unshieldedKeystore));
+  const dustParams = LedgerParametersV8.initialParameters().dust;
 
-  const facade: WalletFacade = new WalletFacade(shieldedWallet, unshieldedWallet, dustWallet);
-  await facade.start(shieldedSecretKeys, dustSecretKey);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const facade = await (WalletFacade as any).init({
+    configuration: walletConfiguration,
+    shielded: () => ShieldedWallet(walletConfiguration).startWithSecretKeys(shieldedSecretKeys),
+    dust: () => DustWallet(walletConfiguration).startWithSecretKey(dustSecretKey, dustParams),
+    unshielded: () => UnshieldedWallet({
+      ...walletConfiguration,
+      txHistoryStorage: new InMemoryTransactionHistoryStorage(),
+    }).startWithPublicKey(UnshieldedPublicKey.fromKeyStore(unshieldedKeystore)),
+  });
+
+  // Start background sync for wallets that require it
+  await facade.shielded.start(shieldedSecretKeys);
+  await facade.dust.start(dustSecretKey);
 
   return { wallet: facade, shieldedSecretKeys, dustSecretKey, unshieldedKeystore };
 };

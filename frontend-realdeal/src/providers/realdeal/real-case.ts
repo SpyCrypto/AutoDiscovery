@@ -52,6 +52,9 @@ import {
   getStepsForCase,
   getPartiesForCase,
   getChainMappingForCase,
+  setChainMapping,
+  caseNumberToBytes32,
+  jurisdictionToBytes8,
 } from './storage/case-storage';
 
 import {
@@ -123,15 +126,18 @@ export class RealCaseProvider implements ICaseProvider {
       const deployed = getDeployedContract('discovery-core');
       if (deployed) {
         try {
-          // Call the contract circuit to anchor the case on-chain
-          // const caseNumberBytes = caseNumberToBytes32(params.caseNumber);
-          // const jurisdictionBytes = jurisdictionToBytes8(params.jurisdiction);
-          // const tx = await deployed.callTx.createNewCase(caseNumberBytes, jurisdictionBytes);
-          // const onChainCaseId = tx.public.result;
-          // setChainMapping({ localCaseId: newCase.id, onChainCaseIdentifier: onChainCaseId.toString(16), onChainStepHashes: {} });
+          const caseNumberBytes = caseNumberToBytes32(params.caseNumber);
+          const jurisdictionBytes = jurisdictionToBytes8(params.jurisdiction);
+          const tx = await deployed.callTx.createNewCase(caseNumberBytes, jurisdictionBytes);
+          const onChainCaseId = tx.public.result as bigint;
+          setChainMapping({
+            localCaseId: newCase.id,
+            onChainCaseIdentifier: onChainCaseId.toString(16),
+            onChainStepHashes: {},
+          });
           console.info(
-            `[RealCaseProvider] Wallet connected. On-chain anchoring ready for case "${newCase.title}".` +
-            ' Circuit calls will activate when contract deployment addresses are configured.',
+            `[RealCaseProvider] Case "${newCase.title}" anchored on-chain. ` +
+            `ID: ${onChainCaseId.toString(16).slice(0, 12)}...`,
           );
         } catch (error) {
           // On-chain anchoring failed — case is still saved locally

@@ -63,11 +63,11 @@ console.log(`   Indexer : ${config.indexer}`);
 console.log(`   Proof   : ${config.proofServer}`);
 console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
-// 1. Build wallet and wait for funds
-const walletContext = await api.buildWalletAndWaitForFunds(config, mnemonic);
-
-// 2. Set network ID globally
+// 1. Set network ID globally (must be before wallet init)
 setNetworkId(config.networkId);
+
+// 2. Build wallet and wait for funds
+const walletContext = await api.buildWalletAndWaitForFunds(config, mnemonic);
 
 // 3. Build shared providers
 const walletAndMidnightProvider = await api.createWalletAndMidnightProvider(walletContext);

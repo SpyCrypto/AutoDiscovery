@@ -145,6 +145,7 @@ export interface AccessGrant {
   expiresAt?: string;
   revoked: boolean;
   revokedAt?: string;
+  participantPublicKey?: string; // on-chain public key hash (hex) for circuit calls
 }
 
 export interface SharingEvent {
@@ -299,7 +300,7 @@ export interface IAccessControlProvider {
   getPermissions(caseId: string): Promise<AccessPermission[]>;
   getSharingEvents(caseId: string): Promise<SharingEvent[]>;
   getCustodyChain(documentId: string): Promise<CustodyEntry[]>;
-  grantAccess(documentId: string, participantName: string, level: ProtectiveOrderTier): Promise<AccessGrant>;
+  grantAccess(documentId: string, participantName: string, level: ProtectiveOrderTier, participantPublicKey?: string): Promise<AccessGrant>;
   revokeAccess(grantId: string): Promise<void>;
 }
 

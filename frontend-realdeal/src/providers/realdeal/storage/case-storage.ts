@@ -221,3 +221,12 @@ export function ruleReferenceToBytes32(ruleReference: string): Uint8Array {
   bytes.set(encoded.slice(0, 32));
   return bytes;
 }
+
+export function hexToBytes32(hexString: string): Uint8Array {
+  const bytes = new Uint8Array(32);
+  const cleaned = hexString.replace(/^0x/, '').padStart(64, '0').slice(0, 64);
+  for (let i = 0; i < 32; i++) {
+    bytes[i] = parseInt(cleaned.slice(i * 2, i * 2 + 2), 16);
+  }
+  return bytes;
+}

@@ -15,6 +15,21 @@ import type {
 } from '../types';
 
 import {
+  isWalletConnected,
+  getDeployedContract,
+} from '../../contracts/midnight-connection';
+
+import { ContractCallError } from '../../lib/errors';
+
+function computeExpertQualificationHash(qualifications: string[]): Uint8Array {
+  const combined = qualifications.join('|');
+  const encoded = new TextEncoder().encode(combined);
+  const bytes = new Uint8Array(32);
+  bytes.set(encoded.slice(0, 32));
+  return bytes;
+}
+
+import {
   getExpertsByCase,
   getExpertById,
   registerExpertLocally,
@@ -37,14 +52,25 @@ export class RealExpertWitnessProvider implements IExpertWitnessProvider {
   ): Promise<ExpertWitness> {
     const newExpert = registerExpertLocally(expert);
 
-    // Phase 2: Call expert-witness.registerExpertWitness circuit
-    // const qualificationHash = computeExpertQualificationHash(expert.qualifications);
-    // const tx = await deployed.callTx.registerExpertWitness(qualificationHash);
-    // updateExpertLocally(newExpert.id, { qualificationProofVerified: true });
+    if (isWalletConnected()) {
+      const deployed = getDeployedContract('expert-witness');
+      if (deployed) {
+        try {
+          const qualificationHash = computeExpertQualificationHash(expert.qualifications ?? []);
+          await deployed.callTx.registerExpertWitness(qualificationHash);
+          console.info(
+            `[RealExpertWitnessProvider] Expert "${newExpert.name}" registered on-chain.`,
+          );
+        } catch (error) {
+          throw new ContractCallError('registerExpertWitness', error);
+        }
+      }
+    } else {
+      console.info(
+        `[RealExpertWitnessProvider] Expert "${newExpert.name}" registered locally. Connect wallet to anchor on-chain.`,
+      );
+    }
 
-    console.info(
-      `[RealExpertWitnessProvider] Expert "${newExpert.name}" registered locally. Connect wallet to anchor on-chain.`,
-    );
     return newExpert;
   }
 }

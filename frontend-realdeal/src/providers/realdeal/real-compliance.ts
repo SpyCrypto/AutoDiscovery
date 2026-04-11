@@ -21,6 +21,15 @@ import type {
 } from '../types';
 
 import {
+  isWalletConnected,
+  getDeployedContract,
+} from '../../contracts/midnight-connection';
+
+import { ContractCallError } from '../../lib/errors';
+
+import { getChainMappingForCase } from './storage/case-storage';
+
+import {
   getAttestationsByCase,
   addAttestationLocally,
   computeComplianceStatusLocally,
@@ -42,15 +51,44 @@ export class RealComplianceProvider implements IComplianceProvider {
   }
 
   async generateProof(caseId: string, stepId: string): Promise<Attestation> {
-    // Phase 1: Create a local attestation record
-    // Phase 2: Call compliance-proof.attestStepLevelCompliance circuit
-    // const tx = await deployed.callTx.attestStepLevelCompliance(caseIdBigInt, stepHashBigInt, deadlineBigInt);
-    // The circuit returns an attestation hash (Bytes<32>) anchored on-chain
-
     const now = new Date().toISOString();
-    const proofHash = `local-${Date.now().toString(16)}`;
+    const steps = getStepsForCase(caseId);
+    const step = steps.find((s) => s.id === stepId);
+    let proofHash = `local-${Date.now().toString(16)}`;
+    let verified = false;
 
-    const attestation = addAttestationLocally({
+    if (isWalletConnected()) {
+      const deployed = getDeployedContract('compliance-proof');
+      const chainMapping = getChainMappingForCase(caseId);
+      if (deployed && chainMapping && step) {
+        const onChainStepHash = chainMapping.onChainStepHashes[stepId];
+        if (onChainStepHash) {
+          try {
+            const caseIdBigInt = BigInt('0x' + chainMapping.onChainCaseIdentifier);
+            const stepHashBigInt = BigInt('0x' + onChainStepHash);
+            const deadlineBigInt = BigInt(step.deadline ? new Date(step.deadline).getTime() : Date.now());
+            const tx = await deployed.callTx.attestStepLevelCompliance(
+              caseIdBigInt,
+              stepHashBigInt,
+              deadlineBigInt,
+            );
+            proofHash = (tx.public.result as bigint).toString(16);
+            verified = true;
+            console.info(
+              `[RealComplianceProvider] Step attestation anchored on-chain. Hash: ${proofHash.slice(0, 12)}...`,
+            );
+          } catch (error) {
+            throw new ContractCallError('attestStepLevelCompliance', error);
+          }
+        }
+      }
+    } else {
+      console.info(
+        `[RealComplianceProvider] Attestation created locally. Connect wallet to anchor on-chain.`,
+      );
+    }
+
+    return addAttestationLocally({
       caseId,
       stepId,
       type: 'step_completion',
@@ -58,13 +96,8 @@ export class RealComplianceProvider implements IComplianceProvider {
       description: `Step-level compliance attestation for step ${stepId}`,
       proofHash,
       timestamp: now,
-      verified: false, // Will be true after on-chain anchoring
+      verified,
     });
-
-    console.info(
-      `[RealComplianceProvider] Attestation created locally (${proofHash}). Connect wallet to anchor compliance record on-chain.`,
-    );
-    return attestation;
   }
 
   async getComplianceReport(caseId: string): Promise<ComplianceReport> {

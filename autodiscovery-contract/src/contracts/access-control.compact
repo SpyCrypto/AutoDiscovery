@@ -332,7 +332,7 @@ export circuit proveParticipantHasRole(
   // 2. Look up the Merkle proof path for this public key in the role tree.
   //    The witness queries the off-chain copy of the authorizedRoleCommitments tree.
   //    Returns Maybe<MerkleTreePath<10, Bytes<32>>> — None if not registered.
-  const maybeMerklePath = lookupRoleCommitmentMerklePath(callerPublicKey);
+  const maybeMerklePath = lookupRoleCommitmentMerklePath(callerPublicKey.bytes);
 
   // 3. Assert the Merkle path exists (caller is in the tree).
   //    If not in tree → they were never registered → not authorized.
@@ -360,7 +360,7 @@ export circuit proveParticipantHasRole(
   //    Merkle proof alone proves both membership AND role, eliminating
   //    the need for any Map lookup. See: commitment/nullifier pattern in
   //    docs.midnight.network/develop/how-midnight-works/keeping-data-private
-  const storedRole = participantRoleByPublicKeyHash.lookup(disclose(callerPublicKey));
+  const storedRole = participantRoleByPublicKeyHash.lookup(disclose(callerPublicKey.bytes));
 
   // 6. Assert the stored role matches the claimed role.
   assert(storedRole == claimedRoleEnum,

@@ -255,6 +255,10 @@ export function getAccessGrantsByDocument(documentId: string): AccessGrant[] {
   return read<AccessGrant[]>(KEY_ACCESS_GRANTS, []).filter((g) => g.documentId === documentId);
 }
 
+export function getAccessGrantById(grantId: string): AccessGrant | undefined {
+  return read<AccessGrant[]>(KEY_ACCESS_GRANTS, []).find((g) => g.id === grantId);
+}
+
 export function addAccessGrantLocally(grant: Omit<AccessGrant, 'id'>): AccessGrant {
   const all = read<AccessGrant[]>(KEY_ACCESS_GRANTS, []);
   const newG: AccessGrant = { ...grant, id: generateId() };

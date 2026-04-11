@@ -26,6 +26,25 @@ import type {
 } from '../types';
 
 import {
+  isWalletConnected,
+  getDeployedContract,
+  getCoinPublicKey,
+} from '../../contracts/midnight-connection';
+
+import { ContractCallError } from '../../lib/errors';
+
+import {
+  hexToBytes32,
+} from './storage/case-storage';
+
+const DOCUMENT_CATEGORY_MAP: Record<string, bigint> = {
+  pleading: 1n, deposition: 2n, exhibit: 3n, expert_report: 4n,
+  correspondence: 5n, medical_record: 6n, financial_record: 7n,
+  contract: 8n, photograph: 9n, video: 10n, audio: 11n,
+  electronic: 12n, other: 99n,
+};
+
+import {
   getDocumentsByCase,
   getDocumentById,
   registerDocumentLocally,
@@ -49,16 +68,28 @@ export class RealDocumentProvider implements IDocumentProvider {
   async registerDocument(input: DocumentInput): Promise<Document> {
     const doc = registerDocumentLocally(input);
 
-    // Phase 2: Call document-registry.registerDocument circuit
-    // const contentHashBytes = hexToBytes32(doc.contentHash);
-    // const categoryNumber = BigInt(categoryToNumber(doc.category));
-    // const originatorKey = hexToBytes32(session.publicKey);
-    // const tx = await deployed.callTx.registerDocument(contentHashBytes, categoryNumber, originatorKey);
-    // updateDocumentLocally(doc.id, { verified: true });
+    if (isWalletConnected()) {
+      const deployed = getDeployedContract('document-registry');
+      if (deployed && doc.contentHash) {
+        try {
+          const contentHashBytes = hexToBytes32(doc.contentHash);
+          const categoryNumber = DOCUMENT_CATEGORY_MAP[doc.category ?? 'other'] ?? 99n;
+          const originatorPublicKey = getCoinPublicKey() ?? '';
+          const originatorKey = hexToBytes32(originatorPublicKey);
+          await deployed.callTx.registerDocument(contentHashBytes, categoryNumber, originatorKey);
+          console.info(
+            `[RealDocumentProvider] Document "${doc.title}" anchored on-chain.`,
+          );
+        } catch (error) {
+          throw new ContractCallError('registerDocument', error);
+        }
+      }
+    } else {
+      console.info(
+        `[RealDocumentProvider] Document "${doc.title}" saved locally. Connect wallet to anchor on-chain.`,
+      );
+    }
 
-    console.info(
-      `[RealDocumentProvider] Document "${doc.title}" saved locally. Connect wallet to anchor on-chain.`,
-    );
     return doc;
   }
 

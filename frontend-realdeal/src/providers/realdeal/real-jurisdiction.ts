@@ -17,6 +17,15 @@ import type {
 } from '../types';
 
 import {
+  isWalletConnected,
+  getDeployedContract,
+} from '../../contracts/midnight-connection';
+
+import { ContractCallError } from '../../lib/errors';
+
+import { jurisdictionToBytes8, hexToBytes32 } from './storage/case-storage';
+
+import {
   getAllJurisdictions,
   getJurisdictionByCode,
 } from './storage/adl-storage';
@@ -41,17 +50,24 @@ export class RealJurisdictionProvider implements IJurisdictionProvider {
       return { valid: false, message: `Jurisdiction ${code} not registered` };
     }
 
-    // Phase 2: Call jurisdiction-registry.verifyRulePackHashMatchesExpected circuit
-    // const codeBytes = jurisdictionToBytes8(code);
-    // const expectedHash = hexToBytes32(jurisdiction.registryHash);
-    // const tx = await deployed.callTx.verifyRulePackHashMatchesExpected(codeBytes, expectedHash);
-    // return { valid: tx.public.result, message: tx.public.result ? 'Verified on-chain' : 'Mismatch' };
+    if (isWalletConnected()) {
+      const deployed = getDeployedContract('jurisdiction-registry');
+      if (deployed && jurisdiction.registryHash) {
+        try {
+          const codeBytes = jurisdictionToBytes8(code);
+          const expectedHash = hexToBytes32(jurisdiction.registryHash);
+          const tx = await deployed.callTx.verifyRulePackHashMatchesExpected(codeBytes, expectedHash);
+          const valid = tx.public.result as boolean;
+          return {
+            valid,
+            message: valid ? 'Rule pack hash verified on-chain.' : 'Rule pack hash mismatch — on-chain hash differs from local record.',
+          };
+        } catch (error) {
+          throw new ContractCallError('verifyRulePackHashMatchesExpected', error);
+        }
+      }
+    }
 
-    // NOTE: `verifiedOnChain` is a locally-stored flag set when the jurisdiction was
-    // originally registered. It does NOT represent a live on-chain verification —
-    // the Phase 2 circuit call above is still commented out. The message below
-    // intentionally disambiguates local cache from a true on-chain proof so that
-    // compliance auditors are never misled.
     if (jurisdiction.verifiedOnChain) {
       return {
         valid: true,
