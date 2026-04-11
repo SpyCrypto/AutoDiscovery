@@ -227,12 +227,32 @@ export async function getOnChainStepStatus(
       return { exists: false, completed: false };
     }
 
-    // Same approach as getOnChainCaseStatus — check raw state for hash presence.
-    // Full parsing requires the contract ledger parser.
     const normalizedHash = onChainStepHash.toLowerCase().replace(/^0x/, '');
-    const exists = rawState.toLowerCase().includes(normalizedHash);
 
-    return { exists, completed: false }; // Completion flag requires parsed state
+    // Prefer the compiled ledger parser when available
+    if (_ledgerParser) {
+      try {
+        const parsed = _ledgerParser(rawState) as {
+          isStepCompletedByStepHash: {
+            member(key: bigint): boolean;
+            lookup(key: bigint): boolean;
+          };
+        };
+        const stepHashBigInt = BigInt('0x' + normalizedHash);
+        const exists = parsed.isStepCompletedByStepHash.member(stepHashBigInt);
+        if (exists) {
+          const completed = parsed.isStepCompletedByStepHash.lookup(stepHashBigInt);
+          return { exists: true, completed };
+        }
+        return { exists: false, completed: false };
+      } catch (parseError) {
+        console.warn('[DiscoveryCoreReader] Ledger parser failed for step status, falling back to heuristic:', parseError);
+      }
+    }
+
+    // Fallback: raw hex substring heuristic
+    const exists = rawState.toLowerCase().includes(normalizedHash);
+    return { exists, completed: false };
   } catch (error) {
     console.warn(
       `[DiscoveryCoreReader] On-chain step lookup failed for ${onChainStepHash.slice(0, 16)}...:`,
@@ -252,6 +272,23 @@ export async function isAttestationOnChain(attestationHash: string): Promise<boo
     if (!rawState) return false;
 
     const normalizedHash = attestationHash.toLowerCase().replace(/^0x/, '');
+
+    // Prefer the compiled ledger parser when available
+    if (_ledgerParser) {
+      try {
+        const parsed = _ledgerParser(rawState) as {
+          completionAttestationHashes: {
+            member(key: bigint): boolean;
+          };
+        };
+        const hashBigInt = BigInt('0x' + normalizedHash);
+        return parsed.completionAttestationHashes.member(hashBigInt);
+      } catch (parseError) {
+        console.warn('[DiscoveryCoreReader] Ledger parser failed for attestation check, falling back to heuristic:', parseError);
+      }
+    }
+
+    // Fallback: raw hex substring heuristic
     return rawState.toLowerCase().includes(normalizedHash);
   } catch (error) {
     console.warn(

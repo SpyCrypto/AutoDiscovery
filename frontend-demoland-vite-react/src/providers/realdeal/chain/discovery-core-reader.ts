@@ -39,6 +39,21 @@ export interface DiscoveryCoreOnChainState {
   totalCasesCreated: bigint;
 }
 
+// --- Contract Ledger Parser ---
+// Imported from the compiled contract package. When @autodiscovery/contract
+// is installed and built, this provides typed ledger state parsing.
+let _ledgerParser: ((state: unknown) => unknown) | null = null;
+try {
+  // Dynamic import so missing package doesn't break the module at load time
+  import('@autodiscovery/contract').then((m) => {
+    _ledgerParser = (m.DiscoveryCore as unknown as { ledger: (s: unknown) => unknown }).ledger ?? null;
+  }).catch(() => {
+    _ledgerParser = null;
+  });
+} catch {
+  _ledgerParser = null;
+}
+
 // --- Status code to human-readable mapping ---
 
 export const CASE_STATUS_LABELS: Record<number, string> = {
@@ -57,7 +72,7 @@ function getIndexerUrl(): string {
   const url = import.meta.env.VITE_INDEXER_URL;
   if (!url) {
     console.info('[DiscoveryCoreReader] VITE_INDEXER_URL not set — using default preprod indexer');
-    return 'https://indexer.preprod.midnight.network/api/v1/graphql';
+    return 'https://indexer.preprod.midnight.network/api/v3/graphql';
   }
   return url;
 }
@@ -143,51 +158,117 @@ export async function isContractReachable(): Promise<boolean> {
 }
 
 /**
- * Placeholder for parsing raw state into typed ledger objects.
+ * Parse raw contract state into a typed case status.
  *
- * Once the contract package is linked as a dependency, this will use:
+ * When @autodiscovery/contract is linked as a workspace dependency,
+ * this will use the generated ledger parser:
  *   import { ledger } from '@autodiscovery/contract';
- *   const parsedLedger = ledger(rawStateBytes);
- *   parsedLedger.caseStatusByCaseIdentifier.lookup(caseId);
+ *   const parsed = ledger(rawState);
+ *   parsed.caseStatusByCaseIdentifier.lookup(caseId);
  *
- * For now, this returns the raw data and individual lookup functions
- * will be implemented when the dependency is wired.
+ * Until the contract package is built and linked, this queries the
+ * indexer for raw state and attempts to determine case existence.
  */
 export async function getOnChainCaseStatus(
   onChainCaseIdentifier: string,
 ): Promise<OnChainCaseStatus> {
-  // TODO: When contract package is linked as a dependency:
-  //   1. Fetch raw state via fetchRawContractState()
-  //   2. Parse with: const parsed = ledger(rawState)
-  //   3. Check: parsed.caseStatusByCaseIdentifier.member(BigInt('0x' + onChainCaseIdentifier))
-  //   4. Lookup: parsed.caseStatusByCaseIdentifier.lookup(BigInt('0x' + onChainCaseIdentifier))
-  //
-  // For MVP, return a "not yet connected" status so the UI can still render.
-  console.info(
-    `[DiscoveryCoreReader] On-chain lookup for case ${onChainCaseIdentifier.slice(0, 16)}... — ledger parser not yet linked`,
-  );
+  try {
+    const rawState = await fetchRawContractState();
 
-  return {
-    exists: false,
-    statusCode: -1,
-    jurisdictionCode: null,
-  };
+    if (!rawState) {
+      return { exists: false, statusCode: -1, jurisdictionCode: null };
+    }
+
+    const normalizedId = onChainCaseIdentifier.toLowerCase().replace(/^0x/, '');
+
+    // Prefer the compiled ledger parser when available
+    if (_ledgerParser) {
+      try {
+        const parsed = _ledgerParser(rawState) as {
+          caseStatusByCaseIdentifier: {
+            member(key: bigint): boolean;
+            lookup(key: bigint): bigint;
+          };
+          jurisdictionCodeByCaseIdentifier: {
+            member(key: bigint): boolean;
+            lookup(key: bigint): Uint8Array;
+          };
+        };
+        const caseIdBigInt = BigInt('0x' + normalizedId);
+        const exists = parsed.caseStatusByCaseIdentifier.member(caseIdBigInt);
+        if (exists) {
+          const statusCode = Number(parsed.caseStatusByCaseIdentifier.lookup(caseIdBigInt));
+          let jurisdictionCode: string | null = null;
+          if (parsed.jurisdictionCodeByCaseIdentifier.member(caseIdBigInt)) {
+            const jBytes = parsed.jurisdictionCodeByCaseIdentifier.lookup(caseIdBigInt);
+            jurisdictionCode = new TextDecoder().decode(jBytes).replace(/\0+$/, '');
+          }
+          return { exists: true, statusCode, jurisdictionCode };
+        }
+        return { exists: false, statusCode: -1, jurisdictionCode: null };
+      } catch (parseError) {
+        console.warn('[DiscoveryCoreReader] Ledger parser failed, falling back to heuristic:', parseError);
+      }
+    }
+
+    // Fallback: raw hex substring heuristic
+    const exists = rawState.toLowerCase().includes(normalizedId);
+    if (exists) {
+      return { exists: true, statusCode: 1, jurisdictionCode: null };
+    }
+    return { exists: false, statusCode: -1, jurisdictionCode: null };
+  } catch (error) {
+    console.warn(
+      `[DiscoveryCoreReader] On-chain lookup failed for case ${onChainCaseIdentifier.slice(0, 16)}...:`,
+      error,
+    );
+    return { exists: false, statusCode: -1, jurisdictionCode: null };
+  }
 }
 
 export async function getOnChainStepStatus(
   onChainStepHash: string,
 ): Promise<OnChainStepStatus> {
-  // TODO: Same pattern as getOnChainCaseStatus — parse ledger, then:
-  //   parsed.isStepCompletedByStepHash.member(BigInt('0x' + stepHash))
-  //   parsed.isStepCompletedByStepHash.lookup(BigInt('0x' + stepHash))
-  console.info(
-    `[DiscoveryCoreReader] On-chain lookup for step ${onChainStepHash.slice(0, 16)}... — ledger parser not yet linked`,
-  );
+  try {
+    const rawState = await fetchRawContractState();
 
-  return {
-    exists: false,
-    completed: false,
-  };
+    if (!rawState) {
+      return { exists: false, completed: false };
+    }
+
+    const normalizedHash = onChainStepHash.toLowerCase().replace(/^0x/, '');
+
+    // Prefer the compiled ledger parser when available
+    if (_ledgerParser) {
+      try {
+        const parsed = _ledgerParser(rawState) as {
+          isStepCompletedByStepHash: {
+            member(key: bigint): boolean;
+            lookup(key: bigint): boolean;
+          };
+        };
+        const stepHashBigInt = BigInt('0x' + normalizedHash);
+        const exists = parsed.isStepCompletedByStepHash.member(stepHashBigInt);
+        if (exists) {
+          const completed = parsed.isStepCompletedByStepHash.lookup(stepHashBigInt);
+          return { exists: true, completed };
+        }
+        return { exists: false, completed: false };
+      } catch (parseError) {
+        console.warn('[DiscoveryCoreReader] Ledger parser failed for step status, falling back to heuristic:', parseError);
+      }
+    }
+
+    // Fallback: raw hex substring heuristic
+    const exists = rawState.toLowerCase().includes(normalizedHash);
+    return { exists, completed: false };
+  } catch (error) {
+    console.warn(
+      `[DiscoveryCoreReader] On-chain step lookup failed for ${onChainStepHash.slice(0, 16)}...:`,
+      error,
+    );
+    return { exists: false, completed: false };
+  }
 }
 
 /**
@@ -195,9 +276,34 @@ export async function getOnChainStepStatus(
  * Used to verify that a step completion was properly anchored.
  */
 export async function isAttestationOnChain(attestationHash: string): Promise<boolean> {
-  // TODO: parsed.completionAttestationHashes.member(BigInt('0x' + attestationHash))
-  console.info(
-    `[DiscoveryCoreReader] Attestation check for ${attestationHash.slice(0, 16)}... — ledger parser not yet linked`,
-  );
-  return false;
+  try {
+    const rawState = await fetchRawContractState();
+    if (!rawState) return false;
+
+    const normalizedHash = attestationHash.toLowerCase().replace(/^0x/, '');
+
+    // Prefer the compiled ledger parser when available
+    if (_ledgerParser) {
+      try {
+        const parsed = _ledgerParser(rawState) as {
+          completionAttestationHashes: {
+            member(key: bigint): boolean;
+          };
+        };
+        const hashBigInt = BigInt('0x' + normalizedHash);
+        return parsed.completionAttestationHashes.member(hashBigInt);
+      } catch (parseError) {
+        console.warn('[DiscoveryCoreReader] Ledger parser failed for attestation check, falling back to heuristic:', parseError);
+      }
+    }
+
+    // Fallback: raw hex substring heuristic
+    return rawState.toLowerCase().includes(normalizedHash);
+  } catch (error) {
+    console.warn(
+      `[DiscoveryCoreReader] Attestation check failed for ${attestationHash.slice(0, 16)}...:`,
+      error,
+    );
+    return false;
+  }
 }
