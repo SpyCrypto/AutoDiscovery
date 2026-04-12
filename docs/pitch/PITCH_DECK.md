@@ -168,14 +168,14 @@ Jurisdiction-aware discovery automation with cryptographic compliance proofs.
 
 ## Slide 10: Business Model
 
-### SaaS + Per-Proof Revenue
+### SaaS Subscriptions
 
 | Tier | Price | Target |
 |------|-------|--------|
 | **Solo** | $99/mo | Solo attorneys, 1 jurisdiction, basic automation |
-| **Practice** | $399/mo | Small firms, multi-jurisdiction, team workflows |
-| **Enterprise** | $1,499/mo | Regional firms, unlimited jurisdictions, API + compliance proofs |
-| **ZK Proof** | $25/each | Per compliance attestation, court-ready export |
+| **Small Firm** | $299/mo | Small firms, multi-jurisdiction, team workflows |
+| **Mid Firm** | $499/mo | Mid-size firms, multi-jurisdiction, advanced compliance |
+| **Large Firm** | $699/mo | Large firms, unlimited jurisdictions, enterprise compliance |
 
 ### Year 2 Unit Economics (Beachhead: 50 Idaho Firms)
 
@@ -184,8 +184,7 @@ Jurisdiction-aware discovery automation with cryptographic compliance proofs.
 | Average Revenue per Firm | $350/mo |
 | Monthly Recurring Revenue | $17,500 |
 | Annual Recurring Revenue | $210,000 |
-| Compliance Proof Revenue | $75,000/yr |
-| **Total Year 2 Revenue** | **~$285,000** |
+| **Total Year 2 Revenue** | **~$210,000** |
 
 ### The ROI Pitch
 

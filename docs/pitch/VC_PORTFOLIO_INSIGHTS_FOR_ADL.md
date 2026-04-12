@@ -77,7 +77,7 @@ The article shows post-downturn vintages outperform (2010-2013 had 27% IRR after
 VCs care about risk-adjusted performance (Sortino ratio), not just raw returns. They want to see that downside is managed.
 
 **What this means for ADL:**
-- Our pitch already has strong ROI math ($704K average sanction vs. $99-$1,499/yr subscription). **Keep hammering this.**
+- Our pitch already has strong ROI math ($704K average sanction vs. $99-$699/mo subscription). **Keep hammering this.**
 - Add a "downside protection" angle: even if the ZK precedent takes longer than expected, the SaaS product (jurisdiction-aware deadline automation) has standalone value without blockchain
 - This means ADL has **two value propositions**: (1) immediate SaaS utility, (2) long-term blockchain precedent. Investors love optionality.
 

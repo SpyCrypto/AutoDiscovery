@@ -186,8 +186,8 @@ Do not use 🔵 figures in investor materials without disclosure. Use 🟢 and �
 |------|--------------|-----------------|---------|-----------------|
 | **Solo** | $99/mo ($1,188/yr) | $5K–$15K/yr | $4K–$14K | 4–12x cheaper |
 | **Small Firm** | $299/mo ($3,588/yr) | $25K–$60K/yr | $21K–$56K | 7–17x cheaper |
-| **Mid Firm** | $999/mo ($11,988/yr) | $80K–$200K/yr | $68K–$188K | 7–17x cheaper |
-| **Enterprise** | $2,999/mo ($35,988/yr) | $200K–$500K/yr | $164K–$464K | 6–14x cheaper |
+| **Mid Firm** | $499/mo ($5,988/yr) | $80K–$200K/yr | $74K–$194K | 13–33x cheaper |
+| **Large Firm** | $699/mo ($8,388/yr) | $200K–$500K/yr | $192K–$492K | 24–60x cheaper |
 
 ---
 
@@ -253,7 +253,7 @@ Do not use 🔵 figures in investor materials without disclosure. Use 🟢 and �
 |----------|----------------|-------------|
 | **Solo attorneys** | "One mistake costs more than years of AutoDiscovery" | Avg sanction: $704K |
 | **Small firms** | "Standardize compliance. Eliminate manual checklists." | 28% malpractice from deadlines |
-| **Mid-size firms** | "Replace your $100K+ discovery stack for $12K/yr" | 7–17x cheaper than Relativity |
+| **Mid-size firms** | "Replace your $100K+ discovery stack for $6K/yr" | 7–17x cheaper than Relativity |
 | **Enterprise** | "The only platform that produces court-admissible ZK compliance proofs" | Midnight ZK unique differentiator |
 | **Investors** | "$11.8B US market, no privacy-preserving competitor" | ComplexDiscovery 2024 data |
 
@@ -294,7 +294,7 @@ All sources cited in this document. Verify and link in any investor or marketing
 1. **Hold current pricing** — already 7–17x cheaper than alternatives; validates the market entry position
 2. **Add a per-case add-on tier** — complements subscription and captures variable-use firms
 3. **Build a public pricing page ROI calculator** — show the break-even point (it's less than 1 avoided sanction)
-4. **Create an enterprise anchor price** — $4,999/mo creates a premium tier; makes $999 look like a steal
+4. **Create an enterprise anchor price** — a custom/negotiated tier above Large Firm creates a premium anchor; makes $699/mo look like a steal
 
 ### 📣 For Marketing
 1. **Use the $704,094 average sanction figure** — most attorneys have never seen this number; it's a stopper
