@@ -34,6 +34,8 @@ export default [
         Buffer: 'readonly',
         URL: 'readonly',
         setTimeout: 'readonly',
+        console: 'readonly',
+        globalThis: 'readonly',
       },
     },
     plugins: {

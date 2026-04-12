@@ -74,7 +74,7 @@ const walletAndMidnightProvider = await api.createWalletAndMidnightProvider(wall
 const publicDataProvider = indexerPublicDataProvider(config.indexer, config.indexerWS);
 const proofProvider = httpClientProofProvider(config.proofServer);
 
-function buildProviders(contractName: string, privateStateId: string, circuits: string[]) {
+function buildProviders(contractName: string, _privateStateId: string, _circuits: string[]) {
   return {
     publicDataProvider,
     proofProvider,

@@ -131,68 +131,43 @@ export const deploy = async (
   return discoveryCoreContract;
 };
 
-const logFinalizedTxData = (finalizedTxData: FinalizedTxData): void => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const logFinalizedTxData = (finalizedTxData: any): void => {
+  // FinalizedCallTxData has .public and .private sub-objects
+  const pub = finalizedTxData.public ?? finalizedTxData;
+  const priv = finalizedTxData.private;
+
   logger.info({
     section: 'PUBLIC',
-    tx: finalizedTxData.public.tx,
-    txHash: finalizedTxData.public.txHash,
-    txId: finalizedTxData.public.txId,
-    blockHeight: finalizedTxData.public.blockHeight,
-    blockHash: finalizedTxData.public.blockHash,
-    blockAuthority: finalizedTxData.public.blockAuthor,
-    blockTimestamp: finalizedTxData.public.blockTimestamp,
-    fees: finalizedTxData.public.fees,
-    nextContractState: finalizedTxData.public.nextContractState,
-    publicTranscript: finalizedTxData.public.publicTranscript,
-    status: finalizedTxData.public.status,
-    identifiers: finalizedTxData.public.identifiers,
-    indexerId: finalizedTxData.public.indexerId,
-    protocolVersion: finalizedTxData.public.protocolVersion,
-    segmentStatusMap: finalizedTxData.public.segmentStatusMap,
-    unshielded: finalizedTxData.public.unshielded,
+    tx: pub.tx,
+    txHash: pub.txHash,
+    txId: pub.txId,
+    blockHeight: pub.blockHeight,
+    blockHash: pub.blockHash,
+    blockAuthority: pub.blockAuthor,
+    blockTimestamp: pub.blockTimestamp,
+    fees: pub.fees,
+    status: pub.status,
+    identifiers: pub.identifiers,
+    indexerId: pub.indexerId,
+    protocolVersion: pub.protocolVersion,
+    segmentStatusMap: pub.segmentStatusMap,
+    unshielded: pub.unshielded,
   });
 
-  logger.info({
-    section: 'Guaranteed-Effects',
-    claimedContractCalls: finalizedTxData.public.partitionedTranscript[0]?.effects.claimedContractCalls,
-    claimedNullifiers: finalizedTxData.public.partitionedTranscript[0]?.effects.claimedNullifiers,
-    claimedShieldedReceives: finalizedTxData.public.partitionedTranscript[0]?.effects.claimedShieldedReceives,
-    claimedShieldedSpends: finalizedTxData.public.partitionedTranscript[0]?.effects.claimedShieldedSpends,
-    claimedUnshieldedSpends: finalizedTxData.public.partitionedTranscript[0]?.effects.claimedUnshieldedSpends,
-    shieldedMints: finalizedTxData.public.partitionedTranscript[0]?.effects.shieldedMints,
-    unshieldedInputs: finalizedTxData.public.partitionedTranscript[0]?.effects.unshieldedInputs,
-    unshieldedMints: finalizedTxData.public.partitionedTranscript[0]?.effects.unshieldedMints,
-    unshieldedOutputs: finalizedTxData.public.partitionedTranscript[0]?.effects.unshieldedOutputs,
-    gas: finalizedTxData.public.partitionedTranscript[0]?.gas,
-    program: finalizedTxData.public.partitionedTranscript[0]?.program,
-  });
-
-  logger.info({
-    section: 'Fallible-Effects',
-    claimedContractCalls: finalizedTxData.public.partitionedTranscript[1]?.effects.claimedContractCalls,
-    claimedNullifiers: finalizedTxData.public.partitionedTranscript[1]?.effects.claimedNullifiers,
-    claimedShieldedReceives: finalizedTxData.public.partitionedTranscript[1]?.effects.claimedShieldedReceives,
-    claimedShieldedSpends: finalizedTxData.public.partitionedTranscript[1]?.effects.claimedShieldedSpends,
-    claimedUnshieldedSpends: finalizedTxData.public.partitionedTranscript[1]?.effects.claimedUnshieldedSpends,
-    shieldedMints: finalizedTxData.public.partitionedTranscript[1]?.effects.shieldedMints,
-    unshieldedInputs: finalizedTxData.public.partitionedTranscript[1]?.effects.unshieldedInputs,
-    unshieldedMints: finalizedTxData.public.partitionedTranscript[1]?.effects.unshieldedMints,
-    unshieldedOutputs: finalizedTxData.public.partitionedTranscript[1]?.effects.unshieldedOutputs,
-    gas: finalizedTxData.public.partitionedTranscript[1]?.gas,
-    program: finalizedTxData.public.partitionedTranscript[1]?.program,
-  });
-
-  logger.info({
-    section: 'Private Section',
-    Inputs: finalizedTxData.private.input,
-    newCoins: finalizedTxData.private.newCoins,
-    nextPrivateState: finalizedTxData.private.nextPrivateState,
-    nextZswapLocalState: finalizedTxData.private.nextZswapLocalState,
-    Output: finalizedTxData.private.output,
-    privateTranscriptOutputs: finalizedTxData.private.privateTranscriptOutputs,
-    result: finalizedTxData.private.result,
-    unprovenTx: finalizedTxData.private.unprovenTx,
-  });
+  if (priv) {
+    logger.info({
+      section: 'Private Section',
+      Inputs: priv.input,
+      newCoins: priv.newCoins,
+      nextPrivateState: priv.nextPrivateState,
+      nextZswapLocalState: priv.nextZswapLocalState,
+      Output: priv.output,
+      privateTranscriptOutputs: priv.privateTranscriptOutputs,
+      result: priv.result,
+      unprovenTx: priv.unprovenTx,
+    });
+  }
 };
 
 export const createNewCase = async (
@@ -575,22 +550,24 @@ export const createWalletAndMidnightProvider = async (
     },
     async balanceTx(
       tx: ledger.UnprovenTransaction,
-      newCoins?: ledger.ShieldedCoinInfo[],
+      _newCoins?: ledger.ShieldedCoinInfo[],
       ttl?: Date,
     ): Promise<BalancedProvingRecipe> {
       // Use the wallet facade to balance the transaction
       const txTtl = ttl ?? new Date(Date.now() + 30 * 60 * 1000); // 30 min default TTL
-      // balanceTransaction returns a ProvingRecipe directly
-      const provingRecipe = await walletContext.wallet.balanceTransaction(
-        walletContext.shieldedSecretKeys,
-        walletContext.dustSecretKey,
-        tx as unknown as ledger.Transaction<ledger.SignatureEnabled, ledger.Proofish, ledger.Bindingish>,
-        txTtl,
+      // WalletFacade v3 uses balanceUnprovenTransaction (not balanceTransaction)
+      const recipe = await walletContext.wallet.balanceUnprovenTransaction(
+        tx as any,
+        {
+          shieldedSecretKeys: walletContext.shieldedSecretKeys as any,
+          dustSecretKey: walletContext.dustSecretKey,
+        },
+        { ttl: txTtl },
       );
-      return provingRecipe as unknown as BalancedProvingRecipe;
+      return recipe as unknown as BalancedProvingRecipe;
     },
     async submitTx(tx: ledger.FinalizedTransaction): Promise<ledger.TransactionId> {
-      return await walletContext.wallet.submitTransaction(tx);
+      return await walletContext.wallet.submitTransaction(tx as any) as unknown as ledger.TransactionId;
     },
   };
 };
@@ -658,7 +635,7 @@ export const registerNightForDust = async (walletContext: WalletContext): Promis
     logger.info('No unshielded Night UTXOs available for dust registration, or all are already registered');
 
     // Check current dust balance
-    const dustBalance = state.dust?.walletBalance(new Date()) ?? 0n;
+    const dustBalance = state.dust?.balance(new Date()) ?? 0n;
     logger.info(`Current dust balance: ${dustBalance}`);
 
     return dustBalance > 0n;
@@ -675,7 +652,7 @@ export const registerNightForDust = async (walletContext: WalletContext): Promis
     );
 
     logger.info('Finalizing dust registration transaction...');
-    const finalizedTx = await walletContext.wallet.finalizeTransaction(recipe);
+    const finalizedTx = await walletContext.wallet.finalizeRecipe(recipe);
 
     logger.info('Submitting dust registration transaction...');
     const txId = await walletContext.wallet.submitTransaction(finalizedTx);
@@ -687,10 +664,10 @@ export const registerNightForDust = async (walletContext: WalletContext): Promis
       walletContext.wallet.state().pipe(
         Rx.throttleTime(5_000),
         Rx.tap((s) => {
-          const dustBalance = s.dust?.walletBalance(new Date()) ?? 0n;
+          const dustBalance = s.dust?.balance(new Date()) ?? 0n;
           logger.info(`Dust balance: ${dustBalance}`);
         }),
-        Rx.filter((s) => (s.dust?.walletBalance(new Date()) ?? 0n) > 0n),
+        Rx.filter((s) => (s.dust?.balance(new Date()) ?? 0n) > 0n),
       ),
     );
 
@@ -747,7 +724,7 @@ export const initWalletWithSeed = async (
     indexerUrl: config.indexerWS,
   };
 
-  const shieldedWallet = ShieldedWallet(walletConfiguration).startWithSecretKeys(shieldedSecretKeys);
+  const shieldedWallet = ShieldedWallet(walletConfiguration).startWithSecretKeys(shieldedSecretKeys as any);
   const dustWallet = DustWallet(walletConfiguration).startWithSecretKey(
     dustSecretKey,
     ledger.LedgerParameters.initialParameters().dust,
@@ -757,8 +734,13 @@ export const initWalletWithSeed = async (
     txHistoryStorage: new InMemoryTransactionHistoryStorage(),
   }).startWithPublicKey(UnshieldedPublicKey.fromKeyStore(unshieldedKeystore));
 
-  const facade: WalletFacade = new WalletFacade(shieldedWallet, unshieldedWallet, dustWallet);
-  await facade.start(shieldedSecretKeys, dustSecretKey);
+  const facade = await WalletFacade.init({
+    configuration: walletConfiguration,
+    shielded: () => shieldedWallet,
+    unshielded: () => unshieldedWallet,
+    dust: () => dustWallet,
+  });
+  await facade.start(shieldedSecretKeys as any, dustSecretKey);
 
   return { wallet: facade, shieldedSecretKeys, dustSecretKey, unshieldedKeystore };
 };
