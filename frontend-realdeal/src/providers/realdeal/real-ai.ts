@@ -13,6 +13,10 @@
  */
 import type { IAIProvider, Synopsis, Entity, ObfuscationScore } from '../types';
 
+function isAIEnabled(): boolean {
+  return import.meta.env.VITE_FEATURE_AI !== 'false';
+}
+
 function getAIServiceUrl(): string | null {
   const url = import.meta.env.VITE_AI_SERVICE_URL;
   return url && url.length > 0 ? url : null;
@@ -72,6 +76,9 @@ export class RealAIProvider implements IAIProvider {
   private readonly serviceUrl: string | null = getAIServiceUrl();
 
   async generateSynopsis(content: string): Promise<Synopsis> {
+    if (!isAIEnabled()) {
+      return { summary: 'AI analysis disabled.', keyTopics: [], sentiment: 'neutral', legalRelevance: 0 };
+    }
     if (this.serviceUrl) {
       // Delegate to external AI service when configured
       const url = `${this.serviceUrl}/synopsis`;
@@ -101,6 +108,9 @@ export class RealAIProvider implements IAIProvider {
   }
 
   async extractEntities(content: string): Promise<Entity[]> {
+    if (!isAIEnabled()) {
+      return [];
+    }
     if (this.serviceUrl) {
       const url = `${this.serviceUrl}/entities`;
       const response = await fetch(url, {
@@ -120,6 +130,9 @@ export class RealAIProvider implements IAIProvider {
   }
 
   async detectObfuscation(_productionId: string): Promise<ObfuscationScore> {
+    if (!isAIEnabled()) {
+      return { score: 0, level: 'low', flags: [], recommendation: 'AI module disabled.' };
+    }
     if (this.serviceUrl) {
       const url = `${this.serviceUrl}/obfuscation`;
       const response = await fetch(url, {
@@ -144,6 +157,9 @@ export class RealAIProvider implements IAIProvider {
   }
 
   async scoreFidelity(_imageHash: string, _digitalHash: string): Promise<number> {
+    if (!isAIEnabled()) {
+      return 0;
+    }
     if (this.serviceUrl) {
       const url = `${this.serviceUrl}/fidelity`;
       const response = await fetch(url, {

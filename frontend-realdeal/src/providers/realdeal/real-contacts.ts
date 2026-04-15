@@ -7,6 +7,10 @@
  */
 import type { IContactProvider, CaseContact } from '../types';
 
+function isContactsEnabled(): boolean {
+  return import.meta.env.VITE_FEATURE_CONTACTS !== 'false';
+}
+
 // --- Storage ---
 
 const STORAGE_KEY = 'adl_realdeal_contacts';
@@ -33,6 +37,7 @@ function writeContacts(contacts: CaseContact[]): void {
 
 export class RealContactProvider implements IContactProvider {
   async getContactsByCaseId(caseId: string): Promise<CaseContact[]> {
+    if (!isContactsEnabled()) return [];
     return readContacts()
       .filter((c) => c.caseId === caseId)
       .sort((a, b) => a.sortOrder - b.sortOrder);

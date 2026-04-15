@@ -20,6 +20,10 @@ import type {
   CaseContact,
 } from '../types';
 
+function isEmailSafetyEnabled(): boolean {
+  return import.meta.env.VITE_FEATURE_EMAIL_SAFETY !== 'false';
+}
+
 // --- Storage ---
 
 const APPROVAL_STORAGE_KEY = 'adl_realdeal_tandem_approvals';
@@ -132,6 +136,14 @@ function checkFileMetadata(fileName: string, fileSize: number): string[] {
 export class RealEmailSafetyProvider implements IEmailSafetyProvider {
 
   async checkRecipients(caseId: string, emailAddresses: string[]): Promise<EmailRecipientCheck[]> {
+    if (!isEmailSafetyEnabled()) {
+      return emailAddresses.map((email) => ({
+        contactId: '', name: email, email, team: 'neutral' as const, role: 'other' as const,
+        flag: 'neutral_party' as const, threatLevel: 'safe' as const,
+        warningMessage: 'Email safety module disabled.',
+      }));
+    }
+
     const allContacts = readContacts();
     const caseContacts = allContacts.filter((c) => c.caseId === caseId);
 
