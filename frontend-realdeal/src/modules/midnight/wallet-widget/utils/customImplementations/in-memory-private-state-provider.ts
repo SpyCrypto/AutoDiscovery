@@ -1,10 +1,15 @@
 import type { SigningKey } from "@midnight-ntwrk/compact-runtime";
-import type { ContractAddress } from "@midnight-ntwrk/ledger-v6";
 import {
-  type Contract,
-  type PrivateState,
   type PrivateStateId,
   type PrivateStateProvider,
+  type PrivateStateExport,
+  type ImportPrivateStatesResult,
+  type ImportPrivateStatesOptions,
+  type ExportPrivateStatesOptions,
+  type SigningKeyExport,
+  type ImportSigningKeysResult,
+  type ImportSigningKeysOptions,
+  type ExportSigningKeysOptions,
 } from "@midnight-ntwrk/midnight-js-types";
 
 /**
@@ -15,10 +20,10 @@ import {
  */
 export const inMemoryPrivateStateProvider = <
   PSI extends PrivateStateId,
-  PS extends PrivateState<Contract>,
+  PS,
 >(): PrivateStateProvider<PSI, PS> => {
   const record = new Map<PSI, PS>();
-  const signingKeys = {} as Record<ContractAddress, SigningKey>;
+  const signingKeys = {} as Record<string, SigningKey>;
 
   return {
     /**
@@ -64,7 +69,7 @@ export const inMemoryPrivateStateProvider = <
      * @returns {Promise<void>} A promise that resolves when the signing key is set.
      */
     setSigningKey(
-      contractAddress: ContractAddress,
+      contractAddress: string,
       signingKey: SigningKey
     ): Promise<void> {
       signingKeys[contractAddress] = signingKey;
@@ -72,21 +77,21 @@ export const inMemoryPrivateStateProvider = <
     },
     /**
      * Gets the signing key for a given contract address.
-     * @param {ContractAddress} contractAddress - The contract address.
+     * @param {string} contractAddress - The contract address.
      * @returns {Promise<SigningKey | null>} A promise that resolves to the signing key or null if not found.
      */
     getSigningKey(
-      contractAddress: ContractAddress
+      contractAddress: string
     ): Promise<SigningKey | null> {
       const value = signingKeys[contractAddress] ?? null;
       return Promise.resolve(value);
     },
     /**
      * Removes the signing key for a given contract address.
-     * @param {ContractAddress} contractAddress - The contract address.
+     * @param {string} contractAddress - The contract address.
      * @returns {Promise<void>} A promise that resolves when the signing key is removed.
      */
-    removeSigningKey(contractAddress: ContractAddress): Promise<void> {
+    removeSigningKey(contractAddress: string): Promise<void> {
       delete signingKeys[contractAddress];
       return Promise.resolve();
     },
@@ -99,6 +104,21 @@ export const inMemoryPrivateStateProvider = <
         delete signingKeys[contractAddress];
       });
       return Promise.resolve();
+    },
+    setContractAddress(_address: string): void {
+      // no-op for in-memory provider
+    },
+    exportPrivateStates(_options?: ExportPrivateStatesOptions): Promise<PrivateStateExport> {
+      return Promise.resolve({ format: 'midnight-private-state-export', encryptedPayload: '', salt: '' } as PrivateStateExport);
+    },
+    importPrivateStates(_exportData: PrivateStateExport, _options?: ImportPrivateStatesOptions): Promise<ImportPrivateStatesResult> {
+      return Promise.resolve({ imported: 0, skipped: 0, overwritten: 0 } as ImportPrivateStatesResult);
+    },
+    exportSigningKeys(_options?: ExportSigningKeysOptions): Promise<SigningKeyExport> {
+      return Promise.resolve({ format: 'midnight-signing-key-export', encryptedPayload: '', salt: '' } as SigningKeyExport);
+    },
+    importSigningKeys(_exportData: SigningKeyExport, _options?: ImportSigningKeysOptions): Promise<ImportSigningKeysResult> {
+      return Promise.resolve({ imported: 0, skipped: 0, overwritten: 0 } as ImportSigningKeysResult);
     },
   };
 };

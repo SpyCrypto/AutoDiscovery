@@ -113,8 +113,8 @@ export class RealCaseProvider implements ICaseProvider {
   /**
    * Create a new legal case.
    *
-   * Phase 1: Saves metadata locally only.
-   * Phase 2: Also calls discovery-core.createNewCase circuit
+   * Phase 1 (current): Saves metadata locally only.
+   * Phase 2 (wallet): Also calls discovery-core.createNewCase circuit
    *   to anchor the case hash on-chain, then stores the chain mapping.
    */
   async createCase(params: CreateCaseParams): Promise<Case> {
@@ -126,18 +126,18 @@ export class RealCaseProvider implements ICaseProvider {
       const deployed = getDeployedContract('discovery-core');
       if (deployed) {
         try {
-          // Call the contract circuit to anchor the case on-chain
           const caseNumberBytes = caseNumberToBytes32(params.caseNumber);
           const jurisdictionBytes = jurisdictionToBytes8(params.jurisdiction);
           const tx = await deployed.callTx.createNewCase(caseNumberBytes, jurisdictionBytes);
-          const onChainCaseId = tx.public.result;
+          const onChainCaseId = tx.public.result as bigint;
           setChainMapping({
             localCaseId: newCase.id,
             onChainCaseIdentifier: onChainCaseId.toString(16),
             onChainStepHashes: {},
           });
           console.info(
-            `[RealCaseProvider] Case "${newCase.title}" anchored on-chain. Identifier: ${onChainCaseId.toString(16).slice(0, 16)}...`,
+            `[RealCaseProvider] Case "${newCase.title}" anchored on-chain. ` +
+            `ID: ${onChainCaseId.toString(16).slice(0, 12)}...`,
           );
         } catch (error) {
           // On-chain anchoring failed — case is still saved locally

@@ -15,18 +15,25 @@ import type {
 } from '../types';
 
 import {
-  getExpertsByCase,
-  getExpertById,
-  registerExpertLocally,
-} from './storage/adl-storage';
-
-import {
   isWalletConnected,
   getDeployedContract,
 } from '../../contracts/midnight-connection';
 
 import { ContractCallError } from '../../lib/errors';
-import { stringToBytes32 } from './chain/bytes-utils';
+
+function computeExpertQualificationHash(qualifications: string[]): Uint8Array {
+  const combined = qualifications.join('|');
+  const encoded = new TextEncoder().encode(combined);
+  const bytes = new Uint8Array(32);
+  bytes.set(encoded.slice(0, 32));
+  return bytes;
+}
+
+import {
+  getExpertsByCase,
+  getExpertById,
+  registerExpertLocally,
+} from './storage/adl-storage';
 
 export class RealExpertWitnessProvider implements IExpertWitnessProvider {
 
@@ -45,20 +52,15 @@ export class RealExpertWitnessProvider implements IExpertWitnessProvider {
   ): Promise<ExpertWitness> {
     const newExpert = registerExpertLocally(expert);
 
-    // Anchor on-chain if wallet is connected
     if (isWalletConnected()) {
       const deployed = getDeployedContract('expert-witness');
       if (deployed) {
         try {
-          const qualificationHash = stringToBytes32(
-            Array.isArray(expert.qualifications)
-              ? expert.qualifications.join(',')
-              : String(expert.qualifications || ''),
-          );
+          const qualificationHash = computeExpertQualificationHash(expert.qualifications ?? []);
           await deployed.callTx.registerExpertWitness(qualificationHash);
-          // Mark as verified after successful on-chain registration
-          // Note: updateExpertLocally would need to be added to adl-storage if not present
-          console.info(`[RealExpertWitnessProvider] Expert "${newExpert.name}" anchored on-chain.`);
+          console.info(
+            `[RealExpertWitnessProvider] Expert "${newExpert.name}" registered on-chain.`,
+          );
         } catch (error) {
           throw new ContractCallError('registerExpertWitness', error);
         }

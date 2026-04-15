@@ -17,18 +17,18 @@ import type {
 } from '../types';
 
 import {
-  getAllJurisdictions,
-  getJurisdictionByCode,
-} from './storage/adl-storage';
-
-import {
   isWalletConnected,
   getDeployedContract,
 } from '../../contracts/midnight-connection';
 
 import { ContractCallError } from '../../lib/errors';
-import { hexToBytes32 } from './chain/bytes-utils';
-import { jurisdictionToBytes8 } from './storage/case-storage';
+
+import { jurisdictionToBytes8, hexToBytes32 } from './storage/case-storage';
+
+import {
+  getAllJurisdictions,
+  getJurisdictionByCode,
+} from './storage/adl-storage';
 
 export class RealJurisdictionProvider implements IJurisdictionProvider {
 
@@ -50,7 +50,6 @@ export class RealJurisdictionProvider implements IJurisdictionProvider {
       return { valid: false, message: `Jurisdiction ${code} not registered` };
     }
 
-    // Attempt live on-chain verification if wallet is connected
     if (isWalletConnected()) {
       const deployed = getDeployedContract('jurisdiction-registry');
       if (deployed && jurisdiction.registryHash) {
@@ -58,10 +57,10 @@ export class RealJurisdictionProvider implements IJurisdictionProvider {
           const codeBytes = jurisdictionToBytes8(code);
           const expectedHash = hexToBytes32(jurisdiction.registryHash);
           const tx = await deployed.callTx.verifyRulePackHashMatchesExpected(codeBytes, expectedHash);
-          const isValid = tx.public.result;
+          const valid = tx.public.result as boolean;
           return {
-            valid: isValid,
-            message: isValid ? 'Rule pack hash verified on-chain ✅' : 'On-chain hash mismatch — rule pack may have been updated',
+            valid,
+            message: valid ? 'Rule pack hash verified on-chain.' : 'Rule pack hash mismatch — on-chain hash differs from local record.',
           };
         } catch (error) {
           throw new ContractCallError('verifyRulePackHashMatchesExpected', error);
@@ -69,7 +68,6 @@ export class RealJurisdictionProvider implements IJurisdictionProvider {
       }
     }
 
-    // Fallback: report cached status
     if (jurisdiction.verifiedOnChain) {
       return {
         valid: true,

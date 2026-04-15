@@ -41,6 +41,8 @@ jspm_packages/
 .env
 # Local dev overrides (copy from .env.local.template – never commit secrets)
 .env.local
+# Real-deal env (contains network config — never commit secrets or mnemonics here)
+.env.realdeal
 
 # MacOS
 .DS_Store

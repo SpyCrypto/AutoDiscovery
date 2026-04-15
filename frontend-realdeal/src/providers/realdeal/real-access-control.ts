@@ -23,21 +23,28 @@ import type {
 } from '../types';
 
 import {
+  isWalletConnected,
+  getDeployedContract,
+} from '../../contracts/midnight-connection';
+
+import { ContractCallError } from '../../lib/errors';
+
+import { hexToBytes32 } from './storage/case-storage';
+
+import {
   getPermissionsByCase,
   getSharingEventsByCase,
   getCustodyEntriesByDocument,
   addAccessGrantLocally,
   revokeAccessGrantLocally,
+  getAccessGrantById,
 } from './storage/adl-storage';
 
-import {
-  isWalletConnected,
-  getDeployedContract,
-  getCoinPublicKey,
-} from '../../contracts/midnight-connection';
+import { getDocumentById } from './storage/adl-storage';
 
-import { ContractCallError } from '../../lib/errors';
-import { hexToBytes32, tierToNumber } from './chain/bytes-utils';
+const TIER_ENUM: Record<ProtectiveOrderTier, bigint> = {
+  none: 0n, confidential: 1n, aeo: 2n, sealed: 3n,
+};
 
 export class RealAccessControlProvider implements IAccessControlProvider {
 
@@ -57,9 +64,9 @@ export class RealAccessControlProvider implements IAccessControlProvider {
     documentId: string,
     participantName: string,
     level: ProtectiveOrderTier,
+    participantPublicKey?: string,
   ): Promise<AccessGrant> {
     const now = new Date().toISOString();
-    const walletKey = getCoinPublicKey();
 
     const grant = addAccessGrantLocally({
       documentId,
@@ -67,27 +74,34 @@ export class RealAccessControlProvider implements IAccessControlProvider {
       grantedToRole: 'defense',
       accessLevel: level,
       grantedAt: now,
-      grantedBy: walletKey || 'current-user',
+      grantedBy: 'current-user',
       revoked: false,
+      participantPublicKey,
     });
 
-    // Anchor on-chain if wallet is connected
-    if (isWalletConnected()) {
+    if (isWalletConnected() && participantPublicKey) {
       const deployed = getDeployedContract('access-control');
-      if (deployed) {
+      const doc = getDocumentById(documentId);
+      if (deployed && doc?.contentHash) {
         try {
-          const docHash = hexToBytes32(documentId);
-          const recipientHash = hexToBytes32(participantName);
-          const tierEnum = BigInt(tierToNumber(level));
+          const docHash = hexToBytes32(doc.contentHash);
+          const recipientHash = hexToBytes32(participantPublicKey);
+          const tierEnum = TIER_ENUM[level] ?? 0n;
           await deployed.callTx.grantDocumentAccessToParticipant(docHash, recipientHash, tierEnum);
-          console.info(`[RealAccessControlProvider] Access grant anchored on-chain for ${participantName}.`);
+          console.info(
+            `[RealAccessControlProvider] Access granted on-chain for document ${documentId.slice(0, 8)}...`,
+          );
         } catch (error) {
           throw new ContractCallError('grantDocumentAccessToParticipant', error);
         }
       }
     } else {
       console.info(
-        `[RealAccessControlProvider] Access granted locally. Connect wallet to anchor on-chain.`,
+        `[RealAccessControlProvider] Access granted locally.${
+          !participantPublicKey
+            ? ' No participant public key — pass participantPublicKey to anchor on-chain.'
+            : ' Connect wallet to anchor on-chain.'
+        }`,
       );
     }
 
@@ -95,26 +109,31 @@ export class RealAccessControlProvider implements IAccessControlProvider {
   }
 
   async revokeAccess(grantId: string): Promise<void> {
+    const grant = getAccessGrantById(grantId);
     revokeAccessGrantLocally(grantId);
 
-    // Anchor revocation on-chain if wallet is connected
-    if (isWalletConnected()) {
+    if (isWalletConnected() && grant?.participantPublicKey) {
       const deployed = getDeployedContract('access-control');
-      if (deployed) {
+      const doc = grant.documentId ? getDocumentById(grant.documentId) : undefined;
+      if (deployed && doc?.contentHash) {
         try {
-          // The grantId is used as a proxy for the document + recipient hash pair.
-          // In production, the actual docHash/recipientHash would be stored in the grant record.
-          const docHash = hexToBytes32(grantId);
-          const recipientHash = hexToBytes32(grantId);
-          await deployed.callTx.revokeDocumentAccessFromParticipant(docHash, recipientHash);
-          console.info(`[RealAccessControlProvider] Access revocation anchored on-chain.`);
+          const docHash = hexToBytes32(doc.contentHash);
+          const revokedHash = hexToBytes32(grant.participantPublicKey);
+          await deployed.callTx.revokeDocumentAccessFromParticipant(docHash, revokedHash);
+          console.info(
+            `[RealAccessControlProvider] Access revoked on-chain for document ${grant.documentId.slice(0, 8)}...`,
+          );
         } catch (error) {
           throw new ContractCallError('revokeDocumentAccessFromParticipant', error);
         }
       }
     } else {
       console.info(
-        `[RealAccessControlProvider] Access revoked locally. Connect wallet to anchor on-chain.`,
+        `[RealAccessControlProvider] Access revoked locally.${
+          grant && !grant.participantPublicKey
+            ? ' No participant public key stored — on-chain revocation skipped.'
+            : ' Connect wallet to anchor revocation on-chain.'
+        }`,
       );
     }
   }

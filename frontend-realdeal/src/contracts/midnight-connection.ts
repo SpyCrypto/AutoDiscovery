@@ -41,6 +41,9 @@ import { setNetworkId } from '@midnight-ntwrk/midnight-js-network-id';
 import { getContractConfig, type ContractConfig } from './index';
 import { BrowserZkConfigProvider } from './browser-zk-config-provider';
 import { WalletNotConnectedError } from '../lib/errors';
+import * as LedgerV7 from '@midnight-ntwrk/ledger-v7';
+import { fromHex, toHex } from '@midnight-ntwrk/compact-runtime';
+import { MidnightBrowserWallet } from '../modules/midnight/wallet-widget/api/walletController';
 
 // ============================================================================
 // Types
@@ -81,8 +84,8 @@ export type ConnectionListener = (status: ConnectionStatus, detail?: string) => 
 // ============================================================================
 
 const PREPROD_CONFIG = {
-  indexer: 'https://indexer.preprod.midnight.network/api/v3/graphql',
-  indexerWS: 'wss://indexer.preprod.midnight.network/api/v3/graphql/ws',
+  indexer: import.meta.env.VITE_INDEXER_URL || 'https://indexer.preprod.midnight.network/api/v3/graphql',
+  indexerWS: import.meta.env.VITE_INDEXER_WS || 'wss://indexer.preprod.midnight.network/api/v3/graphql/ws',
   node: 'https://rpc.preprod.midnight.network',
 };
 
@@ -90,14 +93,14 @@ const PREPROD_CONFIG = {
 // Wallet Provider State
 // ============================================================================
 
-/** Lace DApp connector API version */
-const LACE_CONNECTOR_API_VERSION = '1.x';
-
 /** Internal state of the wallet connection */
 interface WalletProviderState {
   coinPublicKey: string;
+  encryptionPublicKey: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  walletState: any | null;
+  connectedAPI: any | null;      // ConnectedAPI from dapp-connector-api v4
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  serviceUriConfig: any | null;  // Configuration with indexer/prover URIs from the wallet
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   midnightProvider: any | null;
   connected: boolean;
@@ -196,36 +199,19 @@ class MidnightConnectionManager {
 
     const proofServerUrl = this.config.proofServerUrl;
 
-    // Public data provider — reads from the preprod indexer (works in browser)
-    const publicDataProvider = (indexerPublicDataProvider as any)(
-      PREPROD_CONFIG.indexer,
-      PREPROD_CONFIG.indexerWS,
-    );
-
-    // Proof provider — sends proofs to the local proof server (HTTP)
-    const zkConfigProvider = new BrowserZkConfigProvider('/contracts/discovery-core');
-    const proofProvider = (httpClientProofProvider as any)(proofServerUrl, zkConfigProvider);
-
-    // Private state provider — uses IndexedDB in browser via `level` package
-    const privateStateProvider = (levelPrivateStateProvider as any)({
-      privateStateStoreName: 'adl-realdeal-private-state',
-    });
-
-    // Wallet provider — real implementation using wallet-sdk v3
-    // Attempts Lace DApp connector first, falls back to seed-based wallet
-    let walletProvider: WalletProviderState;
+    // Wallet state — v4 DApp connector or seed-based dev fallback
+    let walletState: WalletProviderState;
 
     if (!walletSeed && this.isLaceAvailable()) {
-      // Production path: connect via Lace browser extension
-      walletProvider = await this.connectLaceWallet();
+      walletState = await this.connectLaceWallet();
     } else if (walletSeed) {
-      // Dev path: create an HD wallet from the provided seed
-      walletProvider = this.createSeedWallet(walletSeed);
+      walletState = this.createSeedWallet(walletSeed);
     } else {
-      // Offline mode: no wallet available, read-only operations only
-      walletProvider = {
+      walletState = {
         coinPublicKey: '',
-        walletState: null,
+        encryptionPublicKey: '',
+        connectedAPI: null,
+        serviceUriConfig: null,
         midnightProvider: null,
         connected: false,
       };
@@ -235,17 +221,66 @@ class MidnightConnectionManager {
       );
     }
 
-    this.walletState = walletProvider;
+    this.walletState = walletState;
+
+    // Use endpoints from wallet's service URI config when available
+    const serviceUriConfig = walletState.serviceUriConfig;
+    const indexerUri = serviceUriConfig?.indexerUri ?? PREPROD_CONFIG.indexer;
+    const indexerWsUri = serviceUriConfig?.indexerWsUri ?? PREPROD_CONFIG.indexerWS;
+    const proverUri = serviceUriConfig?.proverServerUri ?? proofServerUrl;
+
+    // Public data provider — reads from the indexer
+    const publicDataProvider = (indexerPublicDataProvider as any)(indexerUri, indexerWsUri);
+
+    // Proof provider — sends circuits to the proof server
+    const zkConfigProvider = new BrowserZkConfigProvider('/contracts/discovery-core');
+    const proofProvider = (httpClientProofProvider as any)(proverUri, zkConfigProvider);
+
+    // Private state provider — IndexedDB in browser
+    const privateStateProvider = (levelPrivateStateProvider as any)({
+      privateStateStoreName: 'adl-realdeal-private-state',
+    });
+
+    const connectedAPI = walletState.connectedAPI;
+    const coinPublicKey = walletState.coinPublicKey;
+    const encryptionPublicKey = walletState.encryptionPublicKey;
+
+    // WalletProvider — proper SDK shape with getCoinPublicKey / balanceTx
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sdkWalletProvider: any = connectedAPI
+      ? {
+          getCoinPublicKey() { return coinPublicKey; },
+          getEncryptionPublicKey() { return encryptionPublicKey; },
+          async balanceTx(tx: any, _newCoins?: any[]) {
+            const serialized = toHex(tx.serialize());
+            const received = await connectedAPI.balanceUnsealedTransaction(serialized);
+            const balanced = (LedgerV7 as any).Transaction.deserialize(
+              'signature', 'pre-proof', 'pre-binding',
+              fromHex(received.tx),
+            );
+            return { type: 'TransactionToProve', transaction: balanced };
+          },
+        }
+      : null;
+
+    // MidnightProvider — proper SDK shape with submitTx
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sdkMidnightProvider: any = connectedAPI
+      ? {
+          submitTx: async (tx: any): Promise<any> => {
+            await connectedAPI.submitTransaction(toHex(tx.serialize()));
+            return tx.identifiers?.()?.[0];
+          },
+        }
+      : null;
 
     return {
       privateStateProvider,
       publicDataProvider,
       zkConfigProvider,
       proofProvider,
-      walletProvider: walletProvider.connected
-        ? { coinPublicKey: walletProvider.coinPublicKey }
-        : { coinPublicKey: '' },
-      midnightProvider: walletProvider.midnightProvider ?? {},
+      walletProvider: sdkWalletProvider,
+      midnightProvider: sdkMidnightProvider,
     } as any;
   }
 
@@ -255,7 +290,7 @@ class MidnightConnectionManager {
    * Check if the Lace Midnight wallet extension is available in the browser.
    */
   private isLaceAvailable(): boolean {
-    return typeof window !== 'undefined' && !!(window as any).midnight?.mnLace;
+    return typeof window !== 'undefined' && MidnightBrowserWallet.getAvailableWallets().length > 0;
   }
 
   /**
@@ -263,51 +298,54 @@ class MidnightConnectionManager {
    * Returns wallet state with coinPublicKey for transaction signing.
    */
   private async connectLaceWallet(): Promise<WalletProviderState> {
+    const EMPTY: WalletProviderState = {
+      coinPublicKey: '',
+      encryptionPublicKey: '',
+      connectedAPI: null,
+      serviceUriConfig: null,
+      midnightProvider: null,
+      connected: false,
+    };
     try {
-      const mnLace = (window as any).midnight?.mnLace;
-      if (!mnLace) {
-        return { coinPublicKey: '', walletState: null, midnightProvider: null, connected: false };
+      const wallets = MidnightBrowserWallet.getAvailableWallets();
+      if (wallets.length === 0) return EMPTY;
+
+      // Prefer mnLace rdns if available, otherwise use the first wallet found
+      const wallet = wallets.find((w) => w.rdns === 'mnLace') ?? wallets[0];
+      const rdns = wallet.rdns ?? 'mnLace';
+      const networkID = this.config!.networkId;
+
+      const browserWallet = await MidnightBrowserWallet.connectToWallet(rdns, networkID);
+      if (!browserWallet.connectedAPI) {
+        throw new WalletNotConnectedError('Wallet connection returned no ConnectedAPI.');
       }
 
-      // Request wallet connection — prompts user to approve in the Lace popup
-      const wallet = await mnLace.enable(LACE_CONNECTOR_API_VERSION);
-      if (!wallet) {
-        throw new WalletNotConnectedError('Lace wallet connection was rejected by user.');
-      }
-
-      // Extract wallet state containing coinPublicKey
-      const walletState = await wallet.state();
-      if (!walletState?.coinPublicKey) {
+      const coinPublicKey = browserWallet.shieldedAddresses?.shieldedCoinPublicKey ?? '';
+      const encryptionPublicKey = browserWallet.shieldedAddresses?.shieldedEncryptionPublicKey ?? '';
+      if (!coinPublicKey) {
         throw new WalletNotConnectedError(
-          'Lace wallet did not return coinPublicKey. ' +
+          'Wallet did not return shieldedCoinPublicKey. ' +
           'Wallet SDK version may be incompatible (requires >= 3.0.0).',
         );
       }
 
-      const coinPublicKey = String(walletState.coinPublicKey);
-
-      // The wallet also provides service URI configuration
-      // which can override our defaults (indexer, proof server, node URLs)
-      const serviceUriConfig = walletState.serviceUriConfig ?? {};
-
       console.info(
-        `[MidnightConnection] Connected to Lace wallet. ` +
+        `[MidnightConnection] Connected to wallet (${rdns}). ` +
         `Public key: ${coinPublicKey.slice(0, 12)}...`,
       );
 
       return {
         coinPublicKey,
-        walletState,
-        midnightProvider: {
-          ...serviceUriConfig,
-          coinPublicKey,
-        },
+        encryptionPublicKey,
+        connectedAPI: browserWallet.connectedAPI,
+        serviceUriConfig: browserWallet.serviceUriConfig ?? null,
+        midnightProvider: null,
         connected: true,
       };
     } catch (error) {
       if (error instanceof WalletNotConnectedError) throw error;
-      console.warn('[MidnightConnection] Lace wallet connection failed:', error);
-      return { coinPublicKey: '', walletState: null, midnightProvider: null, connected: false };
+      console.warn('[MidnightConnection] Wallet connection failed:', error);
+      return EMPTY;
     }
   }
 
@@ -322,7 +360,7 @@ class MidnightConnectionManager {
         '[MidnightConnection] Seed-based wallets are not allowed in production. ' +
         'Use the Lace browser extension instead.',
       );
-      return { coinPublicKey: '', walletState: null, midnightProvider: null, connected: false };
+      return { coinPublicKey: '', encryptionPublicKey: '', connectedAPI: null, serviceUriConfig: null, midnightProvider: null, connected: false };
     }
 
     // In dev mode, derive a deterministic public key from the seed
@@ -338,8 +376,10 @@ class MidnightConnectionManager {
 
     return {
       coinPublicKey,
-      walletState: { seed: walletSeed },
-      midnightProvider: { coinPublicKey },
+      encryptionPublicKey: '',
+      connectedAPI: null,
+      serviceUriConfig: null,
+      midnightProvider: null,
       connected: true,
     };
   }

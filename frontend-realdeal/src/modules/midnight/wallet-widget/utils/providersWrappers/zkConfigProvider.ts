@@ -1,18 +1,16 @@
 import type { ProverKey, VerifierKey, ZKIR } from '@midnight-ntwrk/midnight-js-types';
-import { fetch } from 'cross-fetch';
-import { FetchZkConfigProvider } from '@midnight-ntwrk/midnight-js-fetch-zk-config-provider';
+import { BrowserZkConfigProvider } from '../../../../../contracts/browser-zk-config-provider';
 
 type CacheKey = `proverKey:${string}` | `verifierKey:${string}` | `zkir:${string}`;
 
-export class CachedFetchZkConfigProvider<K extends string> extends FetchZkConfigProvider<K> {
+export class CachedFetchZkConfigProvider<K extends string> extends BrowserZkConfigProvider {
   private readonly cache: Map<CacheKey, ProverKey | VerifierKey | ZKIR>;
 
   constructor(
     baseURL: string,
-    fetchFunc: typeof fetch = fetch,
     private readonly callback: (action: 'downloadProverStarted' | 'downloadProverDone') => void,
   ) {
-    super(baseURL, fetchFunc);
+    super(baseURL);
     this.cache = new Map();
   }
 

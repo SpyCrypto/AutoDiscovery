@@ -13,8 +13,10 @@
   },
   "dependencies": {
     "@autodiscovery/contract": "*",
-    "@midnight-ntwrk/compact-js": "2.4.3",
+    "@midnight-ntwrk/dapp-connector-api": "4.0.1",
     "@midnight-ntwrk/compact-runtime": "0.14.0",
+    "@midnight-ntwrk/compact-js": "2.4.3",
+    "@midnight-ntwrk/midnight-js-fetch-zk-config-provider": "3.2.0",
     "@midnight-ntwrk/ledger-v7": "7.0.3",
     "@midnight-ntwrk/midnight-js-contracts": "3.2.0",
     "@midnight-ntwrk/midnight-js-http-client-proof-provider": "3.2.0",

@@ -21,20 +21,21 @@ import type {
 } from '../types';
 
 import {
+  isWalletConnected,
+  getDeployedContract,
+} from '../../contracts/midnight-connection';
+
+import { ContractCallError } from '../../lib/errors';
+
+import { getChainMappingForCase } from './storage/case-storage';
+
+import {
   getAttestationsByCase,
   addAttestationLocally,
   computeComplianceStatusLocally,
 } from './storage/adl-storage';
 
 import { getStepsForCase } from './storage/case-storage';
-
-import {
-  isWalletConnected,
-  getDeployedContract,
-} from '../../contracts/midnight-connection';
-
-import { ContractCallError } from '../../lib/errors';
-import { bytesToHex } from './chain/bytes-utils';
 
 export class RealComplianceProvider implements IComplianceProvider {
 
@@ -51,28 +52,43 @@ export class RealComplianceProvider implements IComplianceProvider {
 
   async generateProof(caseId: string, stepId: string): Promise<Attestation> {
     const now = new Date().toISOString();
+    const steps = getStepsForCase(caseId);
+    const step = steps.find((s) => s.id === stepId);
     let proofHash = `local-${Date.now().toString(16)}`;
     let verified = false;
 
-    // Attempt on-chain attestation if wallet is connected
     if (isWalletConnected()) {
       const deployed = getDeployedContract('compliance-proof');
-      if (deployed) {
-        try {
-          const caseIdBigInt = BigInt('0x' + caseId.replace(/[^0-9a-fA-F]/g, '').slice(0, 16).padEnd(16, '0'));
-          const stepHashBigInt = BigInt('0x' + stepId.replace(/[^0-9a-fA-F]/g, '').slice(0, 16).padEnd(16, '0'));
-          const deadlineBigInt = BigInt(Math.floor(Date.now() / 1000));
-          const tx = await deployed.callTx.attestStepLevelCompliance(caseIdBigInt, stepHashBigInt, deadlineBigInt);
-          proofHash = bytesToHex(tx.public.result);
-          verified = true;
-          console.info(`[RealComplianceProvider] Attestation anchored on-chain: ${proofHash.slice(0, 16)}...`);
-        } catch (error) {
-          throw new ContractCallError('attestStepLevelCompliance', error);
+      const chainMapping = getChainMappingForCase(caseId);
+      if (deployed && chainMapping && step) {
+        const onChainStepHash = chainMapping.onChainStepHashes[stepId];
+        if (onChainStepHash) {
+          try {
+            const caseIdBigInt = BigInt('0x' + chainMapping.onChainCaseIdentifier);
+            const stepHashBigInt = BigInt('0x' + onChainStepHash);
+            const deadlineBigInt = BigInt(step.deadline ? new Date(step.deadline).getTime() : Date.now());
+            const tx = await deployed.callTx.attestStepLevelCompliance(
+              caseIdBigInt,
+              stepHashBigInt,
+              deadlineBigInt,
+            );
+            proofHash = (tx.public.result as bigint).toString(16);
+            verified = true;
+            console.info(
+              `[RealComplianceProvider] Step attestation anchored on-chain. Hash: ${proofHash.slice(0, 12)}...`,
+            );
+          } catch (error) {
+            throw new ContractCallError('attestStepLevelCompliance', error);
+          }
         }
       }
+    } else {
+      console.info(
+        `[RealComplianceProvider] Attestation created locally. Connect wallet to anchor on-chain.`,
+      );
     }
 
-    const attestation = addAttestationLocally({
+    return addAttestationLocally({
       caseId,
       stepId,
       type: 'step_completion',
@@ -82,13 +98,6 @@ export class RealComplianceProvider implements IComplianceProvider {
       timestamp: now,
       verified,
     });
-
-    if (!verified) {
-      console.info(
-        `[RealComplianceProvider] Attestation created locally (${proofHash}). Connect wallet to anchor compliance record on-chain.`,
-      );
-    }
-    return attestation;
   }
 
   async getComplianceReport(caseId: string): Promise<ComplianceReport> {

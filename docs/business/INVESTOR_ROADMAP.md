@@ -51,12 +51,10 @@
 |---------|------|------------|-------------------|
 | **Solo Practitioners** | 400K | High malpractice risk | $99/mo |
 | **Small Firms (2-10)** | 500K | Resource constraints | $299/mo |
-| **Mid Firms (11-50)** | 300K | Multi-jurisdiction complexity | $999/mo |
-| **Large Firms (50+)** | 100K | Enterprise compliance | $2,999/mo |
-| **Corporate Legal** | 50K | Risk management | $4,999/mo |
+| **Mid Firms (11-50)** | 300K | Multi-jurisdiction complexity | $499/mo |
+| **Large Firms (50+) & Corporate Legal** | 150K | Enterprise compliance & risk management | $699/mo |
 
 ### 🌍 **Market Expansion Strategy**
-
 **Phase 1 — Mountain West Anchor (2026 Q2 – 2027 Q3):**
 - Idaho anchor launch (Q2 2026) → Utah → Washington → Nevada → Wyoming → Montana
 - Low-complexity, FRCP-adjacent states — proves modular rule pack architecture
@@ -129,9 +127,8 @@
 1. **💳 SaaS Subscriptions**
    - Solo: $99/month
    - Small Firm: $299/month
-   - Mid Firm: $999/month
-   - Enterprise: $2,999/month
-   - Corporate: $4,999/month
+   - Mid Firm: $499/month
+   - Large Firm: $699/month
 
 2. **🛡️ Compliance Insurance**
    - 10% of subscription fee

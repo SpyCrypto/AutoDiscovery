@@ -6,13 +6,13 @@ import type {
   PublicDataProvider,
   UnshieldedBalances,
 } from "@midnight-ntwrk/midnight-js-types";
-import type { Logger } from "pino";
+type Logger = { info: (msg: string) => void; error: (msg: string) => void; trace?: (msg: string) => void };
 import type {
   ContractAddress,
   ContractState,
 } from "@midnight-ntwrk/compact-runtime";
 import { retryWithBackoff } from "./retryWithBackoff";
-import type { TransactionId, ZswapChainState } from "@midnight-ntwrk/ledger-v6";
+import type { TransactionId, ZswapChainState } from "@midnight-ntwrk/ledger-v7";
 import type { Observable } from "rxjs";
 
 export type ProviderAction =

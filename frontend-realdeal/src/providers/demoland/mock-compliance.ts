@@ -43,6 +43,7 @@ export class MockComplianceProvider implements IComplianceProvider {
     return {
       id: `att-${Date.now()}`, caseId, stepId,
       type: 'step_completion',
+      scope: 'step' as const,
       description: `Compliance record generated for step ${stepId}`,
       proofHash: `zk-proof-${Date.now()}-${Math.random().toString(36).slice(2)}`,
       timestamp: new Date().toISOString(), verified: true,

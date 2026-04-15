@@ -1,13 +1,20 @@
 import type * as __compactRuntime from '@midnight-ntwrk/compact-runtime';
 
 export type Witnesses<PS> = {
+  lookupRoleCommitmentMerklePath(context: __compactRuntime.WitnessContext<Ledger, PS>,
+                                 publicKeyHash_0: Uint8Array): [PS, { is_some: boolean,
+                                                                      value: { leaf: Uint8Array,
+                                                                               path: { sibling: { field: bigint
+                                                                                                },
+                                                                                       goes_left: boolean
+                                                                                     }[]
+                                                                             }
+                                                                    }];
   getCurrentTimestamp(context: __compactRuntime.WitnessContext<Ledger, PS>): [PS, bigint];
   computeSharingEventProofHash(context: __compactRuntime.WitnessContext<Ledger, PS>,
                                documentHash_0: Uint8Array,
                                recipientPublicKeyHash_0: Uint8Array,
                                sharingTimestamp_0: bigint): [PS, Uint8Array];
-  lookupRoleCommitmentMerklePath(context: __compactRuntime.WitnessContext<Ledger, PS>,
-                                 publicKeyHash_0: Uint8Array): [PS, __compactRuntime.MerkleTreePath<Uint8Array> | undefined];
 }
 
 export type ImpureCircuits<PS> = {
@@ -80,34 +87,6 @@ export type Ledger = {
     size(): bigint;
     member(elem_0: Uint8Array): boolean;
     [Symbol.iterator](): Iterator<Uint8Array>
-  };
-  participantRoleByPublicKeyHash: {
-    isEmpty(): boolean;
-    size(): bigint;
-    member(key_0: Uint8Array): boolean;
-    lookup(key_0: Uint8Array): bigint;
-    [Symbol.iterator](): Iterator<[Uint8Array, bigint]>
-  };
-  partyListReferenceByCaseIdentifier: {
-    isEmpty(): boolean;
-    size(): bigint;
-    member(key_0: Uint8Array): boolean;
-    lookup(key_0: Uint8Array): bigint;
-    [Symbol.iterator](): Iterator<[Uint8Array, bigint]>
-  };
-  permittedAccessReferenceByDocumentHash: {
-    isEmpty(): boolean;
-    size(): bigint;
-    member(key_0: Uint8Array): boolean;
-    lookup(key_0: Uint8Array): bigint;
-    [Symbol.iterator](): Iterator<[Uint8Array, bigint]>
-  };
-  protectiveOrderTierByDocumentHash: {
-    isEmpty(): boolean;
-    size(): bigint;
-    member(key_0: Uint8Array): boolean;
-    lookup(key_0: Uint8Array): bigint;
-    [Symbol.iterator](): Iterator<[Uint8Array, bigint]>
   };
 }
 

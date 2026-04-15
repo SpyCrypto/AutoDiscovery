@@ -1,5 +1,18 @@
-import type { PrivateStateProvider, PrivateStateId } from '@midnight-ntwrk/midnight-js-types';
-import type { Logger } from 'pino';
+import type {
+  PrivateStateProvider,
+  PrivateStateId,
+  PrivateStateExport,
+  ExportPrivateStatesOptions,
+  ImportPrivateStatesOptions,
+  ImportPrivateStatesResult,
+  SigningKeyExport,
+  ExportSigningKeysOptions,
+  ImportSigningKeysOptions,
+  ImportSigningKeysResult,
+} from '@midnight-ntwrk/midnight-js-types';
+import type { ContractAddress } from '@midnight-ntwrk/compact-runtime';
+
+type Logger = { trace: (msg: string) => void };
 
 export class WrappedPrivateStateProvider<PSI extends PrivateStateId = PrivateStateId, PS = any>
   implements PrivateStateProvider<PSI, PS>
@@ -47,5 +60,31 @@ export class WrappedPrivateStateProvider<PSI extends PrivateStateId = PrivateSta
   clearSigningKeys(): Promise<void> {
     this.logger?.trace('Clearing signing keys');
     return this.privateDataProvider.clearSigningKeys();
+  }
+
+  setContractAddress(address: ContractAddress): void {
+    return this.privateDataProvider.setContractAddress(address);
+  }
+
+  exportPrivateStates(options?: ExportPrivateStatesOptions): Promise<PrivateStateExport> {
+    return this.privateDataProvider.exportPrivateStates(options);
+  }
+
+  importPrivateStates(
+    exportData: PrivateStateExport,
+    options?: ImportPrivateStatesOptions,
+  ): Promise<ImportPrivateStatesResult> {
+    return this.privateDataProvider.importPrivateStates(exportData, options);
+  }
+
+  exportSigningKeys(options?: ExportSigningKeysOptions): Promise<SigningKeyExport> {
+    return this.privateDataProvider.exportSigningKeys(options);
+  }
+
+  importSigningKeys(
+    exportData: SigningKeyExport,
+    options?: ImportSigningKeysOptions,
+  ): Promise<ImportSigningKeysResult> {
+    return this.privateDataProvider.importSigningKeys(exportData, options);
   }
 }
