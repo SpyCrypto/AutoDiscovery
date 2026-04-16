@@ -2,4 +2,4 @@ jobs:
   contract:
     steps:
       - name: Run contract tests
-        run: npm run test:compile
+        run: npm run test
