@@ -214,7 +214,7 @@ export async function getOnChainCaseStatus(
     // Fallback: raw hex substring heuristic
     const exists = rawState.toLowerCase().includes(normalizedId);
     if (exists) {
-      return { exists: true, statusCode: 1, jurisdictionCode: null };
+      return { exists: true, statusCode: -1, jurisdictionCode: null };
     }
     return { exists: false, statusCode: -1, jurisdictionCode: null };
   } catch (error) {
