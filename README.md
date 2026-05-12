@@ -356,17 +356,10 @@ Domain Expert · Legal Discovery Specialist
 
 20 years complex litigation paralegal experience. Published statistics reports for Idaho government agencies. Jurisdiction expertise across Idaho, Utah, and Washington.
 
-**[Full Dossier →](./docs/TEAM_SPY.md)**
-
 </td>
 <td align="center" width="50%">
 
-### John
-**[@bytewizard42i](https://github.com/bytewizard42i)**
-
-Developer · Midnight Builder · Architect
-
-Full-stack development, smart contract architecture, and ZK protocol design.
+Midnight Team full-stack development, smart contract architecture, and ZK protocol design.
 
 </td>
 </tr>
