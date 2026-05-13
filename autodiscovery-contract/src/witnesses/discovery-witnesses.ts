@@ -4,76 +4,88 @@
 // at transaction time. They bridge the TypeScript world with the ZK world.
 // ============================================================================
 
-import { type WitnessContext } from "@midnight-ntwrk/compact-runtime";
+import { createHash } from "node:crypto";
+import type { WitnessContext } from "@midnight-ntwrk/compact-runtime";
+import type { Ledger } from "../managed/discovery-core/contract/index.js";
 
 // --- Types ---
 
 export type DiscoveryCorePrivateState = {
   // Local tracking of cases owned by this user
   ownedCaseIds: string[];
-  // Local cache of step hashes for quick lookup
-  stepHashes: Map<string, string>;
 };
 
 // --- Private State Factory ---
 
 export const createDiscoveryCorePrivateState = (): DiscoveryCorePrivateState => ({
   ownedCaseIds: [],
-  stepHashes: new Map(),
 });
 
-// --- Witness Implementations ---
+// ---------------------------------------------------------------------------
+// Hash utility: SHA-256 bytes → bigint (248-bit, safely within Midnight Field)
+// ---------------------------------------------------------------------------
+
+function sha256ToField(data: Buffer): bigint {
+  const hash = createHash("sha256").update(data).digest();
+  // Use first 31 bytes (248 bits) to stay safely within Midnight's field prime
+  return BigInt("0x" + hash.slice(0, 31).toString("hex"));
+}
+
+// ---------------------------------------------------------------------------
+// Witnesses — signatures MUST match generated index.d.ts exactly
+// ---------------------------------------------------------------------------
 
 /**
- * Returns the caller's wallet address.
- * Used for ownership verification in createCase, addStep, completeStep.
+ * computeUniqueCaseIdentifier
+ * Mirrors the contract witness: hash(caseNumber || jurisdictionCode) → Field
  */
-export const getCaller = (context: WitnessContext): string => {
-  // TODO: Extract caller address from the transaction context
-  // This will use context.self or similar Midnight SDK method
-  throw new Error("getCaller witness not yet implemented — needs Midnight SDK integration");
+export const computeUniqueCaseIdentifier = (
+  context: WitnessContext<Ledger, DiscoveryCorePrivateState>,
+  caseNumber_0: Uint8Array,
+  jurisdictionCode_0: Uint8Array,
+): [DiscoveryCorePrivateState, bigint] => {
+  const input = Buffer.concat([
+    Buffer.from(caseNumber_0),
+    Buffer.from([0x7c]), // separator "|"
+    Buffer.from(jurisdictionCode_0),
+  ]);
+  const caseId = sha256ToField(input);
+  return [context.privateState, caseId];
 };
 
 /**
- * Computes a deterministic case ID from the case number and jurisdiction code.
- * Uses a hash commitment scheme so the case number isn't revealed on-chain.
+ * computeUniqueStepHash
+ * Mirrors the contract witness: hash(caseIdentifier || ruleReference) → Field
  */
-export const computeCaseId = (
-  _context: WitnessContext,
-  caseNumber: Uint8Array,
-  jurisdiction: Uint8Array
-): bigint => {
-  // TODO: Implement hash(caseNumber || jurisdiction) using Midnight's hash primitive
-  // The result must be deterministic — same inputs always produce same caseId
-  throw new Error("computeCaseId witness not yet implemented — needs hash primitive");
+export const computeUniqueStepHash = (
+  context: WitnessContext<Ledger, DiscoveryCorePrivateState>,
+  caseIdentifier_0: bigint,
+  jurisdictionRuleReference_0: Uint8Array,
+): [DiscoveryCorePrivateState, bigint] => {
+  const caseIdHex = caseIdentifier_0.toString(16).padStart(62, "0");
+  const input = Buffer.concat([
+    Buffer.from(caseIdHex, "hex"),
+    Buffer.from([0x7c]),
+    Buffer.from(jurisdictionRuleReference_0),
+  ]);
+  const stepHash = sha256ToField(input);
+  return [context.privateState, stepHash];
 };
 
 /**
- * Computes a unique step hash from the case ID and rule reference.
- * Allows step tracking without revealing which rule the step corresponds to.
+ * getCurrentTimestamp
+ * Returns current Unix timestamp in seconds.
  */
-export const computeStepHash = (
-  _context: WitnessContext,
-  caseId: bigint,
-  ruleRef: Uint8Array
-): bigint => {
-  // TODO: Implement hash(caseId || ruleRef)
-  throw new Error("computeStepHash witness not yet implemented — needs hash primitive");
+export const getCurrentTimestamp = (
+  context: WitnessContext<Ledger, DiscoveryCorePrivateState>,
+): [DiscoveryCorePrivateState, bigint] => {
+  return [context.privateState, BigInt(Math.floor(Date.now() / 1000))];
 };
 
-/**
- * Returns the current Unix timestamp.
- * Used for deadline comparison and attestation timestamping.
- */
-export const getCurrentTimestamp = (_context: WitnessContext): bigint => {
-  return BigInt(Math.floor(Date.now() / 1000));
-};
-
-// --- Witness Map (for contract binding) ---
+// --- Witness Map (matched to generated Witnesses<PS> type) ---
 
 export const discoveryCoreWitnesses = {
-  getCaller,
-  computeCaseId,
-  computeStepHash,
+  computeUniqueCaseIdentifier,
+  computeUniqueStepHash,
   getCurrentTimestamp,
 };

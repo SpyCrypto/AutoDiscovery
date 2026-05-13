@@ -26,6 +26,24 @@ export type ImpureCircuits<PS> = {
                                   attestationHashToReveal_0: Uint8Array): __compactRuntime.CircuitResults<PS, bigint>;
 }
 
+export type ProvableCircuits<PS> = {
+  attestStepLevelCompliance(context: __compactRuntime.CircuitContext<PS>,
+                            caseUniqueIdentifier_0: bigint,
+                            stepUniqueHash_0: bigint,
+                            stepDeadlineTimestamp_0: bigint): __compactRuntime.CircuitResults<PS, Uint8Array>;
+  attestPhaseLevelCompliance(context: __compactRuntime.CircuitContext<PS>,
+                             caseUniqueIdentifier_0: bigint,
+                             discoveryPhaseIdentifier_0: bigint,
+                             totalStepsInPhase_0: bigint,
+                             completedStepsInPhase_0: bigint): __compactRuntime.CircuitResults<PS, Uint8Array>;
+  attestCaseLevelCompliance(context: __compactRuntime.CircuitContext<PS>,
+                            caseUniqueIdentifier_0: bigint): __compactRuntime.CircuitResults<PS, Uint8Array>;
+  verifyAttestationExists(context: __compactRuntime.CircuitContext<PS>,
+                          attestationHashToVerify_0: Uint8Array): __compactRuntime.CircuitResults<PS, boolean>;
+  revealAttestationCaseIdentifier(context: __compactRuntime.CircuitContext<PS>,
+                                  attestationHashToReveal_0: Uint8Array): __compactRuntime.CircuitResults<PS, bigint>;
+}
+
 export type PureCircuits = {
 }
 
@@ -79,6 +97,7 @@ export declare class Contract<PS = any, W extends Witnesses<PS> = Witnesses<PS>>
   witnesses: W;
   circuits: Circuits<PS>;
   impureCircuits: ImpureCircuits<PS>;
+  provableCircuits: ProvableCircuits<PS>;
   constructor(witnesses: W);
   initialState(context: __compactRuntime.ConstructorContext<PS>): __compactRuntime.ConstructorResult<PS>;
 }

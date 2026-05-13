@@ -1,5 +1,5 @@
 import * as __compactRuntime from '@midnight-ntwrk/compact-runtime';
-__compactRuntime.checkRuntimeVersion('0.14.0');
+__compactRuntime.checkRuntimeVersion('0.15.0');
 
 const _descriptor_0 = __compactRuntime.CompactTypeField;
 
@@ -287,6 +287,12 @@ export class Contract {
       }
     };
     this.impureCircuits = {
+      createNewCase: this.circuits.createNewCase,
+      addDiscoveryStepToCase: this.circuits.addDiscoveryStepToCase,
+      markDiscoveryStepAsCompleted: this.circuits.markDiscoveryStepAsCompleted,
+      checkCaseComplianceStatus: this.circuits.checkCaseComplianceStatus
+    };
+    this.provableCircuits = {
       createNewCase: this.circuits.createNewCase,
       addDiscoveryStepToCase: this.circuits.addDiscoveryStepToCase,
       markDiscoveryStepAsCompleted: this.circuits.markDiscoveryStepAsCompleted,

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import type { Providers, ADMode, AuthSession } from './types';
 import { createDemoProviders } from './demoland';
+import { createRealProviders } from './realdeal';
 
 // --- Provider Context ---
 
@@ -40,11 +41,9 @@ export function useMode(): ADMode {
 // --- Combined Provider ---
 
 function createProviders(mode: ADMode): Providers {
-  if (mode === 'demoland') {
-    return createDemoProviders();
+  if (mode === 'realdeal') {
+    return createRealProviders();
   }
-  // realDeal providers will be implemented later
-  // For now, fall back to demo
   return createDemoProviders();
 }
 

@@ -4,6 +4,7 @@ import { Scale, Mail, KeyRound, HardDrive, Loader2, Shield, Lock, Fingerprint } 
 import { useAuth, useMode } from '@/providers/context';
 import { useVitalsLogger, useVitalsInteraction } from '@/vitals';
 import type { AuthMethod } from '@/providers/types';
+import { WalletConnectButton } from '@/modules/midnight/wallet-widget';
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -223,8 +224,36 @@ export function LoginPage() {
               </div>
             )}
 
-            {/* Trezor Instructions */}
-            {method === 'trezor' && (
+            {/* Trezor / Wallet Instructions */}
+            {method === 'trezor' && mode === 'realdeal' && (
+              <div className="space-y-3">
+                <p className="text-xs font-semibold text-blue-200/70 uppercase tracking-wider">
+                  Connect Midnight Lace Wallet
+                </p>
+                <WalletConnectButton
+                  onConnected={async () => {
+                    setLoading(true);
+                    setError('');
+                    setStatus('Wallet connected — signing in…');
+                    vitals.action('Midnight Lace wallet connected. Deriving identity from wallet address.');
+                    try {
+                      await login('trezor');
+                      vitals.success('Wallet authentication successful. You are now signed in.');
+                      setStatus('Success! Redirecting…');
+                      setTimeout(() => navigate('/'), 500);
+                    } catch (err) {
+                      const msg = err instanceof Error ? err.message : 'Sign-in failed';
+                      setError(msg);
+                      vitals.logError('Wallet sign-in failed.', `Reason: "${msg}"`, 'The wallet connected but login was rejected.', 'Check console for details and try again.');
+                    } finally {
+                      setLoading(false);
+                      setStatus('');
+                    }
+                  }}
+                />
+              </div>
+            )}
+            {method === 'trezor' && mode === 'demoland' && (
               <div className="bg-white/5 border border-white/10 rounded-xl p-5 text-center space-y-3">
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-ad-gold/10 ad-glow-gold">
                   <HardDrive className="w-7 h-7 text-ad-gold" />
@@ -254,25 +283,27 @@ export function LoginPage() {
               </div>
             )}
 
-            {/* Sign In Button — Gold Gradient */}
-            <button
-              onMouseEnter={track.hover('Sign In button')}
-              onClick={handleLogin}
-              disabled={loading}
-              className="w-full py-3 ad-gradient-gold text-amber-950 rounded-xl font-bold text-sm hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-ad-gold/20"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Authenticating...
-                </>
-              ) : (
-                <>
-                  <Lock className="w-4 h-4" />
-                  Sign In Securely
-                </>
-              )}
-            </button>
+            {/* Sign In Button — hidden in realdeal+trezor (WalletConnectButton handles it) */}
+            {!(mode === 'realdeal' && method === 'trezor') && (
+              <button
+                onMouseEnter={track.hover('Sign In button')}
+                onClick={handleLogin}
+                disabled={loading}
+                className="w-full py-3 ad-gradient-gold text-amber-950 rounded-xl font-bold text-sm hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-ad-gold/20"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Authenticating...
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-4 h-4" />
+                    Sign In Securely
+                  </>
+                )}
+              </button>
+            )}
           </div>
 
           {/* Footer */}

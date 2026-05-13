@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { ThemeProvider } from "./components/theme-provider";
 import { ProvidersProvider } from "./providers/context";
 import { VitalsProvider, VitalsNavigationLogger } from "./vitals";
+import { WalletProvider } from "./modules/midnight/wallet-widget";
 import { ADLayout } from "./layouts/ad-layout";
 import { LoginPage } from "./pages/login";
 import { Dashboard } from "./pages/dashboard";
@@ -25,6 +26,7 @@ const DEMO_CONTRACTS = [
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="ad-ui-theme">
+      <WalletProvider autoConnect={true}>
       <ProvidersProvider>
         <VitalsProvider mode="mock" contracts={DEMO_CONTRACTS}>
           <BrowserRouter basename="/">
@@ -45,6 +47,7 @@ function App() {
           </BrowserRouter>
         </VitalsProvider>
       </ProvidersProvider>
+      </WalletProvider>
     </ThemeProvider>
   );
 }

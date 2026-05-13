@@ -16,6 +16,19 @@ export type ImpureCircuits<PS> = {
                                     expectedRulePackHash_0: Uint8Array): __compactRuntime.CircuitResults<PS, boolean>;
 }
 
+export type ProvableCircuits<PS> = {
+  registerNewJurisdiction(context: __compactRuntime.CircuitContext<PS>,
+                          jurisdictionCode_0: Uint8Array,
+                          rulePackContentHash_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
+  updateJurisdictionRulePack(context: __compactRuntime.CircuitContext<PS>,
+                             jurisdictionCode_0: Uint8Array,
+                             updatedRulePackContentHash_0: Uint8Array,
+                             updatedVersionNumber_0: bigint): __compactRuntime.CircuitResults<PS, []>;
+  verifyRulePackHashMatchesExpected(context: __compactRuntime.CircuitContext<PS>,
+                                    jurisdictionCode_0: Uint8Array,
+                                    expectedRulePackHash_0: Uint8Array): __compactRuntime.CircuitResults<PS, boolean>;
+}
+
 export type PureCircuits = {
 }
 
@@ -66,6 +79,7 @@ export declare class Contract<PS = any, W extends Witnesses<PS> = Witnesses<PS>>
   witnesses: W;
   circuits: Circuits<PS>;
   impureCircuits: ImpureCircuits<PS>;
+  provableCircuits: ProvableCircuits<PS>;
   constructor(witnesses: W);
   initialState(context: __compactRuntime.ConstructorContext<PS>): __compactRuntime.ConstructorResult<PS>;
 }

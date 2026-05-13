@@ -39,6 +39,32 @@ export type ImpureCircuits<PS> = {
                           currentDigitalTwinHash_0: Uint8Array): __compactRuntime.CircuitResults<PS, boolean>;
 }
 
+export type ProvableCircuits<PS> = {
+  registerDocument(context: __compactRuntime.CircuitContext<PS>,
+                   documentContentHash_0: Uint8Array,
+                   documentCategoryNumber_0: bigint,
+                   originatorPublicKey_0: Uint8Array): __compactRuntime.CircuitResults<PS, Uint8Array>;
+  registerTwinBond(context: __compactRuntime.CircuitContext<PS>,
+                   imageTwinContentHash_0: Uint8Array,
+                   digitalTwinContentHash_0: Uint8Array,
+                   ocrFidelityScorePercent_0: bigint): __compactRuntime.CircuitResults<PS, Uint8Array>;
+  recordCustodyTransfer(context: __compactRuntime.CircuitContext<PS>,
+                        documentContentHash_0: Uint8Array,
+                        senderPartyPublicKey_0: Uint8Array,
+                        receiverPartyPublicKey_0: Uint8Array,
+                        transferTimestamp_0: bigint): __compactRuntime.CircuitResults<PS, []>;
+  anchorProductionMerkleRoot(context: __compactRuntime.CircuitContext<PS>,
+                             productionUniqueIdentifier_0: Uint8Array,
+                             productionMerkleRootHash_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
+  anchorCaseRootSnapshot(context: __compactRuntime.CircuitContext<PS>,
+                         caseUniqueIdentifier_0: Uint8Array,
+                         caseRootMerkleHash_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
+  verifyDocumentExistsInProduction(context: __compactRuntime.CircuitContext<PS>,
+                                   documentContentHash_0: Uint8Array,
+                                   productionUniqueIdentifier_0: Uint8Array,
+                                   merkleProofPath_0: Uint8Array): __compactRuntime.CircuitResults<PS, boolean>;
+}
+
 export type PureCircuits = {
 }
 
@@ -120,6 +146,7 @@ export declare class Contract<PS = any, W extends Witnesses<PS> = Witnesses<PS>>
   witnesses: W;
   circuits: Circuits<PS>;
   impureCircuits: ImpureCircuits<PS>;
+  provableCircuits: ProvableCircuits<PS>;
   constructor(witnesses: W);
   initialState(context: __compactRuntime.ConstructorContext<PS>): __compactRuntime.ConstructorResult<PS>;
 }

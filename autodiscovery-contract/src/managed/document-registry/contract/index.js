@@ -1,5 +1,5 @@
 import * as __compactRuntime from '@midnight-ntwrk/compact-runtime';
-__compactRuntime.checkRuntimeVersion('0.14.0');
+__compactRuntime.checkRuntimeVersion('0.15.0');
 
 const _descriptor_0 = new __compactRuntime.CompactTypeBytes(32);
 
@@ -465,6 +465,14 @@ export class Contract {
       verifyDocumentExistsInProduction: this.circuits.verifyDocumentExistsInProduction,
       verifyTwinBondIntegrity: this.circuits.verifyTwinBondIntegrity
     };
+    this.provableCircuits = {
+      registerDocument: this.circuits.registerDocument,
+      registerTwinBond: this.circuits.registerTwinBond,
+      recordCustodyTransfer: this.circuits.recordCustodyTransfer,
+      anchorProductionMerkleRoot: this.circuits.anchorProductionMerkleRoot,
+      anchorCaseRootSnapshot: this.circuits.anchorCaseRootSnapshot,
+      verifyDocumentExistsInProduction: this.circuits.verifyDocumentExistsInProduction
+    };
   }
   initialState(...args_0) {
     if (args_0.length !== 1) {
@@ -506,7 +514,6 @@ export class Contract {
     state_0.setOperation('anchorProductionMerkleRoot', new __compactRuntime.ContractOperation());
     state_0.setOperation('anchorCaseRootSnapshot', new __compactRuntime.ContractOperation());
     state_0.setOperation('verifyDocumentExistsInProduction', new __compactRuntime.ContractOperation());
-    state_0.setOperation('verifyTwinBondIntegrity', new __compactRuntime.ContractOperation());
     const context = __compactRuntime.createCircuitContext(__compactRuntime.dummyContractAddress(), constructorContext_0.initialZswapLocalState.coinPublicKey, state_0.data, constructorContext_0.initialPrivateState);
     const partialProofData = {
       input: { value: [], alignment: [] },

@@ -25,6 +25,21 @@ export type ImpureCircuits<PS> = {
                             caseUniqueIdentifier_0: bigint): __compactRuntime.CircuitResults<PS, boolean>;
 }
 
+export type ProvableCircuits<PS> = {
+  createNewCase(context: __compactRuntime.CircuitContext<PS>,
+                caseNumber_0: Uint8Array,
+                jurisdictionCode_0: Uint8Array): __compactRuntime.CircuitResults<PS, bigint>;
+  addDiscoveryStepToCase(context: __compactRuntime.CircuitContext<PS>,
+                         caseUniqueIdentifier_0: bigint,
+                         jurisdictionRuleReference_0: Uint8Array,
+                         stepDeadlineTimestamp_0: bigint): __compactRuntime.CircuitResults<PS, bigint>;
+  markDiscoveryStepAsCompleted(context: __compactRuntime.CircuitContext<PS>,
+                               caseUniqueIdentifier_0: bigint,
+                               stepUniqueHash_0: bigint): __compactRuntime.CircuitResults<PS, bigint>;
+  checkCaseComplianceStatus(context: __compactRuntime.CircuitContext<PS>,
+                            caseUniqueIdentifier_0: bigint): __compactRuntime.CircuitResults<PS, boolean>;
+}
+
 export type PureCircuits = {
 }
 
@@ -83,6 +98,7 @@ export declare class Contract<PS = any, W extends Witnesses<PS> = Witnesses<PS>>
   witnesses: W;
   circuits: Circuits<PS>;
   impureCircuits: ImpureCircuits<PS>;
+  provableCircuits: ProvableCircuits<PS>;
   constructor(witnesses: W);
   initialState(context: __compactRuntime.ConstructorContext<PS>): __compactRuntime.ConstructorResult<PS>;
 }
