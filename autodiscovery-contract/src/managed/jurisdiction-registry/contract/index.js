@@ -331,7 +331,7 @@ export class Contract {
                                                  value: __compactRuntime.StateValue.newCell({ value: _descriptor_11.toValue(5n),
                                                                                               alignment: _descriptor_11.alignment() }).encode() } },
                                        { push: { storage: true,
-                                                 value: __compactRuntime.StateValue.newCell({ value: _descriptor_2.toValue({ bytes: new Uint8Array(32) }),
+                                                 value: __compactRuntime.StateValue.newCell({ value: _descriptor_2.toValue({ bytes: (constructorContext_0.initialPrivateState && constructorContext_0.initialPrivateState.adminPublicKey) ? constructorContext_0.initialPrivateState.adminPublicKey : new Uint8Array(32) }),
                                                                                               alignment: _descriptor_2.alignment() }).encode() } },
                                        { ins: { cached: false, n: 1 } }]);
     state_0.data = new __compactRuntime.ChargedState(context.currentQueryContext.state.state);

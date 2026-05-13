@@ -2,23 +2,28 @@
 // Wallet Setup for Deploy Scripts
 // =============================================================================
 // Builds wallet providers (walletProvider + midnightProvider) from a hex seed
-// using the Midnight wallet SDK. These are required by deployContract().
+// using the Midnight WalletFacade. Handles DUST fee payment automatically.
 //
-// The WalletFacade implements BOTH WalletProvider AND MidnightProvider:
-//   WalletProvider  → balanceTx(), getCoinPublicKey(), getEncryptionPublicKey()
-//   MidnightProvider → submitTx()
+// For local undeployed network, use the genesis seed:
+//   0000000000000000000000000000000000000000000000000000000000000001
+// For testnet, use a funded wallet seed (fund via the testnet faucet).
 // =============================================================================
 
 import type { WalletProvider, MidnightProvider } from '@midnight-ntwrk/midnight-js-types';
 import { HDWallet, Roles } from '@midnight-ntwrk/wallet-sdk-hd';
-import { ZswapSecretKeys, DustSecretKey } from '@midnight-ntwrk/ledger-v6';
-import WebSocket from 'ws';
+import { ZswapSecretKeys, DustSecretKey, LedgerParameters } from '@midnight-ntwrk/ledger-v8';
+import { WalletFacade } from '@midnight-ntwrk/wallet-sdk-facade';
+import { ShieldedWallet } from '@midnight-ntwrk/wallet-sdk-shielded';
+import { DustWallet } from '@midnight-ntwrk/wallet-sdk-dust-wallet';
+import { UnshieldedWallet, createKeystore, PublicKey } from '@midnight-ntwrk/wallet-sdk-unshielded-wallet';
+import { NoOpTransactionHistoryStorage } from '@midnight-ntwrk/wallet-sdk-abstractions';
 
 export interface NetworkConfig {
   readonly indexerHttp: string;
   readonly indexerWs: string;
   readonly node: string;
   readonly proofServer: string;
+  readonly networkId: string;
 }
 
 export interface DeployWalletProviders {
@@ -26,10 +31,11 @@ export interface DeployWalletProviders {
   readonly midnightProvider: MidnightProvider;
   readonly storagePassword: () => string;
   readonly dustAddress: string;
+  readonly facade: WalletFacade;
 }
 
 // ---------------------------------------------------------------------------
-// Build wallet providers from a 64-char hex seed
+// Build wallet providers from a 64-char hex seed using WalletFacade
 // ---------------------------------------------------------------------------
 
 export async function buildWalletProviders(
@@ -39,87 +45,88 @@ export async function buildWalletProviders(
   const seedBuf = Buffer.from(seedHex, 'hex');
 
   // ---------------------------------------------------------------------------
-  // Derive HD keys for Zswap (ZK identity) and Dust (fee payment)
+  // Derive HD keys
   // ---------------------------------------------------------------------------
   const hdResult = HDWallet.fromSeed(new Uint8Array(seedBuf));
   if (hdResult.type !== 'seedOk') {
     throw new Error('Failed to initialize HDWallet from seed');
   }
 
-  const accountKey = hdResult.hdWallet.selectAccount(0);
+  const derivationResult = hdResult.hdWallet
+    .selectAccount(0)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .selectRoles([Roles.Zswap, Roles.NightExternal, Roles.Dust] as any)
+    .deriveKeysAt(0);
 
-  const zswapRoleKey = accountKey.selectRole(Roles.Zswap).deriveKeyAt(0);
-  const dustRoleKey = accountKey.selectRole(Roles.Dust).deriveKeyAt(0);
-
-  if (zswapRoleKey.type !== 'keyDerived' || dustRoleKey.type !== 'keyDerived') {
+  if (derivationResult.type !== 'keysDerived') {
     throw new Error('Failed to derive HD keys from seed');
   }
 
-  // ZSwap keys → coin public key for ZK operations
-  const zswapKeys = ZswapSecretKeys.fromSeed(zswapRoleKey.key);
+  const zswapKeys = ZswapSecretKeys.fromSeed(derivationResult.keys[Roles.Zswap]);
+  const dustKey = DustSecretKey.fromSeed(derivationResult.keys[Roles.Dust]);
+  const keystore = createKeystore(derivationResult.keys[Roles.NightExternal], config.networkId);
   const { coinPublicKey, encryptionPublicKey } = zswapKeys;
-
-  // Derive dust address for display (fund this on testnet)
-  DustSecretKey.fromSeed(dustRoleKey.key); // validate derivation works
-  const dustAddress = Buffer.from(dustRoleKey.key).toString('hex').slice(0, 70);
+  const dustAddress = Buffer.from(derivationResult.keys[Roles.Dust]).toString('hex').slice(0, 70);
 
   // ---------------------------------------------------------------------------
-  // WalletProvider — provides keys and balances transactions
-  //
-  // balanceTx: For a local 'undeployed' network (dev mode), we return
-  // NothingToProve since the local node doesn't require fee proofs.
-  // For testnet, this needs to be replaced with actual DUST fee attachment
-  // using a synced DustWallet. See DEPLOY.md for instructions.
+  // WalletFacade configuration
+  // ---------------------------------------------------------------------------
+  const wsUrl = config.node.replace(/^http/, 'ws');
+  const walletConfig = {
+    networkId: config.networkId,
+    relayURL: new URL(wsUrl),
+    provingServerUrl: new URL(config.proofServer),
+    indexerClientConnection: {
+      indexerHttpUrl: config.indexerHttp,
+      indexerWsUrl: config.indexerWs,
+    },
+    txHistoryStorage: new NoOpTransactionHistoryStorage(),
+    costParameters: {
+      feeBlocksMargin: 5,
+      additionalFeeOverhead: 300_000_000_000_000n,
+    },
+  };
+
+  console.log('[wallet] Initializing WalletFacade and waiting for sync…');
+  const facade = await WalletFacade.init({
+    configuration: walletConfig,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    shielded: (cfg: any) => ShieldedWallet(cfg).startWithSecretKeys(zswapKeys),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    unshielded: (cfg: any) => UnshieldedWallet(cfg).startWithPublicKey(PublicKey.fromKeyStore(keystore)),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dust: (cfg: any) => DustWallet(cfg).startWithSecretKey(dustKey, LedgerParameters.initialParameters().dust),
+  });
+
+  await facade.start(zswapKeys, dustKey);
+  console.log('[wallet] Waiting for wallet sync…');
+  await facade.waitForSyncedState();
+  console.log('[wallet] Wallet synced.');
+
+  // ---------------------------------------------------------------------------
+  // WalletProvider: delegates fee balancing to WalletFacade
   // ---------------------------------------------------------------------------
   const walletProvider: WalletProvider = {
     getCoinPublicKey: () => coinPublicKey,
     getEncryptionPublicKey: () => encryptionPublicKey,
-    balanceTx: async (tx) => {
-      return {
-        type: 'NothingToProve' as const,
-        transaction: tx,
-      } as any;
+    balanceTx: async (tx, ttl) => {
+      const txTtl = ttl ?? new Date(Date.now() + 10 * 60 * 1000);
+      const recipe = await facade.balanceUnboundTransaction(
+        tx,
+        { shieldedSecretKeys: zswapKeys, dustSecretKey: dustKey },
+        { ttl: txTtl },
+      );
+      return facade.finalizeRecipe(recipe);
     },
   };
 
   // ---------------------------------------------------------------------------
-  // MidnightProvider — submits finalized transactions to the network
-  //
-  // For local dev: node listens on ws://localhost:9944 (WebSocket RPC)
-  // For testnet: wss://rpc.preprod.midnight.network
-  //
-  // The actual submission format depends on the Midnight node RPC spec.
-  // The indexer HTTP endpoint (graphql) does NOT accept raw tx submission.
-  // Tx submission must go through the node's polkadot-compatible RPC endpoint.
+  // MidnightProvider: submits via WalletFacade (uses wallet-sdk-node-client)
   // ---------------------------------------------------------------------------
   const midnightProvider: MidnightProvider = {
     submitTx: async (tx) => {
-      const wsUrl = config.node.replace(/^http/, 'ws');
-      return new Promise((resolve, reject) => {
-        const ws = new WebSocket(wsUrl);
-        ws.once('open', () => {
-          const txBytes = (tx as any).serialize?.() ?? (tx as any).bytes ?? JSON.stringify(tx);
-          ws.send(JSON.stringify({
-            jsonrpc: '2.0',
-            id: 1,
-            method: 'author_submitExtrinsic',
-            params: [
-              typeof txBytes === 'string' ? txBytes : Buffer.from(txBytes).toString('hex'),
-            ],
-          }));
-        });
-        ws.once('message', (data: string) => {
-          ws.close();
-          try {
-            const resp = JSON.parse(data.toString()) as { result?: string; error?: unknown };
-            if (resp.error) reject(new Error(JSON.stringify(resp.error)));
-            else resolve(resp.result ?? '');
-          } catch (e) {
-            reject(e);
-          }
-        });
-        ws.once('error', reject);
-      });
+      const result = await facade.submitTransaction(tx);
+      return typeof result === 'string' ? result : (result as any).txId ?? String(result);
     },
   };
 
@@ -130,5 +137,6 @@ export async function buildWalletProviders(
     midnightProvider,
     storagePassword,
     dustAddress,
+    facade,
   };
 }

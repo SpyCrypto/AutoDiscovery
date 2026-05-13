@@ -25,6 +25,8 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { pipe } from 'effect';
+import { CompiledContract } from '@midnight-ntwrk/compact-js';
 import { setNetworkId } from '@midnight-ntwrk/midnight-js-network-id';
 import { deployContract } from '@midnight-ntwrk/midnight-js-contracts';
 import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-public-data-provider';
@@ -69,20 +71,25 @@ const NETWORK = (process.env.MIDNIGHT_NETWORK ?? 'undeployed') as
   | 'preview'
   | 'preprod';
 
+const GENESIS_SEED = '0000000000000000000000000000000000000000000000000000000000000001';
+
 const NETWORK_CONFIG = {
   undeployed: {
+    networkId: 'undeployed',
     indexerHttp: 'http://localhost:8088/api/v3/graphql',
     indexerWs: 'ws://localhost:8088/api/v3/graphql/ws',
     node: 'http://localhost:9944',
     proofServer: 'http://localhost:6300',
   },
   preview: {
+    networkId: 'preview',
     indexerHttp: 'https://indexer.preview.midnight.network/api/v3/graphql',
     indexerWs: 'wss://indexer.preview.midnight.network/api/v3/graphql/ws',
     node: 'https://rpc.preview.midnight.network',
     proofServer: process.env.VITE_PROOF_SERVER_URL ?? 'http://localhost:6300',
   },
   preprod: {
+    networkId: 'preprod',
     indexerHttp: 'https://indexer.preprod.midnight.network/api/v3/graphql',
     indexerWs: 'wss://indexer.preprod.midnight.network/api/v3/graphql/ws',
     node: 'https://rpc.preprod.midnight.network',
@@ -100,13 +107,15 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '.
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function buildProviders(contractId: string, wallet: DeployWalletProviders): any {
+  const zkConfigProvider = new NodeZkConfigProvider(path.join(ZK_KEYS_DIR, contractId));
   return {
     publicDataProvider: indexerPublicDataProvider(CONFIG.indexerHttp, CONFIG.indexerWs),
-    proofProvider: httpClientProofProvider(CONFIG.proofServer),
-    zkConfigProvider: new NodeZkConfigProvider(path.join(ZK_KEYS_DIR, contractId, 'keys')),
+    proofProvider: httpClientProofProvider(CONFIG.proofServer, zkConfigProvider),
+    zkConfigProvider,
     privateStateProvider: levelPrivateStateProvider({
       privateStateStoreName: `ad-${contractId}-ps`,
       privateStoragePasswordProvider: wallet.storagePassword,
+      accountId: wallet.dustAddress,
     }),
     walletProvider: wallet.walletProvider,
     midnightProvider: wallet.midnightProvider,
@@ -143,11 +152,15 @@ async function main() {
   console.log(`[deploy] Indexer:      ${CONFIG.indexerHttp}`);
   console.log(`[deploy] Proof server: ${CONFIG.proofServer}`);
 
-  const seed = process.env.DEPLOYER_SEED;
-  if (!seed) {
+  // For local undeployed network, default to genesis seed (already funded).
+  // For testnet, set DEPLOYER_SEED to your funded wallet seed.
+  const rawSeed = process.env.DEPLOYER_SEED;
+  const seed = (NETWORK === 'undeployed' && (!rawSeed || rawSeed.length !== 64))
+    ? GENESIS_SEED
+    : rawSeed;
+  if (!seed || seed.length !== 64) {
     throw new Error(
-      'DEPLOYER_SEED not set. Add a 64-char hex seed to .env.realdeal or environment.\n' +
-      'For testnet, fund the printed wallet address from https://faucet.preprod.midnight.network/',
+      'DEPLOYER_SEED must be a 64-char hex string. Generate with: openssl rand -hex 32',
     );
   }
 
@@ -157,10 +170,15 @@ async function main() {
 
   // 1. Discovery Core
   console.log('[deploy] Deploying discovery-core…');
+  const discoveryCompiledContract = pipe(
+    CompiledContract.make('discovery-core', DiscoveryCoreContract),
+    CompiledContract.withWitnesses(discoveryCoreWitnesses),
+    CompiledContract.withCompiledFileAssets(path.join(ZK_KEYS_DIR, 'discovery-core')),
+  );
   const discoveryDeployed = await deployContract(
     buildProviders('discovery-core', wallet),
     {
-      contract: new DiscoveryCoreContract(discoveryCoreWitnesses),
+      compiledContract: discoveryCompiledContract,
       privateStateId: 'ad-discovery-core-v1',
       initialPrivateState: createDiscoveryCorePrivateState(),
     },
@@ -168,22 +186,36 @@ async function main() {
   const discoveryCoreAddress = discoveryDeployed.deployTxData.public.contractAddress;
   console.log(`[deploy] ✓ discovery-core: ${discoveryCoreAddress}`);
 
-  // 2. Jurisdiction Registry (no private state — witnesses map is empty)
+  // 2. Jurisdiction Registry (no private state)
   console.log('[deploy] Deploying jurisdiction-registry…');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const jurisdictionDeployed = await (deployContract as any)(
+  const jurisdictionCompiledContract = pipe(
+    CompiledContract.make('jurisdiction-registry', JurisdictionRegistryContract),
+    CompiledContract.withVacantWitnesses,
+    CompiledContract.withCompiledFileAssets(path.join(ZK_KEYS_DIR, 'jurisdiction-registry')),
+  );
+  const jurisdictionDeployed = await deployContract(
     buildProviders('jurisdiction-registry', wallet),
-    { contract: new JurisdictionRegistryContract({}) },
+    {
+      compiledContract: jurisdictionCompiledContract,
+      privateStateId: 'ad-jurisdiction-registry-ps',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      initialPrivateState: { adminPublicKey: Buffer.from(wallet.walletProvider.getCoinPublicKey(), 'hex') } as any,
+    },
   );
   const jurisdictionAddress = jurisdictionDeployed.deployTxData.public.contractAddress;
   console.log(`[deploy] ✓ jurisdiction-registry: ${jurisdictionAddress}`);
 
   // 3. Compliance Proof
   console.log('[deploy] Deploying compliance-proof…');
+  const complianceCompiledContract = pipe(
+    CompiledContract.make('compliance-proof', ComplianceProofContract),
+    CompiledContract.withWitnesses(complianceWitnesses),
+    CompiledContract.withCompiledFileAssets(path.join(ZK_KEYS_DIR, 'compliance-proof')),
+  );
   const complianceDeployed = await deployContract(
     buildProviders('compliance-proof', wallet),
     {
-      contract: new ComplianceProofContract(complianceWitnesses),
+      compiledContract: complianceCompiledContract,
       privateStateId: 'ad-compliance-proof-v1',
       initialPrivateState: createCompliancePrivateState(),
     },
@@ -193,10 +225,15 @@ async function main() {
 
   // 4. Document Registry
   console.log('[deploy] Deploying document-registry…');
+  const documentCompiledContract = pipe(
+    CompiledContract.make('document-registry', DocumentRegistryContract),
+    CompiledContract.withWitnesses(documentRegistryWitnesses),
+    CompiledContract.withCompiledFileAssets(path.join(ZK_KEYS_DIR, 'document-registry')),
+  );
   const documentDeployed = await deployContract(
     buildProviders('document-registry', wallet),
     {
-      contract: new DocumentRegistryContract(documentRegistryWitnesses),
+      compiledContract: documentCompiledContract,
       privateStateId: 'ad-document-registry-v1',
       initialPrivateState: createDocumentRegistryPrivateState(),
     },
@@ -225,6 +262,8 @@ async function main() {
 
   console.log('\n[deploy] → Next step: register Idaho IRCP rule pack:');
   console.log('   npm run register-jurisdictions');
+
+  process.exit(0);
 }
 
 main().catch((err) => {

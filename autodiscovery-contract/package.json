@@ -33,6 +33,7 @@
     "toolkit-version": "bash src/toolkit/version.sh",
     "deploy": "node --loader ts-node/esm --env-file=../frontend-vite-react/.env.realdeal src/deploy/deploy-contracts.ts",
     "deploy:local": "MIDNIGHT_NETWORK=undeployed node --loader ts-node/esm src/deploy/deploy-contracts.ts",
+    "register-jurisdictions": "MIDNIGHT_NETWORK=undeployed node --loader ts-node/esm --env-file=../frontend-vite-react/.env.realdeal src/deploy/register-jurisdictions.ts",
     "deploy:preview": "MIDNIGHT_NETWORK=preview node --loader ts-node/esm src/deploy/deploy-contracts.ts",
     "deploy:preprod": "MIDNIGHT_NETWORK=preprod node --loader ts-node/esm src/deploy/deploy-contracts.ts"
   },

@@ -1,23 +1,21 @@
 # =============================================================================
 # AutoDiscovery — Local Development Infrastructure
 # =============================================================================
-# Starts a full local Midnight network:
-#   node       → local Midnight consensus node (undeployed/testnet mode)
-#   indexer    → indexes chain state, exposes GraphQL API on :8088
-#   proof-server → ZK proof generation server on :6300
+# Starts node + indexer for a local Midnight network.
+# NOTE: proof-server is expected to already be running on :6300 separately.
+#       If not, uncomment the proof-server service below.
 #
 # Usage:
-#   docker compose up          # start all services
 #   docker compose up -d       # start in background
 #   docker compose down        # stop and remove containers
 #
 # After all services are healthy, run:
-#   npm run deploy             # (from autodiscovery-contract/) deploy all contracts
+#   npm run deploy:local       # (from autodiscovery-contract/) deploy all contracts
 # =============================================================================
 
 services:
   node:
-    image: 'midnightntwrk/midnight-node:0.18.0-rc.9'
+    image: 'midnightntwrk/midnight-node:0.22.3'
     container_name: 'ad-node'
     ports:
       - "9944:9944"
@@ -32,7 +30,7 @@ services:
 
   indexer:
     container_name: 'ad-indexer'
-    image: 'midnightntwrk/indexer-standalone:3.0.0-alpha.19'
+    image: 'midnightntwrk/indexer-standalone:4.0.1'
     ports:
       - '8088:8088'
     environment:
@@ -53,17 +51,17 @@ services:
       node:
         condition: service_started
 
-  proof-server:
-    container_name: 'ad-proof-server'
-    image: "midnightnetwork/proof-server:6.1.0-alpha.6"
-    command: ["midnight-proof-server", "--network", "undeployed"]
-    ports:
-      - "6300:6300"
-    environment:
-      RUST_BACKTRACE: "full"
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:6300/version']
-      interval: 10s
-      timeout: 5s
-      retries: 20
-      start_period: 10s
+  # proof-server:
+  #   container_name: 'ad-proof-server'
+  #   image: "midnightnetwork/proof-server:6.1.0-alpha.6"
+  #   command: ["midnight-proof-server", "--network", "undeployed"]
+  #   ports:
+  #     - "6300:6300"
+  #   environment:
+  #     RUST_BACKTRACE: "full"
+  #   healthcheck:
+  #     test: ['CMD', 'curl', '-f', 'http://localhost:6300/version']
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 20
+  #     start_period: 10s
