@@ -1,0 +1,57 @@
+# Multi-stage build for AutoDiscovery CLI
+# Stage 1: Builder
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy monorepo root files
+COPY package*.json turbo.json tsconfig.json ./
+COPY autodiscovery-cli autodiscovery-cli/
+COPY autodiscovery-contract autodiscovery-contract/
+
+# Install dependencies with npm ci for reproducibility
+RUN npm ci --omit=dev
+
+# Build contract first (required by CLI)
+RUN cd autodiscovery-contract && npm run build
+
+# Build CLI
+RUN cd autodiscovery-cli && npm run build
+
+# Stage 2: Runtime
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init curl
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Copy only production dependencies and built artifacts
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/autodiscovery-contract/dist ./autodiscovery-contract/dist
+COPY --from=builder /app/autodiscovery-cli/dist ./autodiscovery-cli/dist
+COPY --from=builder /app/package*.json ./
+
+# Copy necessary config files
+COPY .env.production .env.production
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV NODE_OPTIONS="--max-old-space-size=512"
+
+# Use non-root user
+USER nodejs
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["/usr/sbin/dumb-init", "--"]
+
+# Default command - can be overridden
+CMD ["node", "autodiscovery-cli/dist/index.js"]

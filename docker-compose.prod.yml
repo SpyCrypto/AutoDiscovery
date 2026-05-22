@@ -1,0 +1,104 @@
+version: '3.8'
+
+# Production deployment of AutoDiscovery
+# All services communicate over internal network
+# Use with: docker-compose -f docker-compose.prod.yml up -d
+
+services:
+  cli:
+    build:
+      context: .
+      dockerfile: Dockerfile.cli
+    container_name: autodiscovery-cli-prod
+    environment:
+      - NODE_ENV=production
+      - CLI_ENV=preprod
+      - CLI_LOG_LEVEL=info
+      - VITE_NODE_URL=${VITE_NODE_URL}
+      - VITE_INDEXER_URL=${VITE_INDEXER_URL}
+      - VITE_PROOF_SERVER_URL=${VITE_PROOF_SERVER_URL}
+      - VITE_CONTRACT_DISCOVERY_CORE=${VITE_CONTRACT_DISCOVERY_CORE}
+      - VITE_CONTRACT_DISCOVERY_PROOF=${VITE_CONTRACT_DISCOVERY_PROOF}
+      - VITE_CONTRACT_DOCUMENT_REGISTRY=${VITE_CONTRACT_DOCUMENT_REGISTRY}
+      - VITE_CONTRACT_ACCESS_CONTROL=${VITE_CONTRACT_ACCESS_CONTROL}
+      - VITE_CONTRACT_JURISDICTION_REGISTRY=${VITE_CONTRACT_JURISDICTION_REGISTRY}
+      - VITE_CONTRACT_EXPERT_WITNESS=${VITE_CONTRACT_EXPERT_WITNESS}
+    ports:
+      - "8080:8080"
+    volumes:
+      - cli_logs:/app/logs
+    restart: on-failure:5
+    networks:
+      - autodiscovery
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  frontend-realdeal:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend-realdeal
+    container_name: autodiscovery-frontend-realdeal
+    environment:
+      - VITE_NODE_URL=${VITE_NODE_URL}
+      - VITE_INDEXER_URL=${VITE_INDEXER_URL}
+      - VITE_INDEXER_WS=${VITE_INDEXER_WS}
+      - VITE_PROOF_SERVER_URL=${VITE_PROOF_SERVER_URL}
+      - VITE_CONTRACT_DISCOVERY_CORE=${VITE_CONTRACT_DISCOVERY_CORE}
+      - VITE_CONTRACT_DISCOVERY_PROOF=${VITE_CONTRACT_DISCOVERY_PROOF}
+      - VITE_CONTRACT_DOCUMENT_REGISTRY=${VITE_CONTRACT_DOCUMENT_REGISTRY}
+      - VITE_CONTRACT_ACCESS_CONTROL=${VITE_CONTRACT_ACCESS_CONTROL}
+      - VITE_CONTRACT_JURISDICTION_REGISTRY=${VITE_CONTRACT_JURISDICTION_REGISTRY}
+      - VITE_CONTRACT_EXPERT_WITNESS=${VITE_CONTRACT_EXPERT_WITNESS}
+    ports:
+      - "5174:80"
+    volumes:
+      - realdeal_logs:/var/log/nginx
+    restart: on-failure:5
+    networks:
+      - autodiscovery
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      - cli
+
+  frontend-demoland:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend-demoland
+    container_name: autodiscovery-frontend-demoland
+    environment:
+      - VITE_NODE_URL=${VITE_NODE_URL}
+      - VITE_INDEXER_URL=${VITE_INDEXER_URL}
+      - VITE_PROOF_SERVER_URL=${VITE_PROOF_SERVER_URL}
+    ports:
+      - "5173:80"
+    volumes:
+      - demoland_logs:/var/log/nginx
+    restart: on-failure:5
+    networks:
+      - autodiscovery
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      - cli
+
+volumes:
+  cli_logs:
+    driver: local
+  realdeal_logs:
+    driver: local
+  demoland_logs:
+    driver: local
+
+networks:
+  autodiscovery:
+    driver: bridge
