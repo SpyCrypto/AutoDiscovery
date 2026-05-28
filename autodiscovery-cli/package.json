@@ -1,41 +1,48 @@
 {
   "name": "@autodiscovery/cli",
   "version": "0.1.0",
-  "license": "Apache-2.0",
   "private": true,
   "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.js",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
-    }
-  },
-  "scripts": {      
-    "test-undeployed": "vitest run discovery-core.test.ts",  
-    "test-preview": "RUN_ENV_TESTS=true TEST_ENV=preview vitest run discovery-core.test.ts",
-    "tui-undeployed": "npx tsx src/tui_standalone.ts",
-    "tui-preview": "npx tsx src/tui_preview.ts",
-    "setup-undeployed": "npx tsx src/setup/standalone.ts",
-    "deploy-preprod": "npx tsx src/deploy_preprod.ts",
-    "tui-preprod": "npx tsx src/tui_preview.ts", 
-    "ps-undeployed": "docker compose -f ps-undeployed.yml up",
-    "ps-preview": "docker compose -f ps-preview.yml up",
-    "ps-preprod": "docker compose -f ps-preprod.yml up",               
-    "build": "tsc --project tsconfig.build.json",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
     "lint": "eslint src",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "private-provider-testing": "vitest run src/test/private-provider.test.ts",
-    "public-provider-testing": "vitest run src/test/public-provider.test.ts",
-    "zk-provider-testing": "vitest run src/test/zk-provider.test.ts",
-    "indexer-client-testing": "vitest run src/test/indexer-client.test.ts",
-    "wallet-testing": "vitest run src/test/wallet.test.ts"
+    "test": "vitest",
+    "test-undeployed": "echo 'Running tests on undeployed environment...' && vitest --run",
+    "test-preprod": "echo 'Running tests on preprod environment...' && vitest --run --config vitest.config.ts",
+    "setup-undeployed": "tsx src/setup-undeployed.ts",
+    "deploy-preprod": "tsx src/deploy_preprod.ts",
+    "ps-preprod": "echo 'Starting proof server on preprod...'",
+    "create-case": "tsx src/create-case.ts",
+    "clean": "rm -rf dist node_modules",
+    "copy-contracts": "bash ../scripts/copy-contracts.sh"
   },
-  "dependencies": {    
-    "@autodiscovery/contract": "*"    
+  "dependencies": {
+    "@autodiscovery/contract": "*",
+    "@midnight-ntwrk/compact-runtime": "8.0.3",
+    "@midnight-ntwrk/dapp-connector-api": "8.0.3",
+    "@midnight-ntwrk/ledger-v7": "8.0.3",
+    "@midnight-ntwrk/midnight-js-contracts": "8.0.3",
+    "@midnight-ntwrk/midnight-js-fetch-zk-config-provider": "8.0.3",
+    "@midnight-ntwrk/midnight-js-http-client-proof-provider": "8.0.3",
+    "@midnight-ntwrk/midnight-js-indexer-public-data-provider": "8.0.3",
+    "@midnight-ntwrk/midnight-js-level-private-state-provider": "8.0.3",
+    "@midnight-ntwrk/midnight-js-network-id": "8.0.3",
+    "@midnight-ntwrk/midnight-js-node-zk-config-provider": "8.0.3",
+    "@midnight-ntwrk/midnight-js-types": "8.0.3",
+    "@midnight-ntwrk/midnight-js-utils": "8.0.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "@types/node": "^22.15.29",
+    "@typescript-eslint/eslint-plugin": "^8.33.1",
+    "@typescript-eslint/parser": "^8.33.1",
+    "eslint": "^9.25.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.1",
+    "prettier": "^3.4.2",
+    "tsx": "^4.18.1",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.0"
   }
 }
