@@ -1,0 +1,156 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║       Deploy VITE_CONTRACT_DISCOVERY_CORE - Quick Reference Card          ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+CONTRACT DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Name:                discovery-core
+Purpose:             Case/step lifecycle management
+Environment Var:     VITE_CONTRACT_DISCOVERY_CORE
+Location:            autodiscovery-contract/src/managed/discovery-core/
+Network:             Midnight PreProd
+Estimated Gas:       ~500,000 MIST
+Deploy Time:         30-60 seconds
+
+
+QUICK CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Before You Start:
+  ☐ Lace wallet installed (https://www.lace.io)
+  ☐ PreProd network selected in Lace
+  ☐ Test DUST tokens obtained (https://faucet.midnight.network)
+  ☐ Wallet balance > 0 (check in Lace)
+
+Deployment Steps:
+  ☐ 1. Open https://explore-preprod.midnight.network
+  ☐ 2. Click "Connect Wallet" → Select "Lace" → Approve
+  ☐ 3. Click "Deploy Contract"
+  ☐ 4. Select: autodiscovery-contract/src/managed/discovery-core
+  ☐ 5. Review contract details
+  ☐ 6. Click "Deploy"
+  ☐ 7. Approve in Lace wallet popup
+  ☐ 8. Wait 30-60 seconds for confirmation
+  ☐ 9. Copy the contract address
+  ☐ 10. Save to text file
+
+
+WHAT YOU'LL GET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Deployment Successful!
+
+Contract Address: 03cc52g89494d8c9d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f
+Transaction Hash: 0x1234567890abcdef...
+Block Height: 123456
+Gas Used: 450,000 MIST
+
+→ COPY the Contract Address (the long hex string)
+→ SAVE to text file or notes
+
+
+FORMAT TO SAVE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Save like this:
+
+VITE_CONTRACT_DISCOVERY_CORE=03cc52g89494d8c9d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f
+
+
+VERIFY ADDRESS FORMAT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Starts with "02" or "03"
+✓ Contains only hex characters (0-9, a-f)
+✓ Is 50-100 characters long
+✓ No spaces or special characters
+
+
+TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ "Connect Wallet" button missing
+   → Refresh page (F5)
+   → Clear browser cache
+   → Verify Lace is installed
+
+❌ Lace shows "Wrong Network"
+   → Open Lace
+   → Click network dropdown
+   → Select "PreProd"
+   → Reload explorer page
+
+❌ "Insufficient Balance" error
+   → Go to https://faucet.midnight.network
+   → Paste wallet address from Lace
+   → Request tokens (wait 1-2 min)
+   → Check balance in Lace
+   → Try deployment again
+
+❌ Transaction stuck for > 2 min
+   → Refresh page
+   → Check status in Lace wallet
+   → If stuck, try deploying again
+
+❌ "Deploy button" not found
+   → Look for menu icon (☰)
+   → Check for "Contracts" menu
+   → Try scrolling down
+   → Check browser console (F12)
+
+
+LINKS YOU'LL NEED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔗 Deploy Here:      https://explore-preprod.midnight.network
+🔗 Install Lace:     https://www.lace.io
+🔗 Get Test DUST:    https://faucet.midnight.network
+🔗 Full Guide:       See DEPLOY_DISCOVERY_CORE.md
+🔗 Midnight Docs:    https://midnight.network/docs
+
+
+NEXT AFTER THIS DEPLOYMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Save VITE_CONTRACT_DISCOVERY_CORE address to text file
+2. Deploy the other 5 contracts (same process):
+   - VITE_CONTRACT_DISCOVERY_PROOF
+   - VITE_CONTRACT_DOCUMENT_REGISTRY
+   - VITE_CONTRACT_ACCESS_CONTROL
+   - VITE_CONTRACT_JURISDICTION_REGISTRY
+   - VITE_CONTRACT_EXPERT_WITNESS
+
+3. Collect all 6 addresses in text file
+
+4. Run address capture script:
+   bash scripts/save-contract-addresses.sh
+
+5. Deploy AutoDiscovery:
+   bash scripts/setup-production.sh
+
+6. Access the UI:
+   http://localhost:5174 (RealDeal)
+   http://localhost:8080 (CLI)
+
+
+ESTIMATED TIMELINE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+This contract:          5-10 min
+× 5 more contracts:     + 25-50 min
+Save addresses:         + 2 min
+Start AutoDiscovery:    + 5 min
+─────────────────────────────────
+TOTAL:                  ~40-70 min
+
+
+CONTACT INFO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📖 Full Documentation:  See DEPLOY_DISCOVERY_CORE.md
+📖 Deployment Checklist: See DEPLOYMENT_CHECKLIST.md
+🐛 Issues:              https://github.com/SpyCrypto/AutoDiscovery/issues
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║  Ready? Open your browser and go to:                                      ║
+║  👉 https://explore-preprod.midnight.network                              ║
+║                                                                            ║
+║  Good luck! 🚀                                                             ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝

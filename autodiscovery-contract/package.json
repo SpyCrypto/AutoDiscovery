@@ -28,9 +28,9 @@
     "compact:all": "npm run compact:counter && npm run compact:ad",
     "test": "vitest run",
     "test:compile": "npm run compact:all && vitest run",
-    "build": "npx rimraf dist && tsc --project tsconfig.build.json && npx ncp ./src/managed ./dist/managed && npx ncp ./src/contracts ./dist/contracts",
+    "build": "node scripts/build.js",
     "lint": "eslint src",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "toolkit-version": "bash src/toolkit/version.sh"  
+    "toolkit-version": "bash src/toolkit/version.sh"
   }
 }

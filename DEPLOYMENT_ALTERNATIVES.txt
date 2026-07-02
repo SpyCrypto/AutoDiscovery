@@ -1,0 +1,167 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║                  Deployment Link Not Working? Here's What To Do           ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+If: https://explore-preprod.midnight.network doesn't work
+
+Try These Alternatives:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OPTION A: Official Resources
+──────────────────────────────
+🔗 https://midnight.network              (Main site)
+🔗 https://docs.midnight.network         (Developer docs)
+🔗 https://discord.com/invite/midnightnetwork  (Community)
+
+→ Go to docs site
+→ Search for "deploy contract" or "smart contract"
+→ Follow official instructions
+→ Ask Discord community for current explorer URL
+
+
+OPTION B: Community Help (Fastest)
+──────────────────────────────────
+🔗 Discord: https://discord.com/invite/midnightnetwork
+
+Message in #general or #support:
+  "Where is the PreProd contract deployment explorer?"
+  "I'm trying to deploy discovery-core contract"
+  
+Someone will likely respond within 5-30 minutes with:
+  - Working URL
+  - Alternative tools
+  - Current status
+
+
+OPTION C: Test Locally Right Now (No Network Needed)
+─────────────────────────────────────────────────────
+You can test the AutoDiscovery UI without real deployment:
+
+# Start local Midnight stack
+cd AutoDiscovery
+docker-compose up -d
+
+# This starts:
+# - Node on localhost:9944
+# - Indexer on localhost:8088
+# - Proof server on localhost:6300
+
+# Start AutoDiscovery with mock addresses
+bash scripts/setup-production.sh
+
+# Access UI
+Open: http://localhost:5174 (RealDeal Frontend)
+Open: http://localhost:8080 (CLI)
+
+WHAT YOU'LL SEE:
+  ✓ UI loads and works
+  ✓ Wallet connection UI
+  ✓ Mock data displays
+  ✗ Real transactions won't work (no real contracts deployed)
+
+USE THIS TO:
+  - Test the interface
+  - See how the app works
+  - Understand the flow
+  - Test wallet connection
+  - Get familiar with features
+
+THEN WHEN EXPLORER WORKS:
+  - Deploy real contracts
+  - Update .env.prod with real addresses
+  - Transactions will work
+
+
+OPTION D: Check GitHub Issues
+──────────────────────────────
+🔗 https://github.com/SpyCrypto/AutoDiscovery/issues
+
+Other users may have:
+  - Working explorer links
+  - Alternative deployment methods
+  - Current status updates
+  - Solutions to same problems
+
+
+OPTION E: Wait for CLI Tool
+────────────────────────────
+A public Midnight CLI is being developed:
+
+When released:
+  npm install -g @midnight-ntwrk/cli
+  midnight deploy --contract ...
+  
+Until then:
+  - Use explorer when it's available
+  - Or use community tools
+  - Or test locally
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+RECOMMENDED IMMEDIATE ACTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Go to Discord: https://discord.com/invite/midnightnetwork
+2. Ask: "What's the working PreProd explorer URL?"
+3. Wait for response (usually 5-30 min)
+4. Get the correct URL
+5. Use it to deploy
+
+
+IF YOU WANT TO START NOW (Without Real Deployment):
+─────────────────────────────────────────────────────
+
+# Start local services
+cd AutoDiscovery
+docker-compose up -d
+
+# Deploy with mock addresses (for testing only)
+bash scripts/setup-production.sh
+
+# Test the UI
+Open: http://localhost:5174
+
+This lets you:
+  ✓ See the AutoDiscovery interface
+  ✓ Test UI functionality
+  ✓ Understand how it works
+  ✓ Be ready when real contracts deploy
+
+Then when explorer works:
+  ✓ Deploy real contracts
+  ✓ Update addresses
+  ✓ Have real transactions work
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DOCUMENTATION FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEPLOY_LINK_ISSUES.md           - Full guide for link problems
+DEPLOYMENT_ALTERNATIVES.txt     - This file (quick reference)
+DEPLOY_DISCOVERY_CORE.md        - Step-by-step when you have link
+DEPLOYMENT_CHECKLIST.md         - Complete deployment checklist
+
+
+QUICK LINKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔗 Midnight Main:        https://midnight.network
+🔗 Midnight Docs:        https://docs.midnight.network
+🔗 Discord Community:    https://discord.com/invite/midnightnetwork
+🔗 GitHub AutoDiscovery: https://github.com/SpyCrypto/AutoDiscovery
+🔗 Local UI:             http://localhost:5174 (after docker-compose up)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+What would you like to do?
+
+1. Try local testing now (docker-compose up -d)
+2. Go to Discord and ask for explorer URL
+3. Check official Midnight docs
+4. Wait and retry the link later
+
+Let me know! 🚀

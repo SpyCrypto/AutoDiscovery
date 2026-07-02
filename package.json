@@ -22,7 +22,7 @@
     "dev:local": "npm run dev:local:up && npm run dev:local:wait",
     "test:local": "npm run dev:local && cd autodiscovery-cli && npm run test-undeployed",
     "test:local:teardown": "npm run test:local; npm run dev:local:down"
-  },
+  ],
   "engines": {
     "node": ">=18"
   },

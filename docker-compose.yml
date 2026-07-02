@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # Midnight Local Dev - provides indexer, node, and proof server for development
+  midnight-local:
+    image: midnightntwrk/midnight-local-dev:latest
+    container_name: midnight-local-dev
+    ports:
+      - "9944:9944"     # Node RPC
+      - "8088:8088"     # Indexer GraphQL
+      - "6300:6300"     # Proof server
+      - "5173:5173"     # Frontend Demoland (host port)
+      - "5174:5174"     # Frontend RealDeal (host port)
+    environment:
+      # Optionally set log levels
+      LOG_LEVEL: info
+    volumes:
+      # Optional: persist midnight state across restarts
+      - midnight_data:/data
+    healthcheck:
+      test:
+        - "CMD"
+        - "curl"
+        - "-f"
+        - "http://localhost:9944"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - autodiscovery
+
+  # Redis cache (optional, for session/proof caching)
+  redis:
+    image: redis:7-alpine
+    container_name: autodiscovery-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test:
+        - "CMD"
+        - "redis-cli"
+        - "ping"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - autodiscovery
+
+  # PostgreSQL for off-chain indexing (optional)
+  postgres:
+    image: postgres:16-alpine
+    container_name: autodiscovery-postgres
+    environment:
+      POSTGRES_DB: autodiscovery
+      POSTGRES_USER: autodiscovery
+      POSTGRES_PASSWORD: autodiscovery_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "pg_isready -U autodiscovery"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - autodiscovery
+
+volumes:
+  midnight_data:
+  redis_data:
+  postgres_data:
+
+networks:
+  autodiscovery:
+    driver: bridge

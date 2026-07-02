@@ -1,0 +1,171 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║              AutoDiscovery Frontend - How to Open (Simple Steps)           ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+## PROBLEM: File didn't open when double-clicked
+
+Let's try a simpler method.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## METHOD 1: Copy Full File Path and Paste in Browser
+
+### Step 1: Get the Full File Path
+File location: AutoDiscovery/frontend-realdeal/dist/index.html
+
+Full path (copy this):
+C:\Users\Kurti\.docker\cagent\working_directories\docker-gordon-v7\dfba7088-6429-4c3c-908b-ea99b25fdd5b\default\AutoDiscovery\frontend-realdeal\dist\index.html
+
+### Step 2: Open Your Browser
+- Open Google Chrome
+- Or Microsoft Edge
+- Or Firefox
+- Any browser you have
+
+### Step 3: Paste the Path
+1. Click the address bar (top of browser)
+2. Type: file:///
+3. Then paste the full path after file:///
+4. Press Enter
+
+Result:
+file:///C:\Users\Kurti\.docker\cagent\working_directories\docker-gordon-v7\dfba7088-6429-4c3c-908b-ea99b25fdd5b\default\AutoDiscovery\frontend-realdeal\dist\index.html
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## METHOD 2: Use Local Web Server (Recommended)
+
+Your frontend is now being served at:
+
+🌐 http://localhost:5174
+
+### To Access It:
+1. Open your browser (Chrome, Edge, Firefox, etc.)
+2. Click the address bar
+3. Type: http://localhost:5174
+4. Press Enter
+
+**That's it!** The AutoDiscovery UI should load!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## STEP-BY-STEP FOR CHROME
+
+1. Open Google Chrome
+2. Click in the address bar (where it says "Search Google or type URL")
+3. Type: http://localhost:5174
+4. Press Enter
+5. AutoDiscovery UI loads! ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## STEP-BY-STEP FOR EDGE
+
+1. Open Microsoft Edge
+2. Click in the address bar (where it says "Search or enter web address")
+3. Type: http://localhost:5174
+4. Press Enter
+5. AutoDiscovery UI loads! ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## STEP-BY-STEP FOR FIREFOX
+
+1. Open Firefox
+2. Click in the address bar
+3. Type: http://localhost:5174
+4. Press Enter
+5. AutoDiscovery UI loads! ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## IF NOTHING STILL HAPPENS
+
+Try this:
+
+### Restart the Web Server
+1. Open PowerShell
+2. Copy and paste this command:
+
+cd AutoDiscovery\frontend-realdeal\dist && python -m http.server 5174
+
+3. Press Enter
+4. Wait 2 seconds
+5. Open browser to: http://localhost:5174
+
+If it says "Address already in use", that's OK - means server is running.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## WHAT YOU SHOULD SEE
+
+When you open http://localhost:5174, you should see:
+
+✓ A web page loads
+✓ AutoDiscovery UI appears
+✓ Navigation menu on the left
+✓ Main content area in the middle
+✓ You can click buttons (they won't do much but they respond)
+
+If you see an error like "Cannot GET /", the file path is wrong.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## TROUBLESHOOTING
+
+"Connection refused" or "This site can't be reached":
+→ Server might not be running
+→ Run: python -m http.server 5174 in PowerShell
+
+"Cannot find module http.server":
+→ Python might not be installed
+→ Install from: https://www.python.org/
+
+"Address already in use":
+→ That's OK! Server is already running
+→ Just open: http://localhost:5174
+
+"Blank page":
+→ Refresh (press F5)
+→ Clear cache (Ctrl+Shift+Delete)
+→ Try in incognito/private mode
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## QUICK TEST
+
+Don't have Python? Try this instead:
+
+1. Open PowerShell
+2. Copy this:
+
+cd AutoDiscovery\frontend-realdeal\dist && python -m http.server 5174
+
+3. If it doesn't work, try:
+
+cd AutoDiscovery\frontend-realdeal\dist && py -m http.server 5174
+
+4. If that doesn't work, Python isn't installed (get it from python.org)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+READY? 🚀
+
+👉 METHOD 1 (Easiest):
+   Open browser
+   Click address bar
+   Type: http://localhost:5174
+   Press Enter
+
+👉 If that doesn't work, open PowerShell and run:
+   cd AutoDiscovery\frontend-realdeal\dist && python -m http.server 5174
+   
+   Then try: http://localhost:5174
+
+Let me know what happens! 🎉
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║  The UI is ready. Just need to open it in your browser at localhost:5174 ║
+╚════════════════════════════════════════════════════════════════════════════╝
