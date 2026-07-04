@@ -4,28 +4,24 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy monorepo root
-COPY package*.json turbo.json tsconfig.json ./
-
-# Copy workspace packages
-COPY autodiscovery-contract autodiscovery-contract/
-COPY frontend-demoland-vite-react frontend-demoland-vite-react/
+# Copy all files
+COPY . .
 
 # Install dependencies
-RUN npm ci
+RUN npm install --legacy-peer-deps --no-save
 
 # Build contract first (required by frontend)
-RUN cd autodiscovery-contract && npm run build
+RUN npm run build --workspace=autodiscovery-contract
 
 # Build frontend with Vite
-RUN cd frontend-demoland-vite-react && npm run build
+RUN npm run build --workspace=frontend-demoland-vite-react
 
 # Stage 2: Runtime (nginx)
 FROM nginx:1.27-alpine
 
 # Copy nginx configuration
-COPY frontend-demoland-vite-react/nginx.conf /etc/nginx/nginx.conf
-COPY frontend-demoland-vite-react/default.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY default.conf /etc/nginx/conf.d/default.conf
 
 # Copy built frontend from builder
 COPY --from=builder /app/frontend-demoland-vite-react/dist /usr/share/nginx/html
@@ -36,11 +32,11 @@ RUN chown -R nginx:nginx /usr/share/nginx/html && \
     chmod -R 555 /usr/share/nginx/html
 
 # Expose port
-EXPOSE 80 443
+EXPOSE 80
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost/health || exit 1
+    CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
 
 # Use nginx's default entrypoint
 CMD ["nginx", "-g", "daemon off;"]

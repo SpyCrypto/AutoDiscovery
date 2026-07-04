@@ -1,0 +1,137 @@
+name: Deploy to Production
+
+on:
+  workflow_run:
+    workflows: ["Build & Push Preview Image"]
+    types:
+      - completed
+    branches:
+      - main
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/autodiscovery-preview
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    name: Deploy to Staging
+    if: github.ref == 'refs/heads/develop' || github.event.inputs.environment == 'staging'
+    environment: staging
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to staging server via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          port: ${{ secrets.STAGING_PORT || 22 }}
+          script: |
+            cd /opt/autodiscovery
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+            docker compose -f docker-compose.preview.yml down
+            docker compose -f docker-compose.preview.yml up -d
+            docker compose -f docker-compose.preview.yml ps
+            echo "✅ Staging deployment complete"
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    name: Deploy to Production
+    if: github.ref == 'refs/heads/main' && github.event.inputs.environment == 'production'
+    environment: production
+    needs: deploy-staging
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to production server via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          port: ${{ secrets.PROD_PORT || 22 }}
+          script: |
+            cd /opt/autodiscovery
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            docker compose -f docker-compose.preview.yml down
+            docker compose -f docker-compose.preview.yml up -d
+            docker compose -f docker-compose.preview.yml ps
+            curl -f http://localhost/health || exit 1
+            echo "✅ Production deployment complete"
+      
+      - name: Notify Slack on success
+        if: success()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+          payload: |
+            {
+              "text": "✅ AutoDiscovery deployed to production",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*AutoDiscovery Production Deployment*\n✅ Successful\n\n*Commit:* ${{ github.sha }}\n*Author:* ${{ github.actor }}\n*Branch:* main"
+                  }
+                }
+              ]
+            }
+      
+      - name: Notify Slack on failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+          payload: |
+            {
+              "text": "❌ AutoDiscovery production deployment failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*AutoDiscovery Production Deployment*\n❌ Failed\n\n*Commit:* ${{ github.sha }}\n*Author:* ${{ github.actor }}\n*Branch:* main"
+                  }
+                }
+              ]
+            }
+
+  rollback:
+    runs-on: ubuntu-latest
+    name: Rollback on Failure
+    if: failure() && github.ref == 'refs/heads/main'
+    needs: deploy-production
+    environment: production
+    
+    steps:
+      - name: Rollback production deployment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          port: ${{ secrets.PROD_PORT || 22 }}
+          script: |
+            cd /opt/autodiscovery
+            docker compose -f docker-compose.preview.yml down
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-stable || echo "No stable tag found"
+            docker compose -f docker-compose.preview.yml up -d
+            echo "🔄 Rollback complete"

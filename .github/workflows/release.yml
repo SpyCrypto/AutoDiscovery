@@ -1,0 +1,121 @@
+name: Release & Version Management
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 0.2.0)'
+        required: true
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/autodiscovery-preview
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    name: Create GitHub Release
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    permissions:
+      contents: write
+      packages: write
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      
+      - name: Generate changelog
+        id: changelog
+        run: |
+          git log --oneline --format='- %h: %s' $(git describe --tags --abbrev=0 HEAD^)...HEAD > CHANGELOG_LATEST.md || echo "- Initial release" > CHANGELOG_LATEST.md
+          cat CHANGELOG_LATEST.md
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ steps.version.outputs.VERSION }}
+          body_path: CHANGELOG_LATEST.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build and push tagged image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.frontend-demoland
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.VERSION }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-stable
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  publish-docs:
+    runs-on: ubuntu-latest
+    name: Publish Documentation
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: create-release
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Build documentation
+        run: |
+          mkdir -p public
+          cp README.md public/index.md
+          cp PREVIEW_DEPLOYMENT_STATUS.md public/deployment.md
+          ls -la docs/ && cp docs/*.md public/ 2>/dev/null || true
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  notify-release:
+    runs-on: ubuntu-latest
+    name: Notify Release
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: create-release
+    
+    steps:
+      - name: Extract version
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      
+      - name: Notify Slack
+        uses: slackapi/slack-github-action@v1.24.0
+        if: secrets.SLACK_WEBHOOK != ''
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+          payload: |
+            {
+              "text": "🎉 AutoDiscovery ${{ steps.version.outputs.VERSION }} Released",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*🎉 AutoDiscovery ${{ steps.version.outputs.VERSION }} Released*\n\n📦 Docker Image: `${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.VERSION }}`\n🔗 Release: https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.VERSION }}"
+                  }
+                }
+              ]
+            }
