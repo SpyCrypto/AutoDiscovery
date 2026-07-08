@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "compact": "turbo run compact",
-    "build": "turbo run build",
+    "build": "turbo run build --filter=@autodiscovery/contract",
+    "build-contract": "cd autodiscovery-contract && npm run build",
     "build-production": "cd autodiscovery-contract && npm run build && cd ../frontend-demoland-vite-react && npm run build",
     "setup-standalone": "cd autodiscovery-cli && npm run setup-undeployed",
     "dev:frontend": "cd frontend-demoland-vite-react && npm run dev",
@@ -22,7 +23,7 @@
     "dev:local": "npm run dev:local:up && npm run dev:local:wait",
     "test:local": "npm run dev:local && cd autodiscovery-cli && npm run test-undeployed",
     "test:local:teardown": "npm run test:local; npm run dev:local:down"
-  ],
+  },
   "engines": {
     "node": ">=18"
   },
