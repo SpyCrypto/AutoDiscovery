@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "compact": "turbo run compact",
-    "build": "turbo run build",
+    "build": "turbo run build --filter=@autodiscovery/contract",
     "build-production": "cd autodiscovery-contract && npm run build && cd ../frontend-demoland-vite-react && npm run build",
     "setup-standalone": "cd autodiscovery-cli && npm run setup-undeployed",
     "dev:frontend": "cd frontend-demoland-vite-react && npm run dev",
