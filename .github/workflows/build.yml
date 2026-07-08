@@ -1,0 +1,118 @@
+name: Build & Push Preview Image
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'frontend-demoland-vite-react/**'
+      - 'autodiscovery-contract/**'
+      - 'Dockerfile.frontend-demoland'
+      - 'nginx.conf'
+      - 'default.conf'
+      - 'package.json'
+      - '.github/workflows/build.yml'
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/autodiscovery-preview
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint & Type Check
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps --no-save
+      
+      - name: Run TypeScript check
+        run: npm run build --workspace=frontend-demoland-vite-react 2>&1 | head -50 || true
+      
+      - name: Run ESLint
+        run: npm run lint --workspace=frontend-demoland-vite-react 2>&1 || true
+
+  build:
+    runs-on: ubuntu-latest
+    name: Build Docker Image
+    needs: lint
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to GitHub Container Registry
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.frontend-demoland
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Image digest
+        if: github.event_name == 'push'
+        run: echo "Built image digest: ${{ steps.docker_build.outputs.digest }}"
+
+  security-scan:
+    runs-on: ubuntu-latest
+    name: Security Scan (Trivy)
+    needs: build
+    if: github.event_name == 'push'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'

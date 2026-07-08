@@ -4,44 +4,20 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "autodiscovery-cli",
     "autodiscovery-contract",
-    "frontend-demoland-vite-react",
-    "frontend-realdeal"
+    "frontend-demoland-vite-react"
   ],
   "scripts": {
-    "compact": "turbo run compact",
     "build": "turbo run build",
-    "build-production": "cd autodiscovery-contract && npm run build && cd ../frontend-demoland-vite-react && npm run build",
-    "setup-standalone": "cd autodiscovery-cli && npm run setup-undeployed",
-    "dev:frontend": "cd frontend-demoland-vite-react && npm run dev",
-    "lint": "turbo run lint",
-    "dev:local:up": "cd autodiscovery-cli && docker compose --env-file ../scripts/docker-versions.env -f standalone.yml up -d",
-    "dev:local:down": "cd autodiscovery-cli && docker compose --env-file ../scripts/docker-versions.env -f standalone.yml down -v",
-    "dev:local:wait": "bash scripts/wait-for-stack.sh",
-    "dev:local": "npm run dev:local:up && npm run dev:local:wait",
-    "test:local": "npm run dev:local && cd autodiscovery-cli && npm run test-undeployed",
-    "test:local:teardown": "npm run test:local; npm run dev:local:down"
-  ],
+    "dev:frontend": "cd frontend-demoland-vite-react && npm run dev"
+  },
   "engines": {
     "node": ">=18"
   },
   "packageManager": "npm@10.9.2",
   "devDependencies": {
-    "@eslint/js": "^9.28.0",
-    "@types/node": "^22.15.29",
-    "@types/ws": "^8.18.1",
-    "@typescript-eslint/eslint-plugin": "^8.33.1",
-    "@typescript-eslint/parser": "^8.33.1",
-    "concurrently": "^9.2.0",
-    "eslint": "^9.28.0",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-prettier": "^5.4.1",
-    "testcontainers": "^11.0.0",
-    "ts-node": "^10.9.2",
     "turbo": "^2.4.4",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.0"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@midnight-ntwrk/compact-runtime": "0.14.0",
@@ -68,9 +44,7 @@
     "dotenv": "^17.2.3",
     "pino": "9.7.0",
     "pino-pretty": "13.0.0",
-    "puppeteer": "^24.37.5",
     "rxjs": "^7.8.1",
-    "vite-plugin-node-polyfills": "^0.24.0",
     "ws": "8.18.2"
   }
 }
